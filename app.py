@@ -1,11 +1,12 @@
 from email import header
-from flask import Flask, render_template, redirect, session, flash, request, g
+from flask import Flask, render_template, redirect, session, flash, request, g, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like
 from forms import SearchForm
 import requests
 import time
+
 
 CURR_USER_KEY = 'cur_user'
 
@@ -14,7 +15,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = FLASK_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
 toolbar = DebugToolbarExtension(app)
@@ -44,7 +45,7 @@ toolbar = DebugToolbarExtension(app)
 #         del session[CURR_USER_KEY]
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def homepage():
     form = SearchForm()
     return render_template('index.html', form=form)
@@ -55,24 +56,29 @@ def handle_search():
     form = SearchForm()
 
     if form.validate_on_submit():
-        # q = request.args['q']
         q = form.search.data
         print(f'q: {q}')
-        twitter_response = query_twitter_v1(q)
-        if not twitter_response:
-            form.search.errors.append('No results found. Try another term?')
-            return redirect('/')
-        return render_template('search-results.html', q=twitter_response)
+        q_start_time = time.time()
+        raw_tweets = query_twitter_v1(q, count=10, lang='en')
+        if raw_tweets:
+            pruned_tweets = prune_tweets(raw_tweets, query_v2=True)
+            categorized_tweets = categorize_tweets(pruned_tweets)
 
-    flash('Please search using the search bar below.')
-    return redirect('/')
+            session['tweets'] = categorized_tweets
+            session['q_time'] = time.time() - q_start_time
+            return redirect('/search')
 
-    # TWITTER:
+        form.search.errors.append('No results found. Try another term?')
+        return render_template('index.html', form=form)
+
+    tweets = session.get('tweets')
+    q_time = session.get('q_time')
+    return render_template('search-results.html', tweets=tweets, q_time=q_time)
 
 
-def query_twitter_v1(q, popular_results=True):
-    """Accepts a user search query. Returns a JSON object."""
-    v1_base_url = 'https://api.twitter.com/1.1/search/tweets.json'
+def query_twitter_v1(q, count=10, lang='en'):
+    """Accepts a user search query. If results found, returns a list of tweet objects; else False."""
+    base_url = 'https://api.twitter.com/1.1/search/tweets.json'
     headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
     add_flags = ' -filter:retweets'
     q = requests.utils.quote(q + add_flags)  # urlencodes query
@@ -80,35 +86,39 @@ def query_twitter_v1(q, popular_results=True):
 
     params = {
         'q': q,
-        'lang': 'en',
-        'count': 10,
+        'lang': lang,
+        'count': count,
         'result_type': 'popular'
     }
 
-    res = requests.get(f'{v1_base_url}', headers=headers,
+    res = requests.get(f'{base_url}', headers=headers,
                        params=params)
     data = res.json()
 
-    tweets = data['statuses']
+    raw_tweets = data['statuses']
 
-    if not tweets:
-        # print('No results. result_type header removed!')
+    if not raw_tweets:
+        print('*******************************************')
+        print('No popular results. Searching all tweets...')
+        print('*******************************************')
         del params['result_type']
-        # print(f'Params updated: {params}')
-        res = requests.get(f'{v1_base_url}', headers=headers,
-                           params=params)
-        data = res.json()
-        tweets = data['statuses']
-        if not tweets:
-            # form.search.errors.append('')
+        res_2 = requests.get(f'{base_url}', headers=headers,
+                             params=params)
+        data_2 = res.json()
+        raw_tweets_2 = data['statuses']
+        if not raw_tweets_2:
             print('NO RESULTS!')
             return False
+    # import pdb
+    # pdb.set_trace()
+    return raw_tweets
 
-    # TODO: If tweets does not contain valid results, requery API setting popular_results=False
 
+def prune_tweets(raw_tweets, query_v2=True):
+    """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets."""
     unassigned_tweets = []
 
-    for tweet in tweets:
+    for tweet in raw_tweets:
         cur_tweet = {
             'id': tweet['id_str'],
             'type': 'tweet',
@@ -118,7 +128,7 @@ def query_twitter_v1(q, popular_results=True):
             'text': tweet['text'],
             'is_truncated': tweet['truncated'],
         }
-        if tweet['truncated']:
+        if query_v2 and tweet['truncated']:
             print('Truncated tweet found!')
             full_text = query_twitter_v2(cur_tweet['id'])
             if full_text:
@@ -131,9 +141,8 @@ def query_twitter_v1(q, popular_results=True):
         cur_tweet['sentiment'] = sentiment.get('type')
 
         unassigned_tweets.append(cur_tweet)
-    # import pdb
-    # pdb.set_trace()
-    return categorize_tweets(unassigned_tweets)
+
+    return unassigned_tweets
 
 
 def query_twitter_v2(id):
@@ -156,7 +165,7 @@ def query_twitter_v2(id):
 
 
 def categorize_tweets(tweet_lst):
-    """Accepts a list of tweet dicts. Returns 3 lists: negative, neutral, positive"""
+    """Accepts a list of tweet dicts. Returns a tuple comprised of 3 lists: positive, neutral, negative"""
     negative = []
     neutral = []
     positive = []

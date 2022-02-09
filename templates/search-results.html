@@ -1,13 +1,69 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Twentiment
+Veritas
 {% endblock %}
 
 {% block content %}
 <h1>Search Results:</h1>
-<div>
-  <p>Your Query Was: {{q}}</p>
+<h2>Search took {{q_time}} seconds.</h2>
+<div class="container w-full max-w-md mt-5 mx-auto">
+  <h2 class="text-xl font-medium text-center">Positive</h2>
+  {% if tweets[0] %}
+    <!-- <p>Positive Tweets: {{tweets[0]}}</p> -->
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[0] %}
+      <a href="{{ tweet.url }}" target="_blank">
+        <div class="border border-black p-1">
+          <p>{{tweet.text}}</p>
+          <p>{{tweet.polarity}}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+  <p>Your search didn't yield any positive results.</p>
+  {% endif %}
+  <div class="container">
+    <h2 class="text-xl font-medium text-center">Neutral</h2>
+    {% if tweets[1] %}
+    <!-- <p>Neutral Tweets: {{tweets[1]}}</p> -->
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[1] %}
+      <a href="{{ tweet.url }}" target="_blank">
+      <div class="border border-black p-1">
+        <p>{{tweet.text}}</p>
+        <p>{{tweet.polarity}}</p>
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>Your search didn't yield any neutral results.</p>
+    {% endif %}
+  </div>
+  <div class="container">
+    <h2 class="text-xl font-medium text-center">Negative</h2>
+    {% if tweets[2] %}
+    <!-- <p>Positive Tweets: {{tweets[2]}}</p> -->
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[2] %}
+      <a href="{{ tweet.url }}" target="_blank">
+      <div class="border border-black p-1">
+        <p>{{tweet.text}}</p>
+        <p>{{tweet.polarity}}</p>
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>Your search didn't yield any Negative results.</p>
+    {% endif %}
+  </div>
+</div>
+
+  <div>
+    <p>Your Query Was: {{tweets}}</p>
 </div>
 
 {% endblock %}

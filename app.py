@@ -1,80 +1,189 @@
-from flask import Flask, render_template, redirect, session, flash, request
+from email import header
+from flask import Flask, render_template, redirect, session, flash, request, g
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
+from models import db, connect_db, User, Article, Like
+from forms import SearchForm
 import requests
+import time
+
+CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = FLASK_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = True
+
+connect_db(app)
 toolbar = DebugToolbarExtension(app)
 
 
-base_url = 'https://api.twitter.com/2/tweets/search/recent'
-headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
+# @app.before_request
+# def add_user_to_g():
+#     """If we're logged in, add curr user to Flask global."""
 
-# Newsapi
-# base_url = 'https://newsapi.org/v2/everything/'
-# headers = {'X-Api-Key': NEWS_API_KEY}
+#     if CURR_USER_KEY in session:
+#         g.user = User.query.get(session[CURR_USER_KEY])
+
+#     else:
+#         g.user = None
+
+
+# def do_login(user):
+#     """Log in user."""
+
+#     session[CURR_USER_KEY] = user.id
+
+
+# def do_logout():
+#     """Logout user."""
+
+#     if CURR_USER_KEY in session:
+#         del session[CURR_USER_KEY]
 
 
 @app.route('/')
 def homepage():
-    return render_template('index.html')
+    form = SearchForm()
+    return render_template('index.html', form=form)
 
 
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def handle_search():
-    q = request.args['q']
+    form = SearchForm()
+
+    if form.validate_on_submit():
+        # q = request.args['q']
+        q = form.search.data
+        print(f'q: {q}')
+        twitter_response = query_twitter_v1(q)
+        if not twitter_response:
+            form.search.errors.append('No results found. Try another term?')
+            return redirect('/')
+        return render_template('search-results.html', q=twitter_response)
+
+    flash('Please search using the search bar below.')
+    return redirect('/')
+
     # TWITTER:
-    res = requests.get(f'{base_url}', headers=headers, '
-                       params={'query': q, 'max_results': 10, 'tweet.fields'=[]})
+
+
+def query_twitter_v1(q, popular_results=True):
+    """Accepts a user search query. Returns a JSON object."""
+    v1_base_url = 'https://api.twitter.com/1.1/search/tweets.json'
+    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
+    add_flags = ' -filter:retweets'
+    q = requests.utils.quote(q + add_flags)  # urlencodes query
+    print(f'Query url-encoded: {q}')
+
+    params = {
+        'q': q,
+        'lang': 'en',
+        'count': 10,
+        'result_type': 'popular'
+    }
+
+    res = requests.get(f'{v1_base_url}', headers=headers,
+                       params=params)
     data = res.json()
-    tweets = data['data']
 
-    # tweets = data['sources']
-    return render_template('index.html', tweets=tweets)
+    tweets = data['statuses']
 
-    # NEWSAPI
-    # res = requests.get(f'{base_url}', headers=headers,
-    #                    params={
-    #                        'language': 'en',
-    #                        'from': '2022-02-03',
-    #                        'q': q,
-    #                        'searchIn': 'title'
-    #                    })
-    # data = res.json()
-    # stories = data['articles']
-    # return render_template('index.html', stories=stories)
+    if not tweets:
+        # print('No results. result_type header removed!')
+        del params['result_type']
+        # print(f'Params updated: {params}')
+        res = requests.get(f'{v1_base_url}', headers=headers,
+                           params=params)
+        data = res.json()
+        tweets = data['statuses']
+        if not tweets:
+            # form.search.errors.append('')
+            print('NO RESULTS!')
+            return False
 
-# NEWSAPI RESPONSE
-# {
-#     'status': 'ok',
-#     'totalResults': 8039,
-#     'articles':
-#         [
-#             {
-#                 'source': {'id': 'wired', 'name': 'Wired'},
-#                 'author': 'Gian M. Volpicelli',
-#                 'title': 'As Kazakhstan Descends into Chaos, Crypto Miners Are at a Loss',
-#                 'description': 'The central Asian country became No. 2 in the world for Bitcoin mining. But political turmoil and power cuts have hit hard, and the future looks bleak.'  ,
-#                 'url': 'https://www.wired.com/story/kazakhstan-cryptocurrency-mining-unrest-e  ,
-#                 'urlToImage': 'https://media.wired.com/photos/61de2d453e654a13e9a16ef0/191:100/w_1280,c_limit/Business_Kazakhstan-2HDE52K.jpg'  ,
-#                 'publishedAt': '2022-01-12T12:00:00Z',
-#                 'content': 'When Denis Rusinovich set up cryptocurrency mining company Maveric Group in Kazakhstan in 2017, he thought he had hit the jackpot. Next door to China and Russia, the country had everything a Bitcoin … [+4140 chars]'    },
+    # TODO: If tweets does not contain valid results, requery API setting popular_results=False
+
+    unassigned_tweets = []
+
+    for tweet in tweets:
+        cur_tweet = {
+            'id': tweet['id_str'],
+            'type': 'tweet',
+            'url': tweet['entities']['urls'][0]['url'] if tweet['entities']['urls'] else None,
+            'published': tweet['created_at'],
+            'source': tweet['user'].get('name', 'unknown'),
+            'text': tweet['text'],
+            'is_truncated': tweet['truncated'],
+        }
+        if tweet['truncated']:
+            print('Truncated tweet found!')
+            full_text = query_twitter_v2(cur_tweet['id'])
+            if full_text:
+                print('updating text...')
+                cur_tweet['text'] = full_text
+                cur_tweet['is_truncated'] = False
+
+        sentiment = query_sentim_API(cur_tweet['text'])
+        cur_tweet['polarity'] = sentiment.get('polarity')
+        cur_tweet['sentiment'] = sentiment.get('type')
+
+        unassigned_tweets.append(cur_tweet)
+    # import pdb
+    # pdb.set_trace()
+    return categorize_tweets(unassigned_tweets)
 
 
-# TWITTER RESPONSE
-# {
-#     'data':
-#         [
-#             {'id': '1489062762655453184', 'text': 'RT @ AirdropStario:  Metagwara Token Airdrop Task:          ➕},
-#             {'id': '1489062762537836547', 'text': '@ Bitcoin AltSwitch(ALTS) \nThe mother of all rewards tokens is final},
-#             {'id': '1489062761019629572', 'text': '@ Benzinga @ ElliotLane10 @ BzCannabis @ JavierHasse FATOSHI \nAudited by},
-#             {'id': '1489062760973361157', 'text': 'RT @ satsandtitties: Eventually normies will complain about how unfair},
-#             {'id': '1489062760747089923', 'text': 'RT @ hoseins51979372: @ davidgokhshtein @ InuSaitama Huuuuge News!!!\nNe},
-#             {'id': '1489062760621170691', 'text': 'RT @ BitcoinMagazine: JUST IN - NYDIG CEO: "We are seeing more traditi},
-#             {'id': '1489062759971328001', 'text': '@ ICOAnnouncement I am really happy to participate this project\n@Rase},
-#             {'id': '1489062758796644356', 'text': 'RT @ yassineARK: A conversation about Bitcoin between Cathie Wood, Jac}
-#         ],
-#     'meta':
-#         {'newest_id': '1489062762655453184', 'oldest_id': '1489062757060132865', 'result_count': 10, 'next_token': 'b26v89c19zqg8o3fpe48wcj7w2ffsz1qs6pxefymwmmwt'}}
+def query_twitter_v2(id):
+    """Query Twitter v2 API. If success, returns the full tweet text; else False"""
+
+    print('Twitter v2 API called!')
+    base_url = 'https://api.twitter.com/2/tweets'
+    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
+    res = requests.get(f'{base_url}/{id}', headers=headers)
+
+    if res.status_code == 200:
+        data = res.json()
+        text = data['data']['text']
+        print('Text updated:')
+        print(text)
+        print('***************')
+        return text
+
+    return False
+
+
+def categorize_tweets(tweet_lst):
+    """Accepts a list of tweet dicts. Returns 3 lists: negative, neutral, positive"""
+    negative = []
+    neutral = []
+    positive = []
+
+    for tweet in tweet_lst:
+        if tweet['sentiment'] == 'positive':
+            positive.append(tweet)
+        elif tweet['sentiment'] == 'negative':
+            negative.append(tweet)
+        elif tweet['sentiment'] == 'neutral':
+            neutral.append(tweet)
+
+    return (positive, neutral, negative)
+
+
+def query_sentim_API(text):
+    """Query the sentim API. Text is passed and analyzed for sentiment.
+
+    Returns a dictionary with keys: 'polarity' and 'positive'
+      ex: {'polarity': 0.4, 'type': 'positive'}
+    """
+
+    base_url = 'https://sentim-api.herokuapp.com/api/v1/'
+    headers = {'Accept': 'application/json',
+               'Content-Type': 'application/json'}
+    json = {'text': text}
+
+    res = requests.post(base_url, headers=headers, json=json)
+    data = res.json()
+    return data['result'] or False

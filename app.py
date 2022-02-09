@@ -3,7 +3,8 @@ from flask import Flask, render_template, redirect, session, flash, request, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like
-from forms import SearchForm
+from sqlalchemy.exc import IntegrityError
+from forms import SearchForm, UserAddForm
 import requests
 import time
 
@@ -21,28 +22,31 @@ connect_db(app)
 toolbar = DebugToolbarExtension(app)
 
 
-# @app.before_request
-# def add_user_to_g():
-#     """If we're logged in, add curr user to Flask global."""
+@app.before_request
+def add_user_to_g():
+    """If we're logged in, add curr user to Flask global."""
 
-#     if CURR_USER_KEY in session:
-#         g.user = User.query.get(session[CURR_USER_KEY])
+    if CURR_USER_KEY in session:
+        g.user = User.query.get(session[CURR_USER_KEY])
 
-#     else:
-#         g.user = None
-
-
-# def do_login(user):
-#     """Log in user."""
-
-#     session[CURR_USER_KEY] = user.id
+    else:
+        g.user = None
 
 
-# def do_logout():
-#     """Logout user."""
+def do_login(user):
+    """Log in user."""
 
-#     if CURR_USER_KEY in session:
-#         del session[CURR_USER_KEY]
+    session[CURR_USER_KEY] = user.id
+    session['username'] = user.username
+
+
+def do_logout():
+    """Logout user."""
+
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+    if 'username' in session:
+        session.pop('username')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -74,6 +78,49 @@ def handle_search():
     tweets = session.get('tweets')
     q_time = session.get('q_time')
     return render_template('search-results.html', tweets=tweets, q_time=q_time)
+
+
+@app.route('/register', methods=["GET", "POST"])
+def signup():
+    """Handle user signup.
+
+    Create new user and add to DB. Redirect to home page.
+    """
+
+    form = UserAddForm()
+
+    if form.validate_on_submit():
+        try:
+            user = User.signup(
+                first_name=form.first_name.data,
+                username=form.username.data,
+                password=form.password.data,
+            )
+
+        except IntegrityError:
+            form.username.errors.append('Username already exists.')
+            return render_template('/users/signup.html', form=form)
+
+        do_login(user)
+        return redirect('/')
+    else:
+        return render_template('/users/signup.html', form=form)
+
+
+@app.route('/logout', methods=['POST'])
+def logout_user():
+    """Logs out user from website."""
+    do_logout()
+
+    flash('Successfully logged out.')
+    return redirect('/')
+
+
+@app.route('/login')
+def login_user():
+    """Logs user into website if account exists."""
+    # TODO: Implement this
+    pass
 
 
 def query_twitter_v1(q, count=10, lang='en'):

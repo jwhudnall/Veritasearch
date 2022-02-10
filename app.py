@@ -195,7 +195,10 @@ def delete_user(user_id):
 
 
 def query_twitter_v1(q, count=10, lang='en'):
-    """Accepts a user search query. If results found, returns a list of tweet objects; else False."""
+    """Accepts a user search query. If results found, returns a list of tweet objects; else False.
+
+    API is first queried for popular results. If none found, a second query is sent for all results.
+    """
     base_url = 'https://api.twitter.com/1.1/search/tweets.json'
     headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
     add_flags = ' -filter:retweets'
@@ -213,7 +216,6 @@ def query_twitter_v1(q, count=10, lang='en'):
     res = requests.get(f'{base_url}', headers=headers,
                        params=params)
     data = res.json()
-
     raw_tweets = data['statuses']
 
     if not raw_tweets:

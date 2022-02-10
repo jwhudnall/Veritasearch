@@ -65,7 +65,7 @@ def handle_search():
         q_start_time = time.time()
         raw_tweets = query_twitter_v1(q, count=10, lang='en')
         if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets, query_v2=True)
+            pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
             categorized_tweets = categorize_tweets(pruned_tweets)
 
             session['tweets'] = categorized_tweets

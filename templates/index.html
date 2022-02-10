@@ -5,42 +5,29 @@ Veritas
 {% endblock %}
 
 {% block content %}
-<h1 class="mt-3 text-3xl text-center">Project Veritas</h1>
+<h1 class="mt-6 text-3xl text-center text-white">Project Veritas</h1>
 <div class="w-full max-w-sm mt-5 mx-auto">
 
   <form action="/search" method="POST">
     {{ form.hidden_tag() }}
 
-    {{ form.search(class_="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700") }}
+    {{ form.search(class_="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-thin rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}
 
     {% for error in form.search.errors %}
           <span class="">{{ error }}</span>
         {% endfor %}
-    <button type="submit" class="py-2.5 px-5 mr-2 mb-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button>
-  </form>
+    <div class="flex flex-row justify-center">
+
+      <button type="submit" class="py-2.5 px-5 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button>
+    </div>
+    </form>
 
 
 </div>
 
-<div class="w-full max-w-3xl mt-5 mx-auto">
-  {% if tweets %}
-  <h2 class="text-2xl">Tweets</h2>
-    {% for tweet in tweets %}
+<!-- Test-Area -->
+<!-- <div class="w-full max-w-3xl mt-5 mx-auto">
 
-      <p class="mb-2 p-1 border-solid border-2 border-black">{{tweet.text}}</p>
-    {% endfor %}
-  {% endif %}
 
-  <!-- NEWSAPI -->
-  {% if stories %}
-    <h2 class="text-2xl">Stories</h2>
-    {% for s in stories %}
-      <div class="border-solid border-2 border-black mb-2 p-1">
-        <h2 class="mb-2 p-1 font-bold">{{s.title}}</h2>
-        <p class="text-xs">{{s.content}}</p>
-        <a href="{{s.url}}" target="_blank">Link</a>
-      </div>
-    {% endfor %}
-  {% endif %}
-</div>
+</div> -->
 {% endblock %}

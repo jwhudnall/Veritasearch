@@ -7,7 +7,7 @@ Veritas
 {% block content %}
 <h1>Search Results:</h1>
 <h2>Search took {{q_time}} seconds.</h2>
-<div class="container w-full max-w-md mt-5 mx-auto">
+<div class="container w-full max-w-md mt-5 mx-auto mb-5">
   <h2 class="text-xl font-medium text-center">Positive</h2>
   {% if tweets[0] %}
     <!-- <p>Positive Tweets: {{tweets[0]}}</p> -->
@@ -22,7 +22,7 @@ Veritas
       {% endfor %}
     </div>
   {% else %}
-  <p>Your search didn't yield any positive results.</p>
+  <p class="text-center">Your search didn't yield any positive results.</p>
   {% endif %}
   <div class="container">
     <h2 class="text-xl font-medium text-center">Neutral</h2>
@@ -39,7 +39,7 @@ Veritas
       {% endfor %}
     </div>
     {% else %}
-    <p>Your search didn't yield any neutral results.</p>
+    <p class="text-center">Your search didn't yield any neutral results.</p>
     {% endif %}
   </div>
   <div class="container">
@@ -57,13 +57,13 @@ Veritas
       {% endfor %}
     </div>
     {% else %}
-    <p>Your search didn't yield any Negative results.</p>
+    <p class="text-center">Your search didn't yield any Negative results.</p>
     {% endif %}
   </div>
 </div>
 
-  <div>
+  <!-- <div>
     <p>Your Query Was: {{tweets}}</p>
-</div>
+</div> -->
 
 {% endblock %}

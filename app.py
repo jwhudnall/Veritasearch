@@ -135,6 +135,7 @@ def query_twitter_v1(q, count=10, lang='en'):
         'q': q,
         'lang': lang,
         'count': count,
+        'tweet_mode': 'extended',
         'result_type': 'popular'
     }
 
@@ -172,16 +173,16 @@ def prune_tweets(raw_tweets, query_v2=True):
             'url': tweet['entities']['urls'][0]['url'] if tweet['entities']['urls'] else None,
             'published': tweet['created_at'],
             'source': tweet['user'].get('name', 'unknown'),
-            'text': tweet['text'],
+            'text': tweet['full_text'],
             'is_truncated': tweet['truncated'],
         }
-        if query_v2 and tweet['truncated']:
-            print('Truncated tweet found!')
-            full_text = query_twitter_v2(cur_tweet['id'])
-            if full_text:
-                print('updating text...')
-                cur_tweet['text'] = full_text
-                cur_tweet['is_truncated'] = False
+        # if query_v2 and tweet['truncated']:
+        #     print('Truncated tweet found!')
+        #     full_text = query_twitter_v2(cur_tweet['id'])
+        #     if full_text:
+        #         print('updating text...')
+        #         cur_tweet['text'] = full_text
+        #         cur_tweet['is_truncated'] = False
 
         sentiment = query_sentim_API(cur_tweet['text'])
         cur_tweet['polarity'] = sentiment.get('polarity')

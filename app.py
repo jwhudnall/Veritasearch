@@ -4,7 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like
 from sqlalchemy.exc import IntegrityError
-from forms import SearchForm, UserAddForm
+from forms import SearchForm, UserAddForm, LoginForm
 import requests
 import time
 
@@ -58,6 +58,8 @@ def homepage():
 @app.route('/search', methods=['GET', 'POST'])
 def handle_search():
     form = SearchForm()
+    import pdb
+    pdb.set_trace()
 
     if form.validate_on_submit():
         q = form.search.data
@@ -116,11 +118,24 @@ def logout_user():
     return redirect('/')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login_user():
     """Logs user into website if account exists."""
-    # TODO: Implement this
-    pass
+
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.authenticate(
+            form.username.data,
+            form.password.data
+        )
+
+        if user:
+            do_login(user)
+            flash(f'Welcome back, {user.username}')
+            return redirect('/')
+
+    return render_template('users/login.html', form=form)
 
 
 def query_twitter_v1(q, count=10, lang='en'):
@@ -193,23 +208,23 @@ def prune_tweets(raw_tweets, query_v2=True):
     return unassigned_tweets
 
 
-def query_twitter_v2(id):
-    """Query Twitter v2 API. If success, returns the full tweet text; else False"""
+# def query_twitter_v2(id):
+#     """Query Twitter v2 API. If success, returns the full tweet text; else False"""
 
-    print('Twitter v2 API called!')
-    base_url = 'https://api.twitter.com/2/tweets'
-    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
-    res = requests.get(f'{base_url}/{id}', headers=headers)
+#     print('Twitter v2 API called!')
+#     base_url = 'https://api.twitter.com/2/tweets'
+#     headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
+#     res = requests.get(f'{base_url}/{id}', headers=headers)
 
-    if res.status_code == 200:
-        data = res.json()
-        text = data['data']['text']
-        print('Text updated:')
-        print(text)
-        print('***************')
-        return text
+#     if res.status_code == 200:
+#         data = res.json()
+#         text = data['data']['text']
+#         print('Text updated:')
+#         print(text)
+#         print('***************')
+#         return text
 
-    return False
+#     return False
 
 
 def categorize_tweets(tweet_lst):

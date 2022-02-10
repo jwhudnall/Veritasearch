@@ -4,6 +4,7 @@ from datetime import datetime
 from enum import auto
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+from flask import flash
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
@@ -55,11 +56,12 @@ class User(db.Model):
         If username and password match, user object is returned. Otherwise, returns False.
         """
         user = cls.query.filter_by(username=username).first()
-        has_valid_pw = bcrypt.check_password_hash(user.password, password)
 
-        if user and has_valid_pw:
-            return user
-
+        if user:
+            has_valid_pw = bcrypt.check_password_hash(user.password, password)
+            if has_valid_pw:
+                return user
+        flash('Invalid credentials.')
         return False
 
 

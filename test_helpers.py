@@ -1,6 +1,6 @@
 """Tests for Project Veritas helper functions."""
 from unittest import TestCase
-from app import categorize_tweets
+from app import categorize_tweets, prune_articles
 
 
 class TestHelperFunctions(TestCase):
@@ -57,3 +57,20 @@ class TestHelperFunctions(TestCase):
         self.assertEqual(len(results[0]), 2)
         self.assertEqual(len(results[1]), 1)
         self.assertEqual(len(results[2]), 1)
+
+    def test_prune_articles(self):
+        articles = [
+            {'source': {'id': None, 'name': 'Yahoo Entertainment'},
+             'author': 'Yaёl Bizouati-Kennedy',
+             'title': 'Bitcoin Payroll: The Future of Hiring? Crypto Benefits Plan Could Attract Workers and Improve Employee Retention, Survey Says',
+             'description': 'The Great Resignation triggered a talent war and a very tight labor market, pushing employers to reconsider perks they offer. Now, a new survey suggests that...',
+             'url': 'https://finance.yahoo.com/news/bitcoin-payroll-future-hiring-crypto-170144369.html',
+             'urlToImage': 'https://s.yimg.com/ny/api/res/1.2/mrjL.xbq5kQ6_DLCm9bS.Q--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://s.yimg.com/uu/api/res/1.2/meOGCSd2QYWgkuvNNvP9wQ--~B/aD0xMDgwO3c9MTkyMDthcHBpZD15dGFjaHlvbg--/https://media.zenfs.com/en/gobankingrates_644/89cba59bc2f89b45d9b5eb426b93ee83',
+             'publishedAt': '2022-02-10T17:01:44Z',
+             'content': 'The Great Resignation triggered a talent war and a very tight labor market, pushing employers to reconsider perks they offer. Now, a new survey suggests that nearly one in four workers would prefer a… [+3329 chars]'}
+        ]
+
+        result = prune_articles(articles)
+
+        self.assertEqual(len(result), 1)
+        # Check for presence of all keys, sentiment

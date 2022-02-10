@@ -83,6 +83,12 @@ def handle_search():
         q = form.search.data
         print(f'q: {q}')
         q_start_time = time.time()
+        # *** Search articles ***
+        # raw_articles = query_newsAPI(q)
+        # if raw_articles:
+        #     pruned_articles = prune_articles(raw_articles)
+
+        # Search Tweets
         raw_tweets = query_twitter_v1(q, count=20, lang='en')
         if raw_tweets:
             pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
@@ -247,7 +253,7 @@ def prune_tweets(raw_tweets, query_v2=True):
             'published': tweet['created_at'],
             'source': tweet['user'].get('name', 'unknown'),
             'text': tweet['full_text'],
-            'is_truncated': tweet['truncated'],
+            'is_truncated': tweet['truncated']
         }
         # if query_v2 and tweet['truncated']:
         #     print('Truncated tweet found!')
@@ -264,6 +270,70 @@ def prune_tweets(raw_tweets, query_v2=True):
         unassigned_tweets.append(cur_tweet)
 
     return unassigned_tweets
+
+
+def query_newsAPI(q, min_results=10, count=20, lang='en'):
+    """Searches the newsAPI for q. If results found, returns a list of article objects; else False."""
+    base_url = 'https://newsapi.org/v2/everything'
+    headers = {'X-Api-Key': NEWS_API_KEY}
+    params = {
+        'q': q,
+        'language': lang,
+        'searchIn': 'title',
+        'pageSize': count,
+        'sortBy': 'publishedAt'
+    }
+
+    res = requests.get(base_url, headers=headers,
+                       params=params)
+    data = res.json()
+    num_results = data['totalResults']
+    if not num_results or num_results < min_results:
+        print('*******************************************')
+        print('Not found in title. Searching content...')
+        print('*******************************************')
+        params['searchIn'] = 'content'
+
+        res_2 = requests.get(base_url, headers=headers, params=params)
+        data = res_2.json()
+        num_results_2 = data['totalnum_results_2']
+        if not num_results_2:
+            print('NO RESULTS FOUND ANYWHERE!')
+            return False
+    import pdb
+    pdb.set_trace()
+
+    return data['articles']
+
+
+def prune_articles(raw_articles):
+    """Prunes superfluous fields from the raw article response. Returns a list of pruned articles."""
+    article_lst = []
+
+    for article in raw_articles:
+        cur_article = {
+            # Create unique id incorporating datatime?
+            'type': 'article',
+            'url': article['url'],
+            'img_url': article.get("urlToImage", None),
+            'published': article['publishedAt'],
+            'source': article.get('author', 'unknown'),
+            'title': article['title'],
+            'description': article['description'],
+            'content': article['content']
+        }
+        sentiment_search_str = '.'.join(
+            [cur_article['title'], cur_article['description'], cur_article['content']])
+
+        sentiment = query_sentim_API(sentiment_search_str)
+        cur_article['polarity'] = sentiment.get('polarity')
+        cur_article['sentiment'] = sentiment.get('type')
+
+        article_lst.append(cur_article)
+    # import pdb
+    # pdb.set_trace()
+
+    return article_lst
 
 
 # def query_twitter_v2(id):

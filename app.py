@@ -48,6 +48,7 @@ def do_logout():
         del session[CURR_USER_KEY]
     if 'username' in session:
         session.pop('username')
+    do_clear_search_cookies()
 
 
 def do_clear_search_cookies():
@@ -57,6 +58,8 @@ def do_clear_search_cookies():
         session.pop('q_time')
     if 'query_response' in session:
         session.pop('query_response')
+    if 'q' in session:
+        session.pop('q')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -80,7 +83,7 @@ def handle_search():
         q = form.search.data
         print(f'q: {q}')
         q_start_time = time.time()
-        raw_tweets = query_twitter_v1(q, count=10, lang='en')
+        raw_tweets = query_twitter_v1(q, count=20, lang='en')
         if raw_tweets:
             pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
             categorized_tweets = categorize_tweets(pruned_tweets)
@@ -93,6 +96,7 @@ def handle_search():
 
             session['tweets'] = categorized_tweets
             session['q_time'] = round(time.time() - q_start_time, 2)
+            session['q'] = q
             return redirect('/search')
 
         form.search.errors.append('No results found. Try another term?')
@@ -100,7 +104,8 @@ def handle_search():
 
     tweets = session.get('tweets')
     q_time = session.get('q_time')
-    return render_template('search-results.html', tweets=tweets, q_time=q_time)
+    q = session.get('q')
+    return render_template('search-results.html', tweets=tweets, q_time=q_time, q=q)
 
 
 @app.route('/register', methods=["GET", "POST"])

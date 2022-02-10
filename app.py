@@ -4,6 +4,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like
 from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import Unauthorized
 from forms import SearchForm, UserAddForm, LoginForm
 import requests
 import time
@@ -114,7 +115,7 @@ def logout_user():
     """Logs out user from website."""
     do_logout()
 
-    flash('Successfully logged out.')
+    # flash('Successfully logged out.')
     return redirect('/')
 
 
@@ -132,10 +133,40 @@ def login_user():
 
         if user:
             do_login(user)
-            flash(f'Welcome back, {user.username}')
+            # flash(f'Welcome back, {user.username}')
             return redirect('/')
 
     return render_template('users/login.html', form=form)
+
+
+@app.route('/users/<int:user_id>')
+def show_user_details(user_id):
+    """Show user details page."""
+
+    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+        raise Unauthorized()
+        # OR, redirect to /
+
+    # Shouldn't need _or_404, as user_id already verified?
+    user = User.query.get_or_404(user_id)
+
+    return render_template('users/user-details.html', user=user)
+
+
+@app.route('/users/<int:user_id>/delete', methods=['POST'])
+def delete_user(user_id):
+    """Delete user account."""
+
+    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+        raise Unauthorized()
+        # OR, redirect to /
+
+    # Shouldn't need _or_404, as user_id already verified?
+    user = User.query.get_or_404(user_id)
+    db.session.delete(user)
+    db.session.commit()
+    do_logout()
+    return redirect('/')
 
 
 def query_twitter_v1(q, count=10, lang='en'):

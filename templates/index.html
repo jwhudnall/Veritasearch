@@ -11,7 +11,7 @@ Veritas
   <form action="/search" method="POST">
     {{ form.hidden_tag() }}
 
-    {{ form.search(class_="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-thin rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}
+    {{ form.search(class_="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-thin rounded-3xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}
 
     {% for error in form.search.errors %}
           <span class="">{{ error }}</span>

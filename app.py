@@ -105,7 +105,7 @@ def handle_search():
     tweets = session.get('tweets')
     q_time = session.get('q_time')
     q = session.get('q')
-    return render_template('search-results.html', tweets=tweets, q_time=q_time, q=q)
+    return render_template('search-results.html', tweets=tweets, q_time=q_time, q=q, form=form)
 
 
 @app.route('/register', methods=["GET", "POST"])

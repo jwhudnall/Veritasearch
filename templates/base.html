@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="bg-white text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <title>{% block title %}{% endblock %}</title>
 </head>
-<body class="bg-white dark:bg-slate-800 dark:text-gray-200 text-sm">
+<body class="bg-white text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
 
   <nav class="bg-transparent border-gray-200 px-2 sm:px-4 py-2.5">
     <div class="container flex flex-wrap justify-between items-center mx-auto">
@@ -16,6 +16,23 @@
 
           <span class="self-center text-lg dark:text-gray-400 font-semibold whitespace-nowrap ">Project Veritas</span>
       </a>
+      <!-- Test Form Input -->
+      {% if form and session['q'] %}
+      <div class="inline">
+        <form action="/search" method="POST" class="flex flex-row">
+          {{ form.hidden_tag() }}
+
+          {{ form.search(class_="bg-gray-50 border border-gray-300 text-gray-900 text-sm min-w-full font-thin rounded-3xl focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500") }}
+
+          {% for error in form.search.errors %}
+                <span class="">{{ error }}</span>
+              {% endfor %}
+
+          <!-- <button type="submit" class="inline py-2.5 px-2 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button> -->
+        </form>
+      </div>
+      {% endif %}
+      <!-- End Test -->
       <button data-collapse-toggle="mobile-menu" type="button" class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>

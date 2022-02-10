@@ -16,7 +16,7 @@ class TestHelperFunctions(TestCase):
                 'source': 'The Lead CNN',
                 'text': '"The transatlantic partnership ...',
                 'is_truncated': False,
-                'polarity': 0.06,
+                'polarity': 0.14,
                 'sentiment': 'positive'
             },
             {

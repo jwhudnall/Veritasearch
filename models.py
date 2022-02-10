@@ -30,6 +30,9 @@ class User(db.Model):
     liked_articles = db.relationship('Article', secondary='likes',
                                      backref='liked_users')
 
+    queries = db.relationship(
+        'Query', secondary='queries_users', backref='users')
+
     def __repr__(self):
         return f"<User #{self.id}: {self.username}>"
 

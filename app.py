@@ -2,7 +2,7 @@ from email import header
 from flask import Flask, render_template, redirect, session, flash, request, g, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
-from models import db, connect_db, User, Article, Like
+from models import db, connect_db, User, Article, Like, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 from forms import SearchForm, UserAddForm, LoginForm
@@ -50,17 +50,31 @@ def do_logout():
         session.pop('username')
 
 
+def do_clear_search_cookies():
+    if 'tweets' in session:
+        session.pop('tweets')
+    if 'q_time' in session:
+        session.pop('q_time')
+    if 'query_response' in session:
+        session.pop('query_response')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def homepage():
     form = SearchForm()
+    do_clear_search_cookies()
     return render_template('index.html', form=form)
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def handle_search():
     form = SearchForm()
-    import pdb
-    pdb.set_trace()
+
+    if g.user:
+        user = g.user
+
+    # import pdb
+    # pdb.set_trace()
 
     if form.validate_on_submit():
         q = form.search.data
@@ -71,8 +85,14 @@ def handle_search():
             pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
             categorized_tweets = categorize_tweets(pruned_tweets)
 
+            query = Query(text=q)
+            if g.user:
+                user.queries.append(query)
+            db.session.add(query)
+            db.session.commit()
+
             session['tweets'] = categorized_tweets
-            session['q_time'] = time.time() - q_start_time
+            session['q_time'] = round(time.time() - q_start_time, 2)
             return redirect('/search')
 
         form.search.errors.append('No results found. Try another term?')
@@ -271,6 +291,9 @@ def categorize_tweets(tweet_lst):
             negative.append(tweet)
         elif tweet['sentiment'] == 'neutral':
             neutral.append(tweet)
+
+    negative.sort(key=lambda tweet: tweet['polarity'])
+    positive.sort(key=lambda tweet: tweet['polarity'], reverse=True)
 
     return (positive, neutral, negative)
 

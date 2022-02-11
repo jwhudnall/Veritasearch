@@ -8,6 +8,7 @@ from werkzeug.exceptions import Unauthorized
 from forms import SearchForm, UserAddForm, LoginForm
 import requests
 import time
+import json
 
 
 CURR_USER_KEY = 'cur_user'
@@ -29,6 +30,7 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
+    # Check for cur_user_query_term
 
     else:
         g.user = None
@@ -77,6 +79,13 @@ def handle_search():
         q = form.search.data
         print(f'q: {q}')
         q_start_time = time.time()
+        # Search Articles
+        raw_articles = query_newsAPI(q, count=12)
+        if raw_articles:
+            pruned_articles = prune_articles(raw_articles)
+            categorized_articles = categorize_by_sentiment(pruned_articles)
+        else:
+            categorized_articles = False
 
         # Search Tweets
         raw_tweets = query_twitter_v1(q, count=20, lang='en')
@@ -87,22 +96,48 @@ def handle_search():
             query = Query(text=q)
             if g.user:
                 user.queries.append(query)
+                # Add cookie for user_query. Any liked articles can then be linked to this query.
             db.session.add(query)
             db.session.commit()
 
-            session['tweets'] = categorized_tweets
+            # session['tweets'] = categorized_tweets
             session['q_time'] = round(time.time() - q_start_time, 2)
             session['query'] = q
-            return redirect('/search')
+            # return redirect('/search')
+        # import pdb
+        # pdb.set_trace()
+        if raw_tweets and raw_articles:
+            categorized_tweets = json.dumps(categorized_tweets)
+            categorized_articles = json.dumps(categorized_articles)
+            return redirect(url_for('display_results', tweets=categorized_tweets, articles=categorized_articles))
         else:
             do_clear_search_cookies()
             form.search.errors.append('No results found. Try another term?')
-            redirect('/')
+            flash('No results found.')
+            return redirect('/')
 
-    tweets = session.get('tweets')
+    # tweets = session.get('tweets')
+    tweets = request.args.get("tweets")
+    json_tweets = json.loads(tweets)
+    articles = request.args.get("articles")
+    json_articles = json.loads(articles)
     q_time = session.get('q_time')
     q = session.get('query')
-    return render_template('search-results.html', tweets=tweets, q_time=q_time, q=q, form=form)
+    # import pdb
+    # pdb.set_trace()
+    return render_template('search-results.html', tweets=json_tweets, articles=json_articles, q_time=q_time, q=q)
+
+
+@app.route('/showmethemoney')
+def display_results():
+    tweets = request.args.get("tweets")
+    articles = request.args.get("articles")
+
+    json_tweets = json.loads(tweets)
+    json_articles = json.loads(articles)
+    q_time = session.get('q_time')
+    q = session.get('query')
+    return render_template('search-results.html', tweets=json_tweets, articles=json_articles,  q_time=q_time, q=q)
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -304,16 +339,16 @@ def prune_tweets(raw_tweets, query_v2=True):
 
     for tweet in raw_tweets:
         cur_tweet = {
-            'id': tweet['id_str'],
-            'type': 'tweet',
-            'url': tweet['entities']['urls'][0]['url'] if tweet['entities']['urls'] else None,
-            'published': tweet['created_at'],
-            'source': tweet['user'].get('name', 'unknown'),
-            'text': tweet['full_text']
+            "id": tweet["id_str"],
+            "type": "tweet",
+            "url": tweet["entities"]["urls"][0]["url"] if tweet["entities"]["urls"] else None,
+            "published": tweet["created_at"],
+            "source": tweet["user"].get("name", "unknown"),
+            "text": tweet["full_text"]
         }
-        sentiment = query_sentim_API(cur_tweet['text'])
-        cur_tweet['polarity'] = sentiment.get('polarity')
-        cur_tweet['sentiment'] = sentiment.get('type')
+        sentiment = query_sentim_API(cur_tweet["text"])
+        cur_tweet["polarity"] = sentiment.get("polarity")
+        cur_tweet["sentiment"] = sentiment.get("type")
 
         unassigned_tweets.append(cur_tweet)
 
@@ -340,16 +375,16 @@ def query_newsAPI(q, min_results=10, count=20, lang='en'):
         print('*******************************************')
         print('Not found in title. Searching content...')
         print('*******************************************')
-        params['searchIn'] = 'content'
+        params["searchIn"] = "content"
 
         res_2 = requests.get(base_url, headers=headers, params=params)
         data = res_2.json()
-        num_results_2 = data['totalResults']
+        num_results_2 = data["totalResults"]
         if not num_results_2:
-            print('NO RESULTS FOUND ANYWHERE!')
+            print("NO RESULTS FOUND ANYWHERE!")
             return False
 
-    return data['articles']
+    return data["articles"]
 
 
 def prune_articles(raw_articles):
@@ -359,22 +394,22 @@ def prune_articles(raw_articles):
     for article in raw_articles:
         cur_article = {
             # Create unique id incorporating datatime?
-            'type': 'article',
-            'url': article['url'],
-            'img_url': article.get("urlToImage", None),
-            'published': article['publishedAt'],
-            'source': article.get('author', 'unknown'),
-            'title': article['title'],
-            'description': article['description'],
-            'content': article['content']
+            "type": "article",
+            "url": article["url"],
+            "img_url": article.get("urlToImage", None),
+            "published": article["publishedAt"],
+            "source": article.get("author", "unknown"),
+            "title": article["title"],
+            "description": article["description"],
+            "content": article["content"]
         }
         # sentiment_search_str = '.'.join(
         #     [cur_article['title'], cur_article['description'], cur_article['content']])
-        sentiment_search_str = cur_article['title']
+        sentiment_search_str = cur_article["title"]
 
         sentiment = query_sentim_API(sentiment_search_str)
-        cur_article['polarity'] = sentiment.get('polarity')
-        cur_article['sentiment'] = sentiment.get('type')
+        cur_article["polarity"] = sentiment.get("polarity")
+        cur_article["sentiment"] = sentiment.get("type")
 
         article_lst.append(cur_article)
 

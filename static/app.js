@@ -2,9 +2,6 @@ $(document).ready(function() {
 	if ($('h2#tweetContainer').length > 0) {
 		displayArticles();
 	}
-	$(window).scroll(function() {
-		// if all sections of articles is empty, query getArticles?
-	});
 
 	$('#searchForm').on('submit', async function(e) {
 		window.name = $('#searchInput').val();
@@ -57,6 +54,25 @@ const getArticles = async function(query) {
 // 		alert(`Internal API issue Fetching Tweets. Error Info: ${e}`);
 // 	}
 // };
+
+const retrieveTwitterCard = async function(id, maxWidth = 220, omitScript = false, hideMedia = false) {
+	try {
+		const res = await axios({
+			method: 'GET',
+			url: 'https://publish.twitter.com/oembed',
+			params: {
+				url: `https://twitter.com/Interior/status/${id}`,
+				maxwidth: maxWidth,
+				hide_media: hideMedia,
+				omit_script: omitScript
+			}
+		});
+		console.dir(res);
+		return res.data.html;
+	} catch (e) {
+		alert(`Issue fetching Twitter Cards. Error info: ${e}`);
+	}
+};
 
 const displayArticles = function() {
 	articles = JSON.parse(localStorage.getItem('articles')).articles;

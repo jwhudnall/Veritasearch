@@ -8,13 +8,13 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <title>{% block title %}{% endblock %}</title>
 </head>
-<body class="bg-white text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
+<body class="bg-white text-black dark:text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
 
   <nav class="bg-transparent border-gray-200 px-2 sm:px-4 py-2.5">
     <div class="container flex flex-wrap justify-between items-center mx-auto">
       <a href="/" class="flex">
 
-          <span class="self-center text-lg dark:text-gray-400 font-semibold whitespace-nowrap ">Project Veritas</span>
+          <span class="self-center text-lg text-black dark:text-gray-400 font-semibold whitespace-nowrap ">Project Veritas</span>
       </a>
       <!-- Test Form Input -->
       <!-- {% if form and session['q'] %}
@@ -73,5 +73,22 @@
     integrity="sha256-T/f7Sju1ZfNNfBh7skWn0idlCBcI3RwdLSS4/I7NQKQ=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="static/app.js"></script>
+  <!-- Twitter Widgets -->
+  <script>window.twttr = (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0],
+      t = window.twttr || {};
+    if (d.getElementById(id)) return t;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://platform.twitter.com/widgets.js";
+    fjs.parentNode.insertBefore(js, fjs);
+
+    t._e = [];
+    t.ready = function(f) {
+      t._e.push(f);
+    };
+
+    return t;
+  }(document, "script", "twitter-wjs"));</script>
 </body>
 </html>

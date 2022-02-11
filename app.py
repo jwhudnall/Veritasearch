@@ -60,84 +60,92 @@ def do_clear_search_cookies():
             session.pop(cookie)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def homepage():
     form = SearchForm()
     do_clear_search_cookies()
     return render_template('index.html', form=form)
 
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search', methods=['GET'])
 def handle_search():
-    form = SearchForm()
+
+    do_clear_search_cookies()
 
     if g.user:
         user = g.user
 
-    if form.validate_on_submit():
-        print('form validated!')
-        q = form.search.data
-        print(f'q: {q}')
-        q_start_time = time.time()
-        # Search Articles
-        raw_articles = query_newsAPI(q, count=12)
-        if raw_articles:
-            pruned_articles = prune_articles(raw_articles)
-            categorized_articles = categorize_by_sentiment(pruned_articles)
-        else:
-            categorized_articles = False
+    form_query = request.args.get('query')
+    query = Query(text=form_query)
+    if user:
+        user.queries.append(query)
+        db.session.add(user)
+        # Add cookie for user_query. Any liked articles can then be linked to this query.
+    db.session.add(query)
+    db.session.commit()
+    return render_template('search-results.html')
+    # q = form.search.data
 
-        # Search Tweets
-        raw_tweets = query_twitter_v1(q, count=20, lang='en')
-        if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
-            categorized_tweets = categorize_by_sentiment(pruned_tweets)
+    # q_start_time = time.time()
+    # # Search Articles
+    # raw_articles = query_newsAPI(q, count=12)
+    # if raw_articles:
+    #     pruned_articles = prune_articles(raw_articles)
+    #     categorized_articles = categorize_by_sentiment(pruned_articles)
 
-            query = Query(text=q)
-            if g.user:
-                user.queries.append(query)
-                # Add cookie for user_query. Any liked articles can then be linked to this query.
-            db.session.add(query)
-            db.session.commit()
+    # # Search Tweets
+    # raw_tweets = query_twitter_v1(q, count=20, lang='en')
+    # if raw_tweets:
+    #     pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
+    #     categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
-            # session['tweets'] = categorized_tweets
-            session['q_time'] = round(time.time() - q_start_time, 2)
-            session['query'] = q
-            # return redirect('/search')
-        # import pdb
-        # pdb.set_trace()
-        if raw_tweets and raw_articles:
-            categorized_tweets = json.dumps(categorized_tweets)
-            categorized_articles = json.dumps(categorized_articles)
-            return redirect(url_for('display_results', tweets=categorized_tweets, articles=categorized_articles))
-        else:
-            do_clear_search_cookies()
-            form.search.errors.append('No results found. Try another term?')
-            flash('No results found.')
-            return redirect('/')
+    # query = Query(text=q)
+    # if user:
+    #     user.queries.append(query)
+    #     db.session.add(user)
+    #     # Add cookie for user_query. Any liked articles can then be linked to this query.
+    # db.session.add(query)
+    # db.session.commit()
 
-    # tweets = session.get('tweets')
-    tweets = request.args.get("tweets")
-    json_tweets = json.loads(tweets)
-    articles = request.args.get("articles")
-    json_articles = json.loads(articles)
-    q_time = session.get('q_time')
-    q = session.get('query')
+    # session['tweets'] = categorized_tweets
+    # session['q_time'] = round(time.time() - q_start_time, 2)
+    # session['query'] = q
+    # return redirect('/search')
     # import pdb
     # pdb.set_trace()
-    return render_template('search-results.html', tweets=json_tweets, articles=json_articles, q_time=q_time, q=q)
+    # if raw_tweets and raw_articles:
+    #     categorized_tweets = json.dumps(categorized_tweets)
+    #     categorized_articles = json.dumps(categorized_articles)
+    #     return redirect(url_for('display_results', query=q, tweets=categorized_tweets, articles=categorized_articles))
+    # else:
+    #     do_clear_search_cookies()
+    #     form.search.errors.append('No results found. Try another term?')
+    #     flash('No results found.')
+    #     return redirect('/')
+
+    # q = request.args.get('query')
+    # tweets = request.args.get("tweets")
+    # json_tweets = json.loads(tweets)
+    # articles = request.args.get("articles")
+    # json_articles = json.loads(articles)
+    # q_time = session.get('q_time')
+    # else:
+    #     print('Form NOT validated!')
+    #     raise Unauthorized()
+    # return render_template('search-results.html', tweets=json_tweets, articles=json_articles, q_time=q_time, q=q)
 
 
-@app.route('/showmethemoney')
-def display_results():
-    tweets = request.args.get("tweets")
-    articles = request.args.get("articles")
+# @app.route('/search', methods=['GET'])
+# def display_results():
+#     q = request.args.get('query')
+#     tweets = request.args.get("tweets")
+#     articles = request.args.get("articles")
 
-    json_tweets = json.loads(tweets)
-    json_articles = json.loads(articles)
-    q_time = session.get('q_time')
-    q = session.get('query')
-    return render_template('search-results.html', tweets=json_tweets, articles=json_articles,  q_time=q_time, q=q)
+#     json_tweets = json.loads(tweets)
+#     json_articles = json.loads(articles)
+#     q_time = session.get('q_time')
+#     # q = session.get('query')
+#     return render_template('search-results.html', tweets=json_tweets, articles=json_articles,  q_time=q_time, q=q)
 
 
 @app.route('/register', methods=["GET", "POST"])

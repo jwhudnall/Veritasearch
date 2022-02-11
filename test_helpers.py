@@ -1,12 +1,12 @@
 """Tests for Project Veritas helper functions."""
 from unittest import TestCase
-from app import categorize_tweets, prune_articles
+from app import categorize_by_sentiment, prune_articles
 
 
 class TestHelperFunctions(TestCase):
     """Tests helper functions."""
 
-    def test_categorize_tweets(self):
+    def test_categorize_by_sentiment(self):
         tweet_lst = [
             {
                 'id': '1490818219015294976',
@@ -15,7 +15,6 @@ class TestHelperFunctions(TestCase):
                 'published': 'Mon Feb 07 22:42:16 +0000 2022',
                 'source': 'The Lead CNN',
                 'text': '"The transatlantic partnership ...',
-                'is_truncated': False,
                 'polarity': 0.14,
                 'sentiment': 'positive'
             },
@@ -26,7 +25,6 @@ class TestHelperFunctions(TestCase):
                 'published': 'Tue Feb 08 08:32:41 +0000 2022',
                 'source': 'Olaf Scholz',
                 'text': 'Everyone can be absolutely sure that Germany...',
-                'is_truncated': False,
                 'polarity': 0.06,
                 'sentiment': 'positive'},
             {
@@ -36,7 +34,6 @@ class TestHelperFunctions(TestCase):
                 'published': 'Mon Feb 07 20:51:19 +0000 2022',
                 'source': 'Katie Pavlich',
                 'text': 'As the White House insists Russia could invade Ukraine...',
-                'is_truncated': False,
                 'polarity': 0.0,
                 'sentiment': 'neutral'
             },
@@ -47,11 +44,10 @@ class TestHelperFunctions(TestCase):
                 'published': 'Tue Feb 08 06:05:39 +0000 2022',
                 'source': 'AFP News Agency',
                 'text': 'Ukraine-Russia military balance.\n\n#AFPgraphics...',
-                'is_truncated': False,
                 'polarity': -0.03,
                 'sentiment': 'negative'}
         ]
-        results = categorize_tweets(tweet_lst)
+        results = categorize_by_sentiment(tweet_lst)
 
         self.assertEqual(len(results), 3)
         self.assertEqual(len(results[0]), 2)

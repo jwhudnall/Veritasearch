@@ -17,7 +17,7 @@
           <span class="self-center text-lg dark:text-gray-400 font-semibold whitespace-nowrap ">Project Veritas</span>
       </a>
       <!-- Test Form Input -->
-      {% if form and session['q'] %}
+      <!-- {% if form and session['q'] %}
       <div class="inline">
         <form action="/search" method="POST" class="flex flex-row">
           {{ form.hidden_tag() }}
@@ -28,10 +28,10 @@
                 <span class="">{{ error }}</span>
               {% endfor %}
 
-          <!-- <button type="submit" class="inline py-2.5 px-2 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button> -->
+          <button type="submit" class="inline py-2.5 px-2 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button>
         </form>
       </div>
-      {% endif %}
+      {% endif %} -->
       <!-- End Test -->
       <button data-collapse-toggle="mobile-menu" type="button" class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="mobile-menu-2" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
@@ -69,6 +69,9 @@
   {% block content %}
 
   {% endblock %}
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"
+    integrity="sha256-T/f7Sju1ZfNNfBh7skWn0idlCBcI3RwdLSS4/I7NQKQ=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="static/app.js"></script>
 </body>
 </html>

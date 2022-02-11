@@ -52,16 +52,10 @@ def do_logout():
 
 
 def do_clear_search_cookies():
-    if 'tweets' in session:
-        session.pop('tweets')
-    if 'q_time' in session:
-        session.pop('q_time')
-    if 'query_response' in session:
-        session.pop('query_response')
-    if 'q' in session:
-        session.pop('q')
-    if 'articles' in session:
-        session.pop('articles')
+    cookies = ['tweets', 'q_time', 'query_response', 'q', 'query']
+    for cookie in cookies:
+        if cookie in session:
+            session.pop(cookie)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -78,20 +72,11 @@ def handle_search():
     if g.user:
         user = g.user
 
-    # import pdb
-    # pdb.set_trace()
-
     if form.validate_on_submit():
+        print('form validated!')
         q = form.search.data
         print(f'q: {q}')
         q_start_time = time.time()
-        # *** Search articles ***
-        # raw_articles = query_newsAPI(q, count=12)
-        # if raw_articles:
-        #     pruned_articles = prune_articles(raw_articles)
-        #     categorized_articles = categorize_by_sentiment(pruned_articles)
-        # ISSUE: cookies too large
-        # session['articles'] = categorized_articles
 
         # Search Tweets
         raw_tweets = query_twitter_v1(q, count=20, lang='en')
@@ -105,18 +90,18 @@ def handle_search():
             db.session.add(query)
             db.session.commit()
 
-            # session['tweets'] = categorized_tweets
+            session['tweets'] = categorized_tweets
             session['q_time'] = round(time.time() - q_start_time, 2)
-            session['q'] = q
+            session['query'] = q
             return redirect('/search')
-
-        do_clear_search_cookies()
-        form.search.errors.append('No results found. Try another term?')
-        return render_template('index.html', form=form)
+        else:
+            do_clear_search_cookies()
+            form.search.errors.append('No results found. Try another term?')
+            redirect('/')
 
     tweets = session.get('tweets')
     q_time = session.get('q_time')
-    q = session.get('q')
+    q = session.get('query')
     return render_template('search-results.html', tweets=tweets, q_time=q_time, q=q, form=form)
 
 
@@ -223,8 +208,6 @@ def fetch_articles():
             pruned_articles = prune_articles(raw_articles)
             categorized_articles = categorize_by_sentiment(pruned_articles)
 
-            session['article_query_time'] = round(
-                time.time() - q_start_time, 2)
             session['query'] = query
             response = jsonify(articles=categorized_articles)
         else:
@@ -254,7 +237,6 @@ def fetch_tweets():
             db.session.commit()
 
             # session['tweets'] = categorized_tweets
-            session['tweet_query_time'] = round(time.time() - q_start_time, 2)
             session['query'] = query
             # return redirect('/search')
             response = jsonify(tweets=categorized_tweets)
@@ -306,9 +288,12 @@ def query_twitter_v1(q, count=10, lang='en'):
                              params=params)
         data_2 = res_2.json()
         raw_tweets_2 = data_2['statuses']
+
         if not raw_tweets_2:
             print('NO RESULTS!')
             return False
+        else:
+            return raw_tweets_2
 
     return raw_tweets
 

@@ -8,12 +8,12 @@ Veritas
 <h2>Search for <i>"{{q}}"</i> took {{q_time}} seconds.</h2>
 
 <!-- Tweets -->
-<h2 class="text-center text-3xl mt-5" id="tweetContainer">Tweets</h2>
+<h2 class="text-center text-3xl mt-5">Tweets</h2>
 <div class="container px-8 grid grid-cols-3 gap-4 text-black">
   <!-- Positive  -->
   <div class="bg-orange-500 px-8 py-2 bg-lime-200">
     <div><h2 class="text-center text-xl">Positive</h2></div>
-    {% if tweets[0] %}
+    <!-- {% if tweets[0] %}
     <div class="border-solid border-2 border-black">
       {% for tweet in tweets[0] %}
         <div class="border border-black p-1">
@@ -28,12 +28,12 @@ Veritas
     </div>
   {% else %}
   <p class="text-center">Your search didn't yield any positive results.</p>
-  {% endif %}
+  {% endif %} -->
   </div>
   <!-- Neutral  -->
   <div class="bg-orange-500 px-8 py-2 bg-stone-200">
     <div><h2 class="text-center text-xl">Neutral</h2></div>
-    {% if tweets[1] %}
+    <!-- {% if tweets[1] %}
     <div class="border-solid border-2 border-black">
       {% for tweet in tweets[1] %}
         <div class="border border-black p-1">
@@ -48,12 +48,12 @@ Veritas
     </div>
   {% else %}
   <p class="text-center">Your search didn't yield any neutral results.</p>
-  {% endif %}
+  {% endif %} -->
   </div>
   <!-- Negative  -->
   <div class="bg-orange-500 px-8 py-2 bg-red-300">
     <div><h2 class="text-center text-xl">Negative</h2></div>
-    {% if tweets[2] %}
+    <!-- {% if tweets[2] %}
     <div class="border-solid border-2 border-black">
       {% for tweet in tweets[2] %}
         <div class="border border-black p-1">
@@ -68,7 +68,7 @@ Veritas
     </div>
   {% else %}
   <p class="text-center">Your search didn't yield any negative results.</p>
-  {% endif %}
+  {% endif %} -->
   </div>
 </div>
 
@@ -88,6 +88,63 @@ Veritas
     <div><h2 class="text-center text-xl">Negative</h2></div>
   </div>
 </div>
+
+
+<!-- Original (All Tweets) -->
+<!-- <div class="container w-full max-w-md mt-5 mx-auto mb-5">
+  <h2 class="text-xl font-medium text-center">Positive</h2>
+  {% if tweets[0] %}
+
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[0] %}
+      <a href="{{ tweet.url }}" target="_blank">
+        <div class="border border-black p-1">
+          <p>{{tweet.text}}</p>
+          <p>{{tweet.polarity}}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+  <p class="text-center">Your search didn't yield any positive results.</p>
+  {% endif %}
+  <div class="container">
+    <h2 class="text-xl font-medium text-center">Neutral</h2>
+    {% if tweets[1] %}
+
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[1] %}
+      <a href="{{ tweet.url }}" target="_blank">
+      <div class="border border-black p-1">
+        <p>{{tweet.text}}</p>
+        <p>{{tweet.polarity}}</p>
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center">Your search didn't yield any neutral results.</p>
+    {% endif %}
+  </div>
+  <div class="container">
+    <h2 class="text-xl font-medium text-center">Negative</h2>
+    {% if tweets[2] %}
+
+    <div class="border-solid border-2 border-black">
+      {% for tweet in tweets[2] %}
+      <a href="{{ tweet.url }}" target="_blank">
+      <div class="border border-black p-1">
+        <p>{{tweet.text}}</p>
+        <p>{{tweet.polarity}}</p>
+      </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-center">Your search didn't yield any Negative results.</p>
+    {% endif %}
+  </div>
+</div> -->
 
 
 {% endblock %}

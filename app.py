@@ -368,8 +368,9 @@ def prune_articles(raw_articles):
             'description': article['description'],
             'content': article['content']
         }
-        sentiment_search_str = '.'.join(
-            [cur_article['title'], cur_article['description'], cur_article['content']])
+        # sentiment_search_str = '.'.join(
+        #     [cur_article['title'], cur_article['description'], cur_article['content']])
+        sentiment_search_str = cur_article['title']
 
         sentiment = query_sentim_API(sentiment_search_str)
         cur_article['polarity'] = sentiment.get('polarity')

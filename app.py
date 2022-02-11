@@ -1,5 +1,5 @@
 from email import header
-from flask import Flask, render_template, redirect, session, flash, request, g, url_for
+from flask import Flask, render_template, redirect, session, flash, request, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like, Query
@@ -60,6 +60,8 @@ def do_clear_search_cookies():
         session.pop('query_response')
     if 'q' in session:
         session.pop('q')
+    if 'articles' in session:
+        session.pop('articles')
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -84,15 +86,18 @@ def handle_search():
         print(f'q: {q}')
         q_start_time = time.time()
         # *** Search articles ***
-        # raw_articles = query_newsAPI(q)
+        # raw_articles = query_newsAPI(q, count=12)
         # if raw_articles:
         #     pruned_articles = prune_articles(raw_articles)
+        #     categorized_articles = categorize_by_sentiment(pruned_articles)
+        # ISSUE: cookies too large
+        # session['articles'] = categorized_articles
 
         # Search Tweets
         raw_tweets = query_twitter_v1(q, count=20, lang='en')
         if raw_tweets:
             pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
-            categorized_tweets = categorize_tweets(pruned_tweets)
+            categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
             query = Query(text=q)
             if g.user:
@@ -100,11 +105,12 @@ def handle_search():
             db.session.add(query)
             db.session.commit()
 
-            session['tweets'] = categorized_tweets
+            # session['tweets'] = categorized_tweets
             session['q_time'] = round(time.time() - q_start_time, 2)
             session['q'] = q
             return redirect('/search')
 
+        do_clear_search_cookies()
         form.search.errors.append('No results found. Try another term?')
         return render_template('index.html', form=form)
 
@@ -167,6 +173,7 @@ def login_user():
             # flash(f'Welcome back, {user.username}')
             return redirect('/')
 
+    do_clear_search_cookies()
     return render_template('users/login.html', form=form)
 
 
@@ -198,6 +205,72 @@ def delete_user(user_id):
     db.session.commit()
     do_logout()
     return redirect('/')
+
+# ****************
+# API
+# ****************
+
+
+@app.route('/api/articles')
+def fetch_articles():
+    """Retrieve articles and return as JSON."""
+    # TODO: Protect this route in any scenarios?
+    query = request.args.get('q', None)
+    if query:
+        q_start_time = time.time()
+        raw_articles = query_newsAPI(query, count=12)
+        if raw_articles:
+            pruned_articles = prune_articles(raw_articles)
+            categorized_articles = categorize_by_sentiment(pruned_articles)
+
+            session['article_query_time'] = round(
+                time.time() - q_start_time, 2)
+            session['query'] = query
+            response = jsonify(articles=categorized_articles)
+        else:
+            response = jsonify(error='no articles found')
+    else:
+        response = jsonify(error='No query args received by server')
+
+    return response
+
+
+@app.route('/api/tweets')
+def fetch_tweets():
+    """Retrieve tweets and resturn as JSON."""
+    form = SearchForm()
+    query = request.args.get('q', None)
+    if query:
+        q_start_time = time.time()
+        raw_tweets = query_twitter_v1(query, count=20, lang='en')
+        if raw_tweets:
+            pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
+            categorized_tweets = categorize_by_sentiment(pruned_tweets)
+
+            user_query = Query(text=query)
+            if g.user:
+                g.user.queries.append(user_query)
+            db.session.add(user_query)
+            db.session.commit()
+
+            # session['tweets'] = categorized_tweets
+            session['tweet_query_time'] = round(time.time() - q_start_time, 2)
+            session['query'] = query
+            # return redirect('/search')
+            response = jsonify(tweets=categorized_tweets)
+        else:
+            response = jsonify(error='no articles found')
+            do_clear_search_cookies()
+            # form.search.errors.append('No results found. Try another term?')
+    else:
+        response = jsonify(error='No query args received by server')
+
+    return response
+
+
+# ****************
+# Helper Functions
+# ****************
 
 
 def query_twitter_v1(q, count=10, lang='en'):
@@ -231,13 +304,12 @@ def query_twitter_v1(q, count=10, lang='en'):
         del params['result_type']
         res_2 = requests.get(f'{base_url}', headers=headers,
                              params=params)
-        data_2 = res.json()
-        raw_tweets_2 = data['statuses']
+        data_2 = res_2.json()
+        raw_tweets_2 = data_2['statuses']
         if not raw_tweets_2:
             print('NO RESULTS!')
             return False
-    # import pdb
-    # pdb.set_trace()
+
     return raw_tweets
 
 
@@ -252,17 +324,8 @@ def prune_tweets(raw_tweets, query_v2=True):
             'url': tweet['entities']['urls'][0]['url'] if tweet['entities']['urls'] else None,
             'published': tweet['created_at'],
             'source': tweet['user'].get('name', 'unknown'),
-            'text': tweet['full_text'],
-            'is_truncated': tweet['truncated']
+            'text': tweet['full_text']
         }
-        # if query_v2 and tweet['truncated']:
-        #     print('Truncated tweet found!')
-        #     full_text = query_twitter_v2(cur_tweet['id'])
-        #     if full_text:
-        #         print('updating text...')
-        #         cur_tweet['text'] = full_text
-        #         cur_tweet['is_truncated'] = False
-
         sentiment = query_sentim_API(cur_tweet['text'])
         cur_tweet['polarity'] = sentiment.get('polarity')
         cur_tweet['sentiment'] = sentiment.get('type')
@@ -296,12 +359,10 @@ def query_newsAPI(q, min_results=10, count=20, lang='en'):
 
         res_2 = requests.get(base_url, headers=headers, params=params)
         data = res_2.json()
-        num_results_2 = data['totalnum_results_2']
+        num_results_2 = data['totalResults']
         if not num_results_2:
             print('NO RESULTS FOUND ANYWHERE!')
             return False
-    import pdb
-    pdb.set_trace()
 
     return data['articles']
 
@@ -330,8 +391,6 @@ def prune_articles(raw_articles):
         cur_article['sentiment'] = sentiment.get('type')
 
         article_lst.append(cur_article)
-    # import pdb
-    # pdb.set_trace()
 
     return article_lst
 
@@ -355,22 +414,26 @@ def prune_articles(raw_articles):
 #     return False
 
 
-def categorize_tweets(tweet_lst):
-    """Accepts a list of tweet dicts. Returns a tuple comprised of 3 lists: positive, neutral, negative"""
+def categorize_by_sentiment(obj_lst):
+    """Runs each obj in list through a NLP API and categorizes each based on sentiment, by polarity score.
+
+    Accepts: a list of information dicts.
+    Returns: a tuple comprised of 3 lists: positive, neutral, negative.
+    """
     negative = []
     neutral = []
     positive = []
 
-    for tweet in tweet_lst:
-        if tweet['sentiment'] == 'positive':
-            positive.append(tweet)
-        elif tweet['sentiment'] == 'negative':
-            negative.append(tweet)
-        elif tweet['sentiment'] == 'neutral':
-            neutral.append(tweet)
+    for obj in obj_lst:
+        if obj['sentiment'] == 'positive':
+            positive.append(obj)
+        elif obj['sentiment'] == 'negative':
+            negative.append(obj)
+        elif obj['sentiment'] == 'neutral':
+            neutral.append(obj)
 
-    negative.sort(key=lambda tweet: tweet['polarity'])
-    positive.sort(key=lambda tweet: tweet['polarity'], reverse=True)
+    negative.sort(key=lambda obj: obj['polarity'])
+    positive.sort(key=lambda obj: obj['polarity'], reverse=True)
 
     return (positive, neutral, negative)
 

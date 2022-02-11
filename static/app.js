@@ -8,12 +8,33 @@ const negativeArticleContainer = document.getElementById('articlesNegative');
 $(document).ready(async function() {
 	$('#searchResultContainer').hide();
 	if ($('#searchResultContainer').length > 0) {
-		await getTweets(window.name);
-		console.log('Tweets received from server.');
+		// Tweets
+		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
+			console.log('localStorage empty!');
+			showLoadingView();
+			await getTweets(window.name);
+			renderTweets();
+			// console.log('Tweets received from server.');
+
+			hideLoadingView();
+			$('#searchResultContainer').show();
+			// Articles
+			await getArticles(window.name);
+			console.log('Articles received from server.');
+			displayArticles();
+		} else {
+			alert('LocalStorage exists. Retrieving data...');
+			$('#searchResultContainer').show();
+			renderTweets();
+			displayArticles();
+		}
+		// await getTweets(window.name);
+		// console.log('Tweets received from server.');
 		$('#searchResultContainer').show();
 		renderTweets();
-		await getArticles(window.name);
-		console.log('Articles received from server.');
+		// Articles
+		// await getArticles(window.name);
+		// console.log('Articles received from server.');
 		displayArticles();
 	}
 
@@ -32,6 +53,19 @@ $(document).ready(async function() {
 		// displayArticles();
 	});
 });
+
+const showLoadingView = function() {
+	$('#searchBtn').text('Searching...').prop('disabled', true);
+	const $loadingIcon = $('<img>')
+		.attr({ src: '/static/images/loading-icon.jpeg', id: 'loadingImg' })
+		.addClass('w-32 mx-auto mt-5');
+	$loadingIcon.insertBefore($('#searchResultContainer'));
+};
+
+const hideLoadingView = function() {
+	$('#loadingImg').remove();
+	$('#searchBtn').text('Search').prop('disabled', false);
+};
 
 const asyncLocalStorage = {
 	setItem: async function(key, value) {

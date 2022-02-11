@@ -6,11 +6,21 @@ Veritas
 
 {% block content %}
 <!-- <h2>Search for <i>"{{q}}"</i> took {{q_time}} seconds.</h2> -->
+<div class="w-full max-w-sm mt-5 mx-auto">
+
+  <form action="/search" method="GET" id="searchForm">
+    <input type="text" id="searchInput" name="query" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-thin rounded-3xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    <div class="flex flex-row justify-center">
+
+      <button type="submit" id= "searchBtn" class="py-2.5 px-5 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button>
+    </div>
+    </form>
+</div>
 
 <!-- Test-Area -->
 <div id="searchResultContainer">
   <!-- Tweets -->
-  <div id="tweetsContainer">
+  <div id="tweetsContainer" class="grid justify-center">
     <h2 class="text-center text-3xl mt-5">Tweets</h2>
     <div class="container px-8 grid grid-cols-3 gap-4 text-black">
       <!-- Positive  -->
@@ -31,12 +41,13 @@ Veritas
     </div>
   </div>
   <!-- Articles -->
-  <div id="articlesContainer">
+  <div id="articlesContainer" class="grid justify-center">
     <h2 class="text-center text-3xl mt-5" id="articleContainer">Articles</h2>
-    <div class="container px-8 grid text-sm grid-cols-3 gap-4 text-black">
+    <div class="container px-8 mb-8 grid text-sm grid-cols-3 gap-4 text-black">
       <!-- Positive  -->
       <div class="bg-orange-500 px-8 py-2 bg-lime-200">
         <div><h2 class="text-center text-xl overflow-y-auto h-96" id="articlesPositive">Positive</h2></div>
+
 
       </div>
       <!-- Neutral  -->

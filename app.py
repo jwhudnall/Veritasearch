@@ -55,6 +55,8 @@ def do_logout():
         del session[CURR_USER_KEY]
     if 'username' in session:
         session.pop('username')
+    if 'headlines' in session:
+        session.pop('headlines')
     do_clear_search_cookies()
 
 
@@ -69,17 +71,66 @@ def do_clear_search_cookies():
 def homepage():
     form = SearchForm()
     do_clear_search_cookies()
-    headlines = get_headlines(count=3)
+    # If headlines exist in cookies, use those instead
+    if 'headlines' in session:
+        headlines = session['headlines']
+    else:
+        headlines = get_headlines(count=3)
+        session['headlines'] = headlines
     return render_template('index.html', form=form, headlines=headlines)
 
 
-@app.route('/search', methods=['GET'])
+@app.route('/search', methods=['GET', 'POST'])
 def handle_search():
 
-    do_clear_search_cookies()
+    if request.method == 'POST':
+        user = g.user if g.user else None
+        # test area:
+        # testQuote = '<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Join <a href="https://twitter.com/hashtag/Algorand?src=hash&amp;ref_src=twsrc%5Etfw">#Algorand</a> in Austin, TX on March 14th to experience the Web 3-powered future of music, gaming, art and more.<br><br>Sign up now to attend for free 👉 <a href="https://t.co/S9wDSn2kHo">https://t.co/S9wDSn2kHo</a> <a href="https://twitter.com/hashtag/AlgorandATX?src=hash&amp;ref_src=twsrc%5Etfw">#AlgorandATX</a> <a href="https://t.co/RDCR6zonJt">pic.twitter.com/RDCR6zonJt</a></p>&mdash; Algorand (@Algorand) <a href="https://twitter.com/Algorand/status/1492136615308939268?ref_src=twsrc%5Etfw">February 11, 2022</a></blockquote>\n'
+        # query = request.args.get('query')
+        query = request.form['query']
 
-    user = g.user if g.user else None
+        new_query = Query(text=query)
+        if user:
+            user_queries = [q.text for q in user.queries]
+            if query not in user_queries:
+                user.queries.append(new_query)
+                db.session.add(user)
+            # Add cookie for user_query? Any liked articles can then be linked to this query.
+        db.session.add(new_query)
+        db.session.commit()
 
+        q_start_time = time.time()
+        raw_tweets = query_twitter_v1(query, count=20, lang='en')
+        if raw_tweets:
+            pruned_tweets = prune_tweets(raw_tweets)
+            categorized_tweets = categorize_by_sentiment(pruned_tweets)
+            json_tweets = json.dumps(categorized_tweets)
+            q_time = time.time() - q_start_time
+
+            # session['tweets'] = categorized_tweets
+            # session['query'] = query
+            return redirect(url_for('handle_search', tweets=json_tweets, query=query, q_time=q_time))
+
+        else:
+            do_clear_search_cookies()
+            # form.search.errors.append('No results found. Try another term?')
+            flash('Nothing found. Try another term?')
+            return redirect('/')
+
+    elif request.method == 'GET':
+        # do_clear_search_cookies()
+        tweets = json.loads(request.args['tweets'])
+        query = request.args['query']
+        q_time = request.args['q_time']
+
+        # import pdb
+        # pdb.set_trace()
+        return render_template('search-results.html', tweets=tweets, query=query, q_time=q_time)
+
+    # end test area
+
+    # Old:
     query = request.args.get('query')
     new_query = Query(text=query)
     if user:
@@ -90,7 +141,7 @@ def handle_search():
         # Add cookie for user_query. Any liked articles can then be linked to this query.
     db.session.add(new_query)
     db.session.commit()
-    return render_template('search-results.html')
+    return render_template('search-results.html', testQuote=testQuote)
 
 
 @app.route('/search/<query>', methods=['GET'])
@@ -200,6 +251,22 @@ def delete_user(user_id):
     do_logout()
     return redirect('/')
 
+# Queries
+
+
+@app.route('/queries/<int:query_id>', methods=['DELETE'])
+def delete_query(query_id):
+    """Deletes a user query. Returns confirmation message in JSON format."""
+    # TODO: Protect via authentication to verify user "owns" query
+    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+        raise Unauthorized()
+
+    q = Query.query.get_or_404(query_id)
+    db.session.delete(q)
+    db.session.commit()
+    return jsonify(message="Query deleted")
+
+
 # ****************
 # API
 # ****************
@@ -212,7 +279,7 @@ def fetch_articles():
     query = request.args.get('q', None)
     if query:
         # q_start_time = time.time()
-        raw_articles = query_newsAPI(query, count=12)
+        raw_articles = query_newsAPI(query, count=20)
         if raw_articles:
             pruned_articles = prune_articles(raw_articles)
             categorized_articles = categorize_by_sentiment(pruned_articles)
@@ -266,7 +333,7 @@ def get_headlines(count=3):
     res = requests.get(f'{base_url}', headers=headers,
                        params=params)
     data = res.json()
-    if data['articles']:
+    if data.get('articles'):
         headlines = []
         for i in range(count):
             title = data['articles'][i]['title']
@@ -274,6 +341,7 @@ def get_headlines(count=3):
             headlines.append(truncated)
     else:
         flash('Headlines API appears to be down')
+        return False
 
     return headlines
 
@@ -424,9 +492,10 @@ def prune_articles(raw_articles):
             "description": article["description"],
             "content": article["content"]
         }
-        # sentiment_search_str = '.'.join(
+        # sentiment_search_str = ' . '.join(
         #     [cur_article['title'], cur_article['description'], cur_article['content']])
-        sentiment_search_str = cur_article["title"]
+        sentiment_search_str = f"{cur_article['title']}. {cur_article['description']}"
+        # sentiment_search_str = cur_article["title"]
 
         sentiment = query_sentim_API(sentiment_search_str)
         cur_article["polarity"] = sentiment.get("polarity")

@@ -17,14 +17,20 @@
 </div>
 
 {% if queries %}
-<div id="queryContainer">
+<div id="queryContainer" class="">
   <h3>Your Searches:</h3>
-  <ul>
+  <ul id="queryTable">
     {% for q in queries %}
-    <li >{{q.text}}</li>
+    <li data-qid="{{q.id}}">
+      {{q.text}}
+        <button class="text-red-500">X</button>
+    </li>
     {% endfor %}
   </ul>
 </div>
 {% endif %}
+
+<!-- Test Area -->
+<!-- End Test Area -->
 
 {% endblock %}

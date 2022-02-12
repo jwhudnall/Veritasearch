@@ -230,13 +230,12 @@ def fetch_articles():
 @app.route('/api/tweets')
 def fetch_tweets():
     """Retrieve tweets and resturn as JSON."""
-    form = SearchForm()
     query = request.args.get('q', None)
     if query:
-        q_start_time = time.time()
+        # q_start_time = time.time()
         raw_tweets = query_twitter_v1(query, count=20, lang='en')
         if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
+            pruned_tweets = prune_tweets(raw_tweets)
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
             # session['tweets'] = categorized_tweets
@@ -288,6 +287,25 @@ def remove_stop_words(text, n=2):
     return filtered_sentence
 
 
+def query_twitter_oembed(id):
+    """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
+    base_url = 'https://publish.twitter.com/oembed'
+    params = {
+        'url': f'https://twitter.com/Interior/status/{id}',
+        # 'maxwidth': 220,
+        'omit_script': 'true'
+    }
+    res = requests.get(base_url, params=params)
+    html = False
+    if res.status_code == 200:
+        data = res.json()
+        html = data.get('html')
+
+    if html and res.status_code == 200:
+        return html
+    return False
+
+
 def query_twitter_v1(q, count=10, lang='en'):
     """Accepts a user search query. If results found, returns a list of tweet objects; else False.
 
@@ -331,7 +349,7 @@ def query_twitter_v1(q, count=10, lang='en'):
     return raw_tweets
 
 
-def prune_tweets(raw_tweets, query_v2=True):
+def prune_tweets(raw_tweets):
     """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets."""
     unassigned_tweets = []
 
@@ -347,6 +365,11 @@ def prune_tweets(raw_tweets, query_v2=True):
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
         cur_tweet["sentiment"] = sentiment.get("type")
+        # oembed HTML
+        cur_tweet['oembed_url'] = query_twitter_oembed(cur_tweet.get('id'))
+
+        # import pdb
+        # pdb.set_trace()
 
         unassigned_tweets.append(cur_tweet)
 

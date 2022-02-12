@@ -15,7 +15,7 @@ $(document).ready(async function() {
 			alert('LocalStorage exists. Retrieving data...');
 			$('#searchResultContainer').show();
 			displayArticles();
-			renderTweets();
+			renderEmbedTweets();
 		}
 	}
 
@@ -38,8 +38,11 @@ const fetchAndShowContent = async function() {
 	await getArticles(window.name);
 	$('#searchResultContainer').show();
 	displayArticles();
-	await getTweets(window.name);
-	renderTweets();
+	// await getTweets(window.name);
+	tweets = await getEmbedTweets(window.name);
+	// renderTweets();
+	renderEmbedTweets();
+	await twttr.widgets.load();
 	hideLoadingView();
 };
 
@@ -88,6 +91,27 @@ const getArticles = async function(query) {
 	}
 };
 
+const getEmbedTweets = async function(query) {
+	try {
+		const res = await axios({
+			method: 'GET',
+			url: '/api/tweets',
+			params: {
+				q: query
+			}
+		});
+		if (res.data.error) {
+			console.log('No tweets found!');
+			return;
+		}
+		asyncLocalStorage.setItem('tweets', JSON.stringify(res.data));
+		console.log('localStorage["tweets"] updated!');
+		console.dir(res.data);
+	} catch (e) {
+		alert(`Internal API issue Fetching Tweets. Error Info: ${e}`);
+	}
+};
+
 const getTweets = async function(query) {
 	try {
 		const res = await axios({
@@ -127,7 +151,8 @@ const retrieveTwitterCard = async function(id, maxWidth = 220, omitScript = fals
 		alert(`Issue fetching Twitter Cards. Error info: ${e}`);
 	}
 };
-const renderTweets = function() {
+
+const renderEmbedTweets = function() {
 	tweets = JSON.parse(localStorage.getItem('tweets')).tweets;
 	const positive = tweets[0];
 	const neutral = tweets[1];
@@ -135,26 +160,73 @@ const renderTweets = function() {
 
 	if (positive.length > 0) {
 		for (let t of positive) {
-			appendTweet(t.id, positiveTweetContainer);
+			appendTweet(t, positiveTweetContainer);
 		}
 	}
 	if (neutral.length > 0) {
 		for (let t of neutral) {
-			appendTweet(t.id, neutralTweetContainer);
+			appendTweet(t, neutralTweetContainer);
 		}
 	}
 	if (negative.length > 0) {
 		for (let t of negative) {
-			appendTweet(t.id, negativeTweetContainer);
+			appendTweet(t, negativeTweetContainer);
 		}
 	}
 };
 
-const appendTweet = function(id, targetEl) {
+// const renderTweets = function() {
+// 	tweets = JSON.parse(localStorage.getItem('tweets')).tweets;
+// 	const positive = tweets[0];
+// 	const neutral = tweets[1];
+// 	const negative = tweets[2];
+
+// 	if (positive.length > 0) {
+// 		for (let t of positive) {
+// 			appendTweet(t.id, positiveTweetContainer);
+// 		}
+// 	}
+// 	if (neutral.length > 0) {
+// 		for (let t of neutral) {
+// 			appendTweet(t.id, neutralTweetContainer);
+// 		}
+// 	}
+// 	if (negative.length > 0) {
+// 		for (let t of negative) {
+// 			appendTweet(t.id, negativeTweetContainer);
+// 		}
+// 	}
+// };
+
+const appendTweet = function(tweet, targetEl) {
+	const container = document.createElement('div');
+	const tweetCard = document.createElement('div');
+	const sentDiv = document.createElement('div');
+	const polarity = document.createElement('span');
+	polarity.innerText = `Score: ${tweet.polarity}`;
+	sentDiv.append(polarity);
+	tweetCard.innerHTML = tweet.oembed_url;
+	container.append(sentDiv, tweetCard);
+	targetEl.append(container);
+};
+
+const appendTweetWidget = function(id, targetEl) {
 	twttr.widgets.createTweet(id, targetEl, {
 		cards: 'hidden'
 	});
 };
+
+// const createAndAppendTweetHTML = function(tweet, targetEl) {
+// 	const container = document.createElement('div');
+// 	const tweetCard = document.createElement('div');
+// 	const sentDiv = document.createElement('div');
+// 	const polarity = document.createElement('span');
+// 	polarity.innerText = `Score: ${tweet.polarity}`;
+// 	sentDiv.append(polarity);
+// 	tweetCard.innerHTML = tweet.oembed_url;
+// 	container.append(sentDiv, tweetCard);
+// 	targetEl.append(container);
+// }
 
 const displayArticles = function() {
 	articles = JSON.parse(localStorage.getItem('articles')).articles;

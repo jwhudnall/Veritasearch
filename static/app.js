@@ -10,49 +10,38 @@ $(document).ready(async function() {
 	if ($('#searchResultContainer').length > 0) {
 		// Tweets
 		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
-			console.log('localStorage empty!');
-			showLoadingView();
-			await getTweets(window.name);
-			renderTweets();
-			// console.log('Tweets received from server.');
-
-			hideLoadingView();
-			$('#searchResultContainer').show();
-			// Articles
-			await getArticles(window.name);
-			console.log('Articles received from server.');
-			displayArticles();
+			fetchAndShowContent();
 		} else {
 			alert('LocalStorage exists. Retrieving data...');
 			$('#searchResultContainer').show();
-			renderTweets();
 			displayArticles();
+			renderTweets();
 		}
-		// await getTweets(window.name);
-		// console.log('Tweets received from server.');
-		$('#searchResultContainer').show();
-		renderTweets();
-		// Articles
-		// await getArticles(window.name);
-		// console.log('Articles received from server.');
-		displayArticles();
 	}
 
+	$('#headlineWords').on('click', 'span', async function() {
+		localStorage.clear();
+		query = $(this).text();
+		window.name = $('#searchInput').val(query);
+		$('#searchForm').submit();
+	});
+
 	$('#searchForm').on('submit', async function(e) {
-		// e.preventDefault();
 		window.name = $('#searchInput').val();
 		localStorage.clear();
-		// $('#searchInput').val('');
-		// console.log(`Window name updated: ${window.name}`);
-		// await getTweets(window.name);
-		// console.log('Tweets received from server.');
-		// $('#searchResultContainer').show();
-		// renderTweets();
-		// await getArticles(window.name);
-		// console.log('Articles received from server.');
-		// displayArticles();
 	});
 });
+
+const fetchAndShowContent = async function() {
+	$('#searchResultContainer').hide();
+	showLoadingView();
+	await getArticles(window.name);
+	$('#searchResultContainer').show();
+	displayArticles();
+	await getTweets(window.name);
+	renderTweets();
+	hideLoadingView();
+};
 
 const showLoadingView = function() {
 	$('#searchBtn').text('Searching...').prop('disabled', true);

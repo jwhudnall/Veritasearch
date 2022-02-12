@@ -16,4 +16,15 @@
   </form>
 </div>
 
+{% if queries %}
+<div id="queryContainer">
+  <h3>Your Searches:</h3>
+  <ul>
+    {% for q in queries %}
+    <li >{{q.text}}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
 {% endblock %}

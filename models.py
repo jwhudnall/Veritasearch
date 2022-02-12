@@ -113,6 +113,16 @@ class Query(db.Model):
     timestamp = db.Column(db.DateTime, nullable=False,
                           default=datetime.utcnow())
 
+    def __repr__(self):
+        return f"<Query #{self.id}: {self.text}>"
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'timestamp': self.timestamp
+        }
+
 
 class QueryUser(db.Model):
     """Maps queries to users."""

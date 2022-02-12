@@ -84,7 +84,7 @@ q1 = Query(
 )
 
 q2 = Query(
-    text="'Air Force'"
+    text="Air Force"
 )
 
 q3 = Query(

@@ -5,10 +5,15 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Like, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 from forms import SearchForm, UserAddForm, LoginForm
+import nltk
 import requests
 import time
 import json
+nltk.download('stopwords')
+nltk.download('punkt')
 
 
 CURR_USER_KEY = 'cur_user'
@@ -64,7 +69,8 @@ def do_clear_search_cookies():
 def homepage():
     form = SearchForm()
     do_clear_search_cookies()
-    return render_template('index.html', form=form)
+    headlines = get_headlines(count=3)
+    return render_template('index.html', form=form, headlines=headlines)
 
 
 @app.route('/search', methods=['GET'])
@@ -72,80 +78,37 @@ def handle_search():
 
     do_clear_search_cookies()
 
-    if g.user:
-        user = g.user
+    user = g.user if g.user else None
 
-    form_query = request.args.get('query')
-    query = Query(text=form_query)
+    query = request.args.get('query')
+    new_query = Query(text=query)
     if user:
-        user.queries.append(query)
-        db.session.add(user)
+        user_queries = [q.text for q in user.queries]
+        if query not in user_queries:
+            user.queries.append(new_query)
+            db.session.add(user)
         # Add cookie for user_query. Any liked articles can then be linked to this query.
-    db.session.add(query)
+    db.session.add(new_query)
     db.session.commit()
     return render_template('search-results.html')
-    # q = form.search.data
-
-    # q_start_time = time.time()
-    # # Search Articles
-    # raw_articles = query_newsAPI(q, count=12)
-    # if raw_articles:
-    #     pruned_articles = prune_articles(raw_articles)
-    #     categorized_articles = categorize_by_sentiment(pruned_articles)
-
-    # # Search Tweets
-    # raw_tweets = query_twitter_v1(q, count=20, lang='en')
-    # if raw_tweets:
-    #     pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
-    #     categorized_tweets = categorize_by_sentiment(pruned_tweets)
-
-    # query = Query(text=q)
-    # if user:
-    #     user.queries.append(query)
-    #     db.session.add(user)
-    #     # Add cookie for user_query. Any liked articles can then be linked to this query.
-    # db.session.add(query)
-    # db.session.commit()
-
-    # session['tweets'] = categorized_tweets
-    # session['q_time'] = round(time.time() - q_start_time, 2)
-    # session['query'] = q
-    # return redirect('/search')
-    # import pdb
-    # pdb.set_trace()
-    # if raw_tweets and raw_articles:
-    #     categorized_tweets = json.dumps(categorized_tweets)
-    #     categorized_articles = json.dumps(categorized_articles)
-    #     return redirect(url_for('display_results', query=q, tweets=categorized_tweets, articles=categorized_articles))
-    # else:
-    #     do_clear_search_cookies()
-    #     form.search.errors.append('No results found. Try another term?')
-    #     flash('No results found.')
-    #     return redirect('/')
-
-    # q = request.args.get('query')
-    # tweets = request.args.get("tweets")
-    # json_tweets = json.loads(tweets)
-    # articles = request.args.get("articles")
-    # json_articles = json.loads(articles)
-    # q_time = session.get('q_time')
-    # else:
-    #     print('Form NOT validated!')
-    #     raise Unauthorized()
-    # return render_template('search-results.html', tweets=json_tweets, articles=json_articles, q_time=q_time, q=q)
 
 
-# @app.route('/search', methods=['GET'])
-# def display_results():
-#     q = request.args.get('query')
-#     tweets = request.args.get("tweets")
-#     articles = request.args.get("articles")
+@app.route('/search/<query>', methods=['GET'])
+def display_results(query):
 
-#     json_tweets = json.loads(tweets)
-#     json_articles = json.loads(articles)
-#     q_time = session.get('q_time')
-#     # q = session.get('query')
-#     return render_template('search-results.html', tweets=json_tweets, articles=json_articles,  q_time=q_time, q=q)
+    do_clear_search_cookies()
+    user = g.user if g.user else None
+    new_query = Query(text=query)
+
+    if user:
+        user_queries = [q.text for q in user.queries]
+        if query not in user_queries:
+            user.queries.append(new_query)
+            db.session.add(user)
+        # Add cookie for user_query. Any liked articles can then be linked to this query.
+    db.session.add(new_query)
+    db.session.commit()
+    return render_template('search-results.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -215,8 +178,11 @@ def show_user_details(user_id):
 
     # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
+    queries = [q.serialize() for q in user.queries]
+    # import pdb
+    # pdb.set_trace()
 
-    return render_template('users/user-details.html', user=user)
+    return render_template('users/user-details.html', user=user, queries=queries)
 
 
 @app.route('/users/<int:user_id>/delete', methods=['POST'])
@@ -245,7 +211,7 @@ def fetch_articles():
     # TODO: Protect this route in any scenarios?
     query = request.args.get('q', None)
     if query:
-        q_start_time = time.time()
+        # q_start_time = time.time()
         raw_articles = query_newsAPI(query, count=12)
         if raw_articles:
             pruned_articles = prune_articles(raw_articles)
@@ -273,12 +239,6 @@ def fetch_tweets():
             pruned_tweets = prune_tweets(raw_tweets, query_v2=False)
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
-            user_query = Query(text=query)
-            if g.user:
-                g.user.queries.append(user_query)
-            db.session.add(user_query)
-            db.session.commit()
-
             # session['tweets'] = categorized_tweets
             session['query'] = query
             # return redirect('/search')
@@ -296,6 +256,36 @@ def fetch_tweets():
 # ****************
 # Helper Functions
 # ****************
+
+def get_headlines(count=3):
+    """Retrieve top headlines."""
+    base_url = 'https://newsapi.org/v2/top-headlines'
+    headers = {'X-Api-Key': NEWS_API_KEY}
+    params = {
+        'country': 'us'
+    }
+    res = requests.get(f'{base_url}', headers=headers,
+                       params=params)
+    data = res.json()
+    if data['articles']:
+        headlines = []
+        for i in range(count):
+            title = data['articles'][i]['title']
+            truncated = remove_stop_words(title, n=2)
+            headlines.append(truncated)
+    else:
+        flash('Headlines API appears to be down')
+
+    return headlines
+
+
+def remove_stop_words(text, n=2):
+    """Uses nltk to convert text into tokens. Removes stopwords and returns a string of n words."""
+    text_tokens = word_tokenize(text)
+    text_tokens_no_sw = [
+        word for word in text_tokens if not word in stopwords.words()]
+    filtered_sentence = (" ").join(text_tokens_no_sw[0:n])
+    return filtered_sentence
 
 
 def query_twitter_v1(q, count=10, lang='en'):

@@ -6,14 +6,11 @@ const neutralArticleContainer = document.getElementById('articlesNeutral');
 const negativeArticleContainer = document.getElementById('articlesNegative');
 
 $(document).ready(async function() {
-	$('#searchResultContainer').hide();
 	if ($('#searchResultContainer').length > 0) {
 		// Tweets
 		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
 			fetchAndShowContent();
 		} else {
-			alert('LocalStorage exists. Retrieving data...');
-			$('#searchResultContainer').show();
 			displayArticles();
 			renderEmbedTweets();
 		}
@@ -33,29 +30,31 @@ $(document).ready(async function() {
 });
 
 const fetchAndShowContent = async function() {
-	$('#searchResultContainer').hide();
-	showLoadingView();
-	await getArticles(window.name);
-	$('#searchResultContainer').show();
+	$('#articlesContainer').hide();
+	showLoadingView($('#articlesHeader'), 'articles');
+	$('#tweetsContainer').hide();
+	showLoadingView($('#tweetsHeader'), 'tweets');
+	const articles = await getArticles(window.name);
+	hideLoadingView('articles');
 	displayArticles();
-	// await getTweets(window.name);
-	tweets = await getEmbedTweets(window.name);
-	// renderTweets();
+	$('#articlesContainer').show();
+	const tweets = await getEmbedTweets(window.name);
+	hideLoadingView('tweets');
 	renderEmbedTweets();
+	$('#tweetsContainer').show();
 	await twttr.widgets.load();
-	hideLoadingView();
 };
 
-const showLoadingView = function() {
+const showLoadingView = function($targetEl, tag) {
 	$('#searchBtn').text('Searching...').prop('disabled', true);
 	const $loadingIcon = $('<img>')
-		.attr({ src: '/static/images/loading-icon.jpeg', id: 'loadingImg' })
+		.attr({ src: '/static/images/loading-icon.jpeg', id: `loadingImg${tag}` })
 		.addClass('w-32 mx-auto mt-5');
-	$loadingIcon.insertBefore($('#searchResultContainer'));
+	$loadingIcon.insertAfter($targetEl);
 };
 
-const hideLoadingView = function() {
-	$('#loadingImg').remove();
+const hideLoadingView = function(tag) {
+	$(`#loadingImg${tag}`).remove();
 	$('#searchBtn').text('Search').prop('disabled', false);
 };
 
@@ -72,7 +71,6 @@ const asyncLocalStorage = {
 
 const getArticles = async function(query) {
 	try {
-		// query = $('#searchInput').val();
 		const res = await axios({
 			method: 'GET',
 			url: '/api/articles',
@@ -80,12 +78,13 @@ const getArticles = async function(query) {
 				q: query
 			}
 		});
-		// return res.data;
+
 		if (res.data.error) {
 			console.log('No articles found!');
-			return;
+			return False;
 		}
 		asyncLocalStorage.setItem('articles', JSON.stringify(res.data));
+		return res.data;
 	} catch (e) {
 		alert(`Internal API issue Fetching Articles. Error Info: ${e}`);
 	}
@@ -105,8 +104,8 @@ const getEmbedTweets = async function(query) {
 			return;
 		}
 		asyncLocalStorage.setItem('tweets', JSON.stringify(res.data));
-		console.log('localStorage["tweets"] updated!');
-		console.dir(res.data);
+		// console.log('localStorage["tweets"] updated!');
+		// console.dir(res.data);
 	} catch (e) {
 		alert(`Internal API issue Fetching Tweets. Error Info: ${e}`);
 	}

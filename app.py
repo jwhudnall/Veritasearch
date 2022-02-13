@@ -85,9 +85,6 @@ def handle_search():
 
     if request.method == 'POST':
         user = g.user if g.user else None
-        # test area:
-        # testQuote = '<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Join <a href="https://twitter.com/hashtag/Algorand?src=hash&amp;ref_src=twsrc%5Etfw">#Algorand</a> in Austin, TX on March 14th to experience the Web 3-powered future of music, gaming, art and more.<br><br>Sign up now to attend for free 👉 <a href="https://t.co/S9wDSn2kHo">https://t.co/S9wDSn2kHo</a> <a href="https://twitter.com/hashtag/AlgorandATX?src=hash&amp;ref_src=twsrc%5Etfw">#AlgorandATX</a> <a href="https://t.co/RDCR6zonJt">pic.twitter.com/RDCR6zonJt</a></p>&mdash; Algorand (@Algorand) <a href="https://twitter.com/Algorand/status/1492136615308939268?ref_src=twsrc%5Etfw">February 11, 2022</a></blockquote>\n'
-        # query = request.args.get('query')
         query = request.form['query']
 
         new_query = Query(text=query)
@@ -104,6 +101,7 @@ def handle_search():
         raw_tweets = query_twitter_v1(query, count=20, lang='en')
         if raw_tweets:
             pruned_tweets = prune_tweets(raw_tweets)
+            append_to_db(pruned_tweets)
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
             json_tweets = json.dumps(categorized_tweets)
             q_time = round(time.time() - q_start_time, 2)
@@ -124,8 +122,6 @@ def handle_search():
         q_time = request.args['q_time']
         session['query'] = query
 
-        # import pdb
-        # pdb.set_trace()
         return render_template('search-results.html', tweets=tweets, query=query, q_time=q_time)
 
     # end test area
@@ -230,8 +226,6 @@ def show_user_details(user_id):
     # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
-    # import pdb
-    # pdb.set_trace()
 
     return render_template('users/user-details.html', user=user, queries=queries)
 
@@ -322,6 +316,22 @@ def fetch_tweets():
 # ****************
 # Helper Functions
 # ****************
+
+def append_to_db(tweets):
+    for t in tweets:
+        try:
+            new_article = Article(
+                id=t['id'],
+                text=t['text'],
+                sentiment=t['sentiment'],
+                polarity=t['polarity'],
+                embed_html=t['oembed_url']
+            )
+            db.session.add(new_article)
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+
 
 def get_headlines(count=3):
     """Retrieve top headlines."""
@@ -424,20 +434,16 @@ def prune_tweets(raw_tweets):
     for tweet in raw_tweets:
         cur_tweet = {
             "id": tweet["id_str"],
-            "type": "tweet",
-            "url": tweet["entities"]["urls"][0]["url"] if tweet["entities"]["urls"] else None,
-            "published": tweet["created_at"],
-            "source": tweet["user"].get("name", "unknown"),
+            # "type": "tweet",
+            # "url": tweet["entities"]["urls"][0]["url"] if tweet["entities"]["urls"] else None,
+            # "published": tweet["created_at"],
+            # "source": tweet["user"].get("name", "unknown"),
             "text": tweet["full_text"]
         }
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
         cur_tweet["sentiment"] = sentiment.get("type")
-        # oembed HTML
         cur_tweet['oembed_url'] = query_twitter_oembed(cur_tweet.get('id'))
-
-        # import pdb
-        # pdb.set_trace()
 
         unassigned_tweets.append(cur_tweet)
 

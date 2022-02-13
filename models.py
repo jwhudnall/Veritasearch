@@ -72,15 +72,19 @@ class Article(db.Model):
     """Article Model."""
 
     __tablename__ = 'articles'
-
+    # id, text, sentiment, polarity, oembed_url, timestamp
     id = db.Column(db.String(25), primary_key=True)
-    type = db.Column(db.String(10), nullable=False)
-    url = db.Column(db.Text, nullable=False)
-    published = db.Column(db.DateTime, nullable=False)
-    source = db.Column(db.String(50), nullable=False)
     text = db.Column(db.Text, nullable=False)
-    polarity = db.Column(db.Numeric(precision=3, scale=2), nullable=False)
     sentiment = db.Column(db.String(15), nullable=False)
+    polarity = db.Column(db.Numeric(precision=3, scale=2), nullable=False)
+    embed_html = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False,
+                          default=datetime.utcnow())
+
+    # type = db.Column(db.String(10), nullable=False)
+    # url = db.Column(db.Text, nullable=False)
+    # published = db.Column(db.DateTime, nullable=False)
+    # source = db.Column(db.String(50), nullable=False)
 
     queries = db.relationship(
         'Query', secondary='queries_articles', backref='articles')

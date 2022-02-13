@@ -35,24 +35,21 @@ db.session.commit()
 # Articles
 a1 = Article(
     id="1490483269552553987",
-    type='tweet',
-    url='https://t.co/dAdvBiOEOy',  # "urls"['url'] (escapes removed)
-    published="Mon Feb 07 00:31:17 +0000 2022",  # "created_at"
-    source="George Allison",  # user['name']
     text="🚨 BREAKING NEWS | U.S. Air Force B-52 bombers will shortly be deploying to the United Kingdom. Aircraft are expected to arrive over the coming days. https://t.co/JH2kLOUYqd",
+    sentiment='negative',
     polarity=-0.05,
-    sentiment='negative'
+    embed_html='<blockquote class="twitter-tweet"><p lang="en" dir="ltr">&lt;THREAD&gt; <br>LESS-REDACTED MUELLER REPORT DROPPED.<br><br>Let&#39;s see what they revealed with A/B comparisons! Starting with ROGER STONE. <a href="https://t.co/gYn2gEKWkS">pic.twitter.com/gYn2gEKWkS</a></p>&mdash; Eric Garland (@ericgarland) <a href="https://twitter.com/ericgarland/status/1492266696333307919?ref_src=twsrc%5Etfw">February 11, 2022</a></blockquote>\n',
+    timestamp="Mon Feb 07 00:31:17 +0000 2022"
 )
 
+
 a2 = Article(
-    id="1491083325708304386",
-    type='tweet',
-    url='https://t.co/0IPqvY1YEv',
-    published="Tue Feb 08 16:15:42 +0000 2022",
-    source="CoinGecko",
-    text="RT @coingecko: An Arizona couple’s wedding ceremony tied the knot with their digital identities on @decentraland, making it the first ever…",
+    id="1490483269552553987",
+    text="RT @coingecko: An Arizona couple’s wedding ceremony tied the knot with their digital identities",
+    sentiment='positive',
     polarity=0.12,
-    sentiment='positive'
+    embed_html='<blockquote class="twitter-tweet"><p lang="en" dir="ltr">&lt;THREAD&gt; <br>LESS-REDACTED MUELLER REPORT DROPPED.<br><br>Let&#39;s see what they revealed with A/B comparisons! Starting with ROGER STONE. <a href="https://t.co/gYn2gEKWkS">pic.twitter.com/gYn2gEKWkS</a></p>&mdash; Eric Garland (@ericgarland) <a href="https://twitter.com/ericgarland/status/1492266696333307919?ref_src=twsrc%5Etfw">February 11, 2022</a></blockquote>\n',
+    timestamp="Tue Feb 08 16:15:42 +0000 2022"
 )
 
 db.session.add_all([a1, a2])

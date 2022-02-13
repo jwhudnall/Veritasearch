@@ -45,6 +45,80 @@
 </div>
 
 <h2 class="text-3xl text-center mt-3">Your Recommendations:</h2>
+<!-- Articles -->
+<div id="searchResultContainer">
+
+  <!-- Tweets -->
+  <!-- <h2 class="text-center text-3xl mt-5" id="tweetsHeader">Tweets</h2> -->
+  <div id="tweetsContainer" class="grid justify-center">
+    <div class="container px-8 grid grid-cols-3 gap-4 text-black">
+      <!-- Positive  -->
+      <div class="px-1 py-2 bg-lime-200">
+        <div><h2 class="text-xl text-center" id="tweetsPositive">Positive</h2></div>
+        {% if tweets[0] %}
+        <div class="overflow-y-auto h-96">
+
+          {% for t in tweets[0] %}
+            <div>
+              <div>
+                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
+              </div>
+              {{t.embed_html|safe }}
+            </div>
+          {% endfor %}
+
+        </div>
+        {% else %}
+          <p>No results found for this category.</p>
+        {% endif %}
+      </div>
+      <!-- Neutral DO THIS FOR ALL -->
+      <div class="bg-orange-500 px-8 py-2 bg-stone-200">
+        <div><h2 class="text-center text-xl" id="tweetsNeutral">Neutral</h2></div>
+        {% if tweets[1] %}
+        <div class="overflow-y-auto h-96">
+
+            {% for t in tweets[1] %}
+              <div>
+                <div>
+                  <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
+                </div>
+                {{t.embed_html|safe }}
+              </div>
+            {% endfor %}
+
+        </div>
+          {% else %}
+            <p>No results found for this category.</p>
+          {% endif %}
+      </div>
+      <!-- Negative  -->
+      <div class="bg-orange-500 px-8 py-2 bg-red-300">
+        <div><h2 class="text-center text-xl" id="tweetsNegative">Negative</h2></div>
+        {% if tweets[2] %}
+        <div class="overflow-y-auto h-96">
+
+          {% for t in tweets[2] %}
+            <div>
+              <div>
+                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
+              </div>
+              {{t.embed_html|safe }}
+            </div>
+          {% endfor %}
+
+        </div>
+        {% else %}
+          <p>No results found for this category.</p>
+        </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+<!-- end Articles -->
+
 {% else %}
 <h2 class="text-3xl text-center mt-3">Recommendations will appear here after you make a few searches.</h2>
 {% endif %}

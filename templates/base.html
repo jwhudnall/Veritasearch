@@ -18,7 +18,7 @@
       </a>
       <!-- Test Form Input -->
       {% if session['query'] %}
-      <form action="/search" method="POST" id="searchForm">
+      <form action="/search" method="GET" id="searchForm">
         <div class="flex items-center justify-center">
           <div class="flex border-2 rounded">
             <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">

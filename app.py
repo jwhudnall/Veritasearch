@@ -12,6 +12,7 @@ import nltk
 import requests
 import time
 import json
+import itertools
 nltk.download('stopwords')
 nltk.download('punkt')
 
@@ -35,6 +36,9 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
+        print('***********')
+        print(f'g.user set: {g.user}')
+        print('***********')
     # Check for cur_user_query_term
 
     else:
@@ -80,82 +84,86 @@ def homepage():
     return render_template('index.html', form=form, headlines=headlines)
 
 
-@app.route('/search', methods=['GET', 'POST'])
+@app.route('/search')
 def handle_search():
 
-    if request.method == 'POST':
-        user = g.user if g.user else None
-        query = request.form['query']
-
-        new_query = Query(text=query)
-        if user:
-            user_queries = [q.text for q in user.queries]
-            if query not in user_queries:
-                user.queries.append(new_query)
-                db.session.add(user)
-            # Add cookie for user_query? Any liked articles can then be linked to this query.
-        db.session.add(new_query)
-        db.session.commit()
-
-        q_start_time = time.time()
-        raw_tweets = query_twitter_v1(query, count=20, lang='en')
-        if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets)
-            append_to_db(pruned_tweets)
-            categorized_tweets = categorize_by_sentiment(pruned_tweets)
-            json_tweets = json.dumps(categorized_tweets)
-            q_time = round(time.time() - q_start_time, 2)
-
-            # session['tweets'] = categorized_tweets
-            # session['query'] = query
-            return redirect(url_for('handle_search', tweets=json_tweets, query=query, q_time=q_time))
-
-        else:
-            do_clear_search_cookies()
-            # form.search.errors.append('No results found. Try another term?')
-            flash('Nothing found. Try another term?')
-            return redirect('/')
-
-    elif request.method == 'GET':
-        tweets = json.loads(request.args['tweets'])
-        query = request.args['query']
-        q_time = request.args['q_time']
-        session['query'] = query
-
-        return render_template('search-results.html', tweets=tweets, query=query, q_time=q_time)
-
-    # end test area
-
-    # Old:
-    query = request.args.get('query')
-    new_query = Query(text=query)
-    if user:
-        user_queries = [q.text for q in user.queries]
-        if query not in user_queries:
-            user.queries.append(new_query)
-            db.session.add(user)
-        # Add cookie for user_query. Any liked articles can then be linked to this query.
-    db.session.add(new_query)
-    db.session.commit()
-    return render_template('search-results.html', testQuote=testQuote)
-
-
-@app.route('/search/<query>', methods=['GET'])
-def display_results(query):
-
-    do_clear_search_cookies()
     user = g.user if g.user else None
-    new_query = Query(text=query)
 
+    # query = request.form['query']
+    query = request.args.get('query')
+
+    new_query = Query(text=query)
     if user:
         user_queries = [q.text for q in user.queries]
         if query not in user_queries:
             user.queries.append(new_query)
             db.session.add(user)
-        # Add cookie for user_query. Any liked articles can then be linked to this query.
+        # Add cookie for user_query? Any liked articles can then be linked to this query.
     db.session.add(new_query)
     db.session.commit()
-    return render_template('search-results.html')
+
+    q_start_time = time.time()
+    raw_tweets = query_twitter_v1(query, count=20, lang='en')
+    if raw_tweets:
+        if user:
+            # Articles only kept if a user is logged in
+            append_to_db(pruned_tweets, new_query)
+        pruned_tweets = prune_tweets(raw_tweets)
+        categorized_tweets = categorize_by_sentiment(pruned_tweets)
+        # json_tweets = json.dumps(categorized_tweets)
+        q_time = round(time.time() - q_start_time, 2)
+
+        # session['tweets'] = categorized_tweets
+        session['query'] = query
+        # return redirect(url_for('handle_search', tweets=json_tweets, query=query, q_time=q_time))
+        return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time)
+
+    else:
+        do_clear_search_cookies()
+        # form.search.errors.append('No results found. Try another term?')
+        flash('Nothing found. Try another term?')
+        return redirect('/')
+
+    # elif request.method == 'GET':
+    #     tweets = json.loads(request.args['tweets'])
+    #     query = request.args['query']
+    #     q_time = request.args['q_time']
+    #     session['query'] = query
+
+    #     return render_template('search-results.html', tweets=tweets, query=query, q_time=q_time)
+
+    # # end test area
+
+    # # Old:
+    # query = request.args.get('query')
+    # new_query = Query(text=query)
+    # if user:
+    #     user_queries = [q.text for q in user.queries]
+    #     if query not in user_queries:
+    #         user.queries.append(new_query)
+    #         db.session.add(user)
+    #     # Add cookie for user_query. Any liked articles can then be linked to this query.
+    # db.session.add(new_query)
+    # db.session.commit()
+    # return render_template('search-results.html', testQuote=testQuote)
+
+
+# @app.route('/search/<query>', methods=['GET'])
+# def display_results(query):
+
+#     do_clear_search_cookies()
+#     user = g.user if g.user else None
+#     new_query = Query(text=query)
+
+#     if user:
+#         user_queries = [q.text for q in user.queries]
+#         if query not in user_queries:
+#             user.queries.append(new_query)
+#             db.session.add(user)
+#         # Add cookie for user_query. Any liked articles can then be linked to this query.
+#     db.session.add(new_query)
+#     db.session.commit()
+#     return render_template('search-results.html')
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -226,8 +234,26 @@ def show_user_details(user_id):
     # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
+    articles_by_query = [q.articles for q in user.queries]
+    relevant_articles = list(itertools.chain(*articles_by_query))
+    articles_formatted = [a.serialize() for a in relevant_articles]
 
-    return render_template('users/user-details.html', user=user, queries=queries)
+    tweets = categorize_by_sentiment(articles_formatted)
+
+    return render_template('users/user-details.html', user=user, queries=queries, tweets=tweets)
+
+
+# def query_relevant_articles(queries):
+    # queries = ['tesla','bananas','dogs', ...]
+
+    # SELECT embed_html FROM articles WHERE text ILIKE '%tesla%' OR text ILIKE '%banana%'
+    # if len(queries) < 3:
+    #     articles = Article.query.filter(db.or_(
+    #         Article.text.ilike('%tesla%'),
+    #         Article.text.ilike('%bananas%'))).all()
+    # handle case with queries len of 1
+    # handle case with queries len of 2
+    # handle case with more queries
 
 
 @app.route('/users/<int:user_id>/delete', methods=['POST'])
@@ -317,7 +343,7 @@ def fetch_tweets():
 # Helper Functions
 # ****************
 
-def append_to_db(tweets):
+def append_to_db(tweets, query):
     for t in tweets:
         try:
             new_article = Article(
@@ -328,6 +354,7 @@ def append_to_db(tweets):
                 embed_html=t['oembed_url']
             )
             db.session.add(new_article)
+            new_article.queries.append(query)
             db.session.commit()
         except IntegrityError:
             db.session.rollback()

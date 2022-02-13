@@ -89,10 +89,15 @@ class Article(db.Model):
     queries = db.relationship(
         'Query', secondary='queries_articles', backref='articles')
 
-    def like_count(self):
-        return len(self.liked_users)
-
-    # Define published_pretty format method
+    def serialize(self):
+        return {
+            'id': self.id,
+            'text': self.text,
+            'sentiment': self.sentiment,
+            'polarity': self.polarity,
+            'embed_html': self.embed_html,
+            'timestamp': self.timestamp
+        }
 
 
 class Like(db.Model):

@@ -119,10 +119,10 @@ def handle_search():
             return redirect('/')
 
     elif request.method == 'GET':
-        # do_clear_search_cookies()
         tweets = json.loads(request.args['tweets'])
         query = request.args['query']
         q_time = request.args['q_time']
+        session['query'] = query
 
         # import pdb
         # pdb.set_trace()

@@ -8,11 +8,24 @@ Veritas
 <h1 class="mt-6 text-3xl text-center text-black dark:text-white">Project Veritas</h1>
 <div class="w-full max-w-sm mt-5 mx-auto">
 
+  <!-- test form -->
   <form action="/search" method="POST" id="searchForm">
-
-    <input type="text" id="searchInput" name="query" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm font-thin rounded-3xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <button type="submit" class="py-2.5 px-5 mr-2 my-2 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Search</button>
+    <div class="flex items-center justify-center">
+      <div class="flex border-2 rounded">
+        <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
+        <button type="submit" class="flex items-center justify-center bg-white px-4 border-l">
+            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24">
+                <path
+                    d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+            </svg>
+        </button>
+      </div>
+    </div>
   </form>
+
+</div>
+  <!-- end test -->
   {% if headlines %}
   <h2 class="text-center">Top Headlines</h2>
   <div id="headlineWords" class="flex flex-row justify-center">

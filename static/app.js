@@ -5,47 +5,46 @@
 // const neutralArticleContainer = document.getElementById('articlesNeutral');
 // const negativeArticleContainer = document.getElementById('articlesNegative');
 
-// $(document).ready(async function() {
-// 	if ($('#searchResultContainer').length > 0) {
-// 		// Tweets
-// 		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
-// 			fetchAndShowContent();
-// 		} else {
-// 			displayArticles();
-// 			renderEmbedTweets();
-// 		}
-// 	}
+$(document).ready(async function() {
+	// 	if ($('#searchResultContainer').length > 0) {
+	// 		// Tweets
+	// 		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
+	// 			fetchAndShowContent();
+	// 		} else {
+	// 			displayArticles();
+	// 			renderEmbedTweets();
+	// 		}
+	// 	}
 
-// 	$('#headlineWords').on('click', 'span', async function() {
-// 		localStorage.clear();
-// 		query = $(this).text();
-// 		window.name = $('#searchInput').val(query);
-// 		$('#searchForm').submit();
-// 	});
+	// 	$('#headlineWords').on('click', 'span', async function() {
+	// 		localStorage.clear();
+	// 		query = $(this).text();
+	// 		window.name = $('#searchInput').val(query);
+	// 		$('#searchForm').submit();
+	// 	});
 
-// 	$('#searchForm').on('submit', async function(e) {
-// 		window.name = $('#searchInput').val();
-// 		localStorage.clear();
-// 	});
+	// 	$('#searchForm').on('submit', async function(e) {
+	// 		window.name = $('#searchInput').val();
+	// 		localStorage.clear();
+	// 	});
+	$('#queryTable').on('click', 'button', deleteQuery);
+});
 
-// 	$('#queryTable').on('click', 'button', deleteQuery);
-// });
-
-// const deleteQuery = async function(e) {
-// 	const $tgt = $(e.target);
-// 	const dataId = $tgt.closest('li').data().qid;
-// 	console.log(`Query Id: ${dataId}`);
-// 	try {
-// 		const res = await axios({
-// 			url: `/queries/${dataId}`,
-// 			method: 'DELETE'
-// 		});
-// 		$tgt.closest('li').remove();
-// 		console.log(`Query deleted!`);
-// 	} catch (e) {
-// 		alert(`Something went wrong during Query Deletion. Error info:${e}`);
-// 	}
-// };
+const deleteQuery = async function(e) {
+	const $tgt = $(e.target);
+	const dataId = $tgt.closest('li').data().qid;
+	console.log(`Query Id: ${dataId}`);
+	try {
+		const res = await axios({
+			url: `/queries/${dataId}`,
+			method: 'DELETE'
+		});
+		$tgt.closest('li').remove();
+		console.log(`Query deleted!`);
+	} catch (e) {
+		alert(`Something went wrong during Query Deletion. Error info:${e}`);
+	}
+};
 
 // const fetchAndShowContent = async function() {
 // 	$('#articlesContainer').hide();

@@ -106,7 +106,7 @@ def handle_search():
             pruned_tweets = prune_tweets(raw_tweets)
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
             json_tweets = json.dumps(categorized_tweets)
-            q_time = time.time() - q_start_time
+            q_time = round(time.time() - q_start_time, 2)
 
             # session['tweets'] = categorized_tweets
             # session['query'] = query

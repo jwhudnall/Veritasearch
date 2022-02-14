@@ -1,6 +1,5 @@
 """Tests for Project Veritas Models."""
 
-from sqlalchemy.exc import IntegrityError, InvalidRequestError
 import os
 from unittest import TestCase
 from models import db, User, Article, Query, QueryUser, QueryArticle

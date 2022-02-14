@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-from forms import SearchForm, UserAddForm, LoginForm
+from forms import UserAddForm, LoginForm
 import nltk
 import requests
 import time
@@ -37,10 +37,6 @@ def add_user_to_g():
 
     if CURR_USER_KEY in session:
         g.user = User.query.get(session[CURR_USER_KEY])
-        print('***********')
-        print(f'g.user set: {g.user}')
-        print('***********')
-    # Check for cur_user_query_term
 
     else:
         g.user = None
@@ -74,15 +70,11 @@ def do_clear_search_cookies():
 
 @app.route('/')
 def homepage():
-    form = SearchForm()
+    # form = SearchForm()
     do_clear_search_cookies()
-    # If headlines exist in cookies, use those instead
-    if 'headlines' in session:
-        headlines = session['headlines']
-    else:
-        headlines = get_headlines(count=3)
-        session['headlines'] = headlines
-    return render_template('index.html', form=form, headlines=headlines)
+    # If headlines exist in cookies, use those instead (due to NewsAPI rate limitations)
+    headlines = get_headlines()
+    return render_template('index.html', headlines=headlines)
 
 
 @app.route('/search')
@@ -189,9 +181,10 @@ def login_user():
 def show_user_details(user_id):
     """Show user details page."""
 
-    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+    if CURR_USER_KEY not in session and g.user == None:
         raise Unauthorized()
-        # OR, redirect to /
+    if user_id != session[CURR_USER_KEY]:
+        return redirect(f'/users/{g.user.id}')
 
     # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
@@ -209,12 +202,13 @@ def show_user_details(user_id):
 def delete_user(user_id):
     """Delete user account."""
 
-    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+    if CURR_USER_KEY not in session and g.user == None:
         raise Unauthorized()
-        # OR, redirect to /
+    if user_id != session[CURR_USER_KEY]:
+        return redirect(f'/users/{g.user.id}')
 
-    # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
+
     db.session.delete(user)
     db.session.commit()
     do_logout()
@@ -227,7 +221,11 @@ def delete_user(user_id):
 def delete_query(query_id):
     """Deletes a user query. Returns confirmation message in JSON format."""
     # TODO: Protect via authentication to verify user "owns" query
-    if CURR_USER_KEY not in session or g.user.id != session[CURR_USER_KEY]:
+    query = Query.query.get_or_404(query_id)
+    query_users = [u.id for u in query.users]
+    cur_user = session.get(CURR_USER_KEY, None)
+
+    if not cur_user or cur_user not in query_users:
         raise Unauthorized()
 
     q = Query.query.get_or_404(query_id)
@@ -291,6 +289,18 @@ def fetch_tweets():
 # ****************
 # Helper Functions
 # ****************
+
+def get_headlines():
+    """Retrieves the top 3 headlines to display on home page.
+
+    Query NewsAPI for top headlines. If headlines exist in cookies, those are retrieved instead (due to NewsAPI rate limitations.
+    """
+    if 'headlines' in session:
+        headlines = session['headlines']
+    else:
+        headlines = get_headlines(count=3)
+        session['headlines'] = headlines
+
 
 def append_to_db(tweets, query):
     for t in tweets:

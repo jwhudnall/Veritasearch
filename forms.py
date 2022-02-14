@@ -4,11 +4,11 @@ from wtforms import StringField, PasswordField
 from wtforms.validators import Length, InputRequired
 
 
-class SearchForm(FlaskForm):
-    """User search form."""
+# class SearchForm(FlaskForm):
+#     """User search form."""
 
-    search = StringField('Search', validators=[
-                         InputRequired(), Length(min=3, max=25)])
+#     search = StringField('Search', validators=[
+#                          InputRequired(), Length(min=3, max=25)])
 
 
 class UserAddForm(FlaskForm):

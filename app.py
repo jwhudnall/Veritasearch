@@ -5,16 +5,16 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Query, QueryUser, QueryArticle
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
+# from nltk.corpus import stopwords
+# from nltk.tokenize import word_tokenize
 from forms import UserAddForm, LoginForm
 import nltk
 import requests
 import time
 import itertools
 import os
-nltk.download('stopwords')
-nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('punkt')
 
 
 CURR_USER_KEY = 'cur_user'
@@ -239,26 +239,26 @@ def delete_query(query_id):
 # ****************
 
 
-@app.route('/api/articles')
-def fetch_articles():
-    """Retrieve articles and return as JSON."""
-    # TODO: Protect this route in any scenarios?
-    query = request.args.get('q', None)
-    if query:
-        # q_start_time = time.time()
-        raw_articles = query_newsAPI(query, count=20)
-        if raw_articles:
-            pruned_articles = prune_articles(raw_articles)
-            categorized_articles = categorize_by_sentiment(pruned_articles)
+# @app.route('/api/articles')
+# def fetch_articles():
+#     """Retrieve articles and return as JSON."""
+#     # TODO: Protect this route in any scenarios?
+#     query = request.args.get('q', None)
+#     if query:
+#         # q_start_time = time.time()
+#         raw_articles = query_newsAPI(query, count=20)
+#         if raw_articles:
+#             pruned_articles = prune_articles(raw_articles)
+#             categorized_articles = categorize_by_sentiment(pruned_articles)
 
-            session['query'] = query
-            response = jsonify(articles=categorized_articles)
-        else:
-            response = jsonify(error='no articles found')
-    else:
-        response = jsonify(error='No query args received by server')
+#             session['query'] = query
+#             response = jsonify(articles=categorized_articles)
+#         else:
+#             response = jsonify(error='no articles found')
+#     else:
+#         response = jsonify(error='No query args received by server')
 
-    return response
+#     return response
 
 
 @app.route('/api/tweets')
@@ -315,7 +315,7 @@ def append_to_db(tweets, query):
                 text=t['text'],
                 sentiment=t['sentiment'],
                 polarity=t['polarity'],
-                embed_html=t['oembed_url']
+                embed_html=t['embed_html']
             )
             db.session.add(new_article)
             new_article.queries.append(query)
@@ -356,12 +356,12 @@ def remove_stop_words(text, n=2):
     return filtered_sentence
 
 
-def query_twitter_oembed(id):
+def query_twitter_oembed(id, max_width=300):
     """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
     base_url = 'https://publish.twitter.com/oembed'
     params = {
         'url': f'https://twitter.com/Interior/status/{id}',
-        # 'maxwidth': 220,
+        'maxwidth': max_width,
         'omit_script': 'true'
     }
     res = requests.get(base_url, params=params)
@@ -421,7 +421,7 @@ def query_twitter_v1(q, count=10, lang='en'):
 def prune_tweets(raw_tweets):
     """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets.
 
-    Keys to be returned: id, text, polarity, sentiment, oembed_url
+    Keys to be returned: id, text, polarity, sentiment, embed_html
     """
     unassigned_tweets = []
 
@@ -433,7 +433,7 @@ def prune_tweets(raw_tweets):
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
         cur_tweet["sentiment"] = sentiment.get("type")
-        cur_tweet['oembed_url'] = query_twitter_oembed(cur_tweet.get('id'))
+        cur_tweet['embed_html'] = query_twitter_oembed(cur_tweet.get('id'))
 
         unassigned_tweets.append(cur_tweet)
 

@@ -5,119 +5,87 @@ Veritas
 {% endblock %}
 
 {% block content %}
-<h2>Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
-<div class="w-full max-w-sm mt-5 mx-auto">
+<h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
 
-  <!-- <form action="/search" method="POST" id="searchForm">
-    <div class="flex items-center justify-center">
-      <div class="flex border-2 rounded">
-        <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
-        <button type="submit" class="flex items-center justify-center bg-white px-4 border-l">
-            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24">
-                <path
-                    d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-            </svg>
-        </button>
-      </div>
-    </div>
-  </form> -->
-</div>
-
-
-<div id="searchResultContainer">
-  <!-- Articles -->
-
-  <!-- <h2 class="text-center text-3xl mt-5" id="articlesHeader">Articles</h2>
-  <div id="articlesContainer" class="grid justify-center">
-    <div class="container px-8 mb-8 grid text-sm grid-cols-3 gap-4 text-black">
-      <div class="bg-orange-500 px-8 py-2 bg-lime-200">
-        <div><h2 class="text-center text-xl overflow-y-auto h-96" id="articlesPositive">Positive</h2></div>
-      </div>
-      <div class="bg-orange-500 px-8 py-2 bg-stone-200">
-        <div><h2 class="text-center text-xl overflow-y-auto h-96" id="articlesNeutral">Neutral</h2></div>
-
-      </div>
-      <div class="bg-orange-500 px-8 py-2 bg-red-300">
-        <div><h2 class="text-center text-xl overflow-y-auto h-96" id="articlesNegative">Negative</h2></div>
-
-      </div>
-    </div>
-  </div>
-  </div> -->
-
-  <!-- Tweets -->
-  <h2 class="text-center text-3xl mt-5" id="tweetsHeader">Tweets</h2>
-  <div id="tweetsContainer" class="grid justify-center">
-    <div class="container px-8 grid grid-cols-3 gap-4 text-black">
-      <!-- Positive  -->
-      <div class="px-1 py-2 bg-lime-200">
-        <div><h2 class="text-xl text-center" id="tweetsPositive">Positive</h2></div>
+  <!-- New -->
+  <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      <div class="px-1 py-1">
+        <div><h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2></div>
         {% if tweets[0] %}
         <div class="overflow-y-auto h-96">
 
           {% for t in tweets[0] %}
-            <div>
-              <div>
-                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
+            <div class="relative">
+              <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
+                  <span class="font-semibold text-base"><span class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
               </div>
-              {{t.oembed_url|safe }}
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
+              </div>
             </div>
           {% endfor %}
 
         </div>
         {% else %}
-          <p>No results found for this category.</p>
+          <p class="text-center">No results found for this category.</p>
         {% endif %}
       </div>
-      <!-- Neutral DO THIS FOR ALL -->
-      <div class="bg-orange-500 px-8 py-2 bg-stone-200">
-        <div><h2 class="text-center text-xl" id="tweetsNeutral">Neutral</h2></div>
+
+    </div>
+    <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      <div class="px-1 py-1">
+        <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2></div>
         {% if tweets[1] %}
         <div class="overflow-y-auto h-96">
 
             {% for t in tweets[1] %}
-              <div>
-                <div>
-                  <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-                </div>
-                {{t.oembed_url|safe }}
+            <div class="relative">
+              <div class="absolute top-0 right-0 text-center px-1 bg-amber-50">
+                  <span class="font-semibold text-base"><span class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
               </div>
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
+              </div>
+            </div>
             {% endfor %}
 
         </div>
           {% else %}
-            <p>No results found for this category.</p>
+            <p class="text-center">No results found for this category.</p>
           {% endif %}
       </div>
-      <!-- Negative  -->
-      <div class="bg-orange-500 px-8 py-2 bg-red-300">
-        <div><h2 class="text-center text-xl" id="tweetsNegative">Negative</h2></div>
+
+    </div>
+    <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      <div class="px-1 py-1">
+        <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2></div>
         {% if tweets[2] %}
         <div class="overflow-y-auto h-96">
 
           {% for t in tweets[2] %}
-            <div>
-              <div>
-                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
+          <div class="relative">
+            <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
+                <span class="font-semibold text-base"><span class="font-semibold">{{t.sentiment.title()}}</span>
+                <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+            </div>
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
               </div>
-              {{t.oembed_url|safe }}
             </div>
           {% endfor %}
 
         </div>
         {% else %}
-          <p>No results found for this category.</p>
-        </div>
+          <p class="text-center">No results found for this category.</p>
           {% endif %}
-        </div>
-
       </div>
+
     </div>
+
   </div>
 
-<!-- Test Area -->
-
-<!-- End test area -->
 
 {% endblock %}

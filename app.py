@@ -105,15 +105,12 @@ def handle_search():
     q_start_time = time.time()
     raw_tweets = query_twitter_v1(query, count=20, lang='en')
     if raw_tweets:
-        if user:
-            # Articles only kept if a user is logged in
-            append_to_db(pruned_tweets, new_query)
         pruned_tweets = prune_tweets(raw_tweets)
         categorized_tweets = categorize_by_sentiment(pruned_tweets)
-        # json_tweets = json.dumps(categorized_tweets)
         q_time = round(time.time() - q_start_time, 2)
+        if user:
+            append_to_db(pruned_tweets, new_query)
 
-        # session['tweets'] = categorized_tweets
         session['query'] = query
         # return redirect(url_for('handle_search', tweets=json_tweets, query=query, q_time=q_time))
         return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time)

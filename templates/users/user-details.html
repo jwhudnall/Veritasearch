@@ -53,7 +53,7 @@
   <div id="tweetsContainer" class="grid justify-center">
     <div class="container px-8 grid grid-cols-3 gap-4 text-black">
       <!-- Positive  -->
-      <div class="px-1 py-2 bg-lime-200">
+      <div class="px-1 py-1 bg-lime-200">
         <div><h2 class="text-xl text-center" id="tweetsPositive">Positive</h2></div>
         {% if tweets[0] %}
         <div class="overflow-y-auto h-96">
@@ -73,7 +73,7 @@
         {% endif %}
       </div>
       <!-- Neutral DO THIS FOR ALL -->
-      <div class="bg-orange-500 px-8 py-2 bg-stone-200">
+      <div class="px-1 py-1 bg-stone-200">
         <div><h2 class="text-center text-xl" id="tweetsNeutral">Neutral</h2></div>
         {% if tweets[1] %}
         <div class="overflow-y-auto h-96">
@@ -93,7 +93,7 @@
           {% endif %}
       </div>
       <!-- Negative  -->
-      <div class="bg-orange-500 px-8 py-2 bg-red-300">
+      <div class="px-1 py-1 bg-red-300">
         <div><h2 class="text-center text-xl" id="tweetsNegative">Negative</h2></div>
         {% if tweets[2] %}
         <div class="overflow-y-auto h-96">

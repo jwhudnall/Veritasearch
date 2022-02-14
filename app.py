@@ -145,22 +145,9 @@ def handle_search():
     # return render_template('search-results.html', testQuote=testQuote)
 
 
-# @app.route('/search/<query>', methods=['GET'])
-# def display_results(query):
-
-#     do_clear_search_cookies()
-#     user = g.user if g.user else None
-#     new_query = Query(text=query)
-
-#     if user:
-#         user_queries = [q.text for q in user.queries]
-#         if query not in user_queries:
-#             user.queries.append(new_query)
-#             db.session.add(user)
-#         # Add cookie for user_query. Any liked articles can then be linked to this query.
-#     db.session.add(new_query)
-#     db.session.commit()
-#     return render_template('search-results.html')
+@app.route('/search/<query>', methods=['GET'])
+def display_results(query):
+    return redirect(url_for('handle_search', query=query))
 
 
 @app.route('/register', methods=["GET", "POST"])

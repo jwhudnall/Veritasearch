@@ -5,7 +5,7 @@ Veritas
 {% endblock %}
 
 {% block content %}
-<h1 class="mt-6 text-3xl text-center text-black dark:text-white">Project Veritas</h1>
+<h1 class="mt-56 text-3xl text-center text-black dark:text-white">Project Veritas</h1>
 <div class="w-full max-w-sm mt-5 mx-auto">
 
   <!-- test form -->
@@ -27,10 +27,12 @@ Veritas
 </div>
   <!-- end test -->
   {% if headlines %}
-  <h2 class="text-center">Top Headlines</h2>
+  <h2 class="text-center mt-4">Top Headlines</h2>
   <div id="headlineWords" class="flex flex-row justify-center">
       {% for headline in headlines %}
+        <a href="/search/{{headline}}">
         <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{headline}}</span>
+        </a>
       {% endfor %}
     {% endif %}
   </div>

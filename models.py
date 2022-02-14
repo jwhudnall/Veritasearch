@@ -27,8 +27,8 @@ class User(db.Model):
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
 
-    liked_articles = db.relationship('Article', secondary='likes',
-                                     backref='liked_users')
+    # liked_articles = db.relationship('Article', secondary='likes',
+    #                                  backref='liked_users')
 
     queries = db.relationship(
         'Query', secondary='queries_users', backref='users')
@@ -100,16 +100,16 @@ class Article(db.Model):
         }
 
 
-class Like(db.Model):
-    """Maps user likes to articles."""
+# class Like(db.Model):
+#     """Maps user likes to articles."""
 
-    __tablename__ = 'likes'
+#     __tablename__ = 'likes'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey(
-        'users.id', ondelete='cascade'), primary_key=True)
-    article_id = db.Column(db.String(25), db.ForeignKey(
-        'articles.id', ondelete='cascade'), primary_key=True)
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey(
+#         'users.id', ondelete='cascade'), primary_key=True)
+#     article_id = db.Column(db.String(25), db.ForeignKey(
+#         'articles.id', ondelete='cascade'), primary_key=True)
 
 
 class Query(db.Model):

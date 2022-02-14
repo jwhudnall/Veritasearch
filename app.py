@@ -2,7 +2,7 @@ from email import header
 from flask import Flask, render_template, redirect, session, flash, request, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
-from models import db, connect_db, User, Article, Like, Query
+from models import db, connect_db, User, Article, Query, QueryUser, QueryArticle
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 from nltk.corpus import stopwords
@@ -11,8 +11,8 @@ from forms import SearchForm, UserAddForm, LoginForm
 import nltk
 import requests
 import time
-import json
 import itertools
+import os
 nltk.download('stopwords')
 nltk.download('punkt')
 
@@ -20,9 +20,10 @@ nltk.download('punkt')
 CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    os.environ.get('DATABASE_URL', "postgresql:///veritas"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ECHO"] = True
+app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = FLASK_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 

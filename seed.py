@@ -56,23 +56,23 @@ db.session.add_all([a1, a2])
 db.session.commit()
 
 # Likes
-l1 = Like(
-    user_id=1,
-    article_id="1490483269552553987"
-)
+# l1 = Like(
+#     user_id=1,
+#     article_id="1490483269552553987"
+# )
 
-l2 = Like(
-    user_id=1,
-    article_id="1491083325708304386"
-)
+# l2 = Like(
+#     user_id=1,
+#     article_id="1491083325708304386"
+# )
 
-l3 = Like(
-    user_id=2,
-    article_id="1490483269552553987"
-)
+# l3 = Like(
+#     user_id=2,
+#     article_id="1490483269552553987"
+# )
 
-db.session.add_all([l1, l2, l3])
-db.session.commit()
+# db.session.add_all([l1, l2, l3])
+# db.session.commit()
 
 # Queries
 

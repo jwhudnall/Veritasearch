@@ -121,29 +121,6 @@ def handle_search():
         flash('Nothing found. Try another term?')
         return redirect('/')
 
-    # elif request.method == 'GET':
-    #     tweets = json.loads(request.args['tweets'])
-    #     query = request.args['query']
-    #     q_time = request.args['q_time']
-    #     session['query'] = query
-
-    #     return render_template('search-results.html', tweets=tweets, query=query, q_time=q_time)
-
-    # # end test area
-
-    # # Old:
-    # query = request.args.get('query')
-    # new_query = Query(text=query)
-    # if user:
-    #     user_queries = [q.text for q in user.queries]
-    #     if query not in user_queries:
-    #         user.queries.append(new_query)
-    #         db.session.add(user)
-    #     # Add cookie for user_query. Any liked articles can then be linked to this query.
-    # db.session.add(new_query)
-    # db.session.commit()
-    # return render_template('search-results.html', testQuote=testQuote)
-
 
 @app.route('/search/<query>', methods=['GET'])
 def display_results(query):
@@ -225,19 +202,6 @@ def show_user_details(user_id):
     tweets = categorize_by_sentiment(articles_formatted)
 
     return render_template('users/user-details.html', user=user, queries=queries, tweets=tweets)
-
-
-# def query_relevant_articles(queries):
-    # queries = ['tesla','bananas','dogs', ...]
-
-    # SELECT embed_html FROM articles WHERE text ILIKE '%tesla%' OR text ILIKE '%banana%'
-    # if len(queries) < 3:
-    #     articles = Article.query.filter(db.or_(
-    #         Article.text.ilike('%tesla%'),
-    #         Article.text.ilike('%bananas%'))).all()
-    # handle case with queries len of 1
-    # handle case with queries len of 2
-    # handle case with more queries
 
 
 @app.route('/users/<int:user_id>/delete', methods=['POST'])
@@ -445,10 +409,6 @@ def prune_tweets(raw_tweets):
     for tweet in raw_tweets:
         cur_tweet = {
             "id": tweet["id_str"],
-            # "type": "tweet",
-            # "url": tweet["entities"]["urls"][0]["url"] if tweet["entities"]["urls"] else None,
-            # "published": tweet["created_at"],
-            # "source": tweet["user"].get("name", "unknown"),
             "text": tweet["full_text"]
         }
         sentiment = query_sentim_API(cur_tweet["text"])
@@ -493,34 +453,34 @@ def query_newsAPI(q, min_results=10, count=20, lang='en'):
     return data["articles"]
 
 
-def prune_articles(raw_articles):
-    """Prunes superfluous fields from the raw article response. Returns a list of pruned articles."""
-    article_lst = []
+# def prune_articles(raw_articles):
+#     """Prunes superfluous fields from the raw article response. Returns a list of pruned articles."""
+#     article_lst = []
 
-    for article in raw_articles:
-        cur_article = {
-            # Create unique id incorporating datatime?
-            "type": "article",
-            "url": article["url"],
-            "img_url": article.get("urlToImage", None),
-            "published": article["publishedAt"],
-            "source": article.get("author", "unknown"),
-            "title": article["title"],
-            "description": article["description"],
-            "content": article["content"]
-        }
-        # sentiment_search_str = ' . '.join(
-        #     [cur_article['title'], cur_article['description'], cur_article['content']])
-        sentiment_search_str = f"{cur_article['title']}. {cur_article['description']}"
-        # sentiment_search_str = cur_article["title"]
+#     for article in raw_articles:
+#         cur_article = {
+#             # Create unique id incorporating datatime?
+#             "type": "article",
+#             "url": article["url"],
+#             "img_url": article.get("urlToImage", None),
+#             "published": article["publishedAt"],
+#             "source": article.get("author", "unknown"),
+#             "title": article["title"],
+#             "description": article["description"],
+#             "content": article["content"]
+#         }
+#         # sentiment_search_str = ' . '.join(
+#         #     [cur_article['title'], cur_article['description'], cur_article['content']])
+#         sentiment_search_str = f"{cur_article['title']}. {cur_article['description']}"
+#         # sentiment_search_str = cur_article["title"]
 
-        sentiment = query_sentim_API(sentiment_search_str)
-        cur_article["polarity"] = sentiment.get("polarity")
-        cur_article["sentiment"] = sentiment.get("type")
+#         sentiment = query_sentim_API(sentiment_search_str)
+#         cur_article["polarity"] = sentiment.get("polarity")
+#         cur_article["sentiment"] = sentiment.get("type")
 
-        article_lst.append(cur_article)
+#         article_lst.append(cur_article)
 
-    return article_lst
+#     return article_lst
 
 
 # def query_twitter_v2(id):

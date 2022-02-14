@@ -72,9 +72,9 @@ def do_clear_search_cookies():
 def homepage():
     # form = SearchForm()
     do_clear_search_cookies()
-    # If headlines exist in cookies, use those instead (due to NewsAPI rate limitations)
-    headlines = get_headlines()
-    return render_template('index.html', headlines=headlines)
+
+    latest_queries = get_latest_queries(n=3)
+    return render_template('index.html', queries=latest_queries)
 
 
 @app.route('/search')
@@ -289,6 +289,11 @@ def fetch_tweets():
 # ****************
 # Helper Functions
 # ****************
+
+def get_latest_queries(n):
+    """Retrieves the n latest queries in descending order. Returns a list of serialized query objects."""
+    return Query.query.order_by(Query.timestamp.desc()).limit(n).all()
+
 
 def get_headlines():
     """Retrieves the top 3 headlines to display on home page.

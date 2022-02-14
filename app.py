@@ -332,7 +332,7 @@ def get_headlines(count=3):
 
 
 def remove_stop_words(text, n=2):
-    """Uses nltk to convert text into tokens. Removes stopwords and returns a string of n words."""
+    """Uses nltk to remove stop words, returning a string of n words."""
     text_tokens = word_tokenize(text)
     text_tokens_no_sw = [
         word for word in text_tokens if not word in stopwords.words()]
@@ -403,7 +403,10 @@ def query_twitter_v1(q, count=10, lang='en'):
 
 
 def prune_tweets(raw_tweets):
-    """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets."""
+    """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets.
+
+    Keys to be returned: id, text, polarity, sentiment, oembed_url
+    """
     unassigned_tweets = []
 
     for tweet in raw_tweets:

@@ -4,20 +4,31 @@
 
 {% block content %}
 
-<!-- <form action="/search" method="POST" id="searchForm">
-  <div class="flex items-center justify-center">
-    <div class="flex border-2 rounded">
-      <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
-      <button type="submit" class="flex items-center justify-center bg-white px-4 border-l">
-          <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24">
-              <path
-                  d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-          </svg>
-      </button>
-    </div>
+<!-- Test Area -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+  <div class="md:col-span-1 bg-lime-200">
+    <ol>
+      <li>Recommendations</li>
+      <li>Account Information</li>
+      <li>Search History</li>
+    </ol>
   </div>
-</form> -->
+  <div class="md:col-span-4 bg-gray-200">
+    <p>This is a test</p>
+  </div>
+
+</div>
+
+
+
+
+<!-- End Test Area -->
+
+
+
+
+
+
 
 <h1 class="text-3xl text-center mt-3">Welcome, {{user.username}}</h1>
 <div class="w-full max-w-sm mt-5 mx-auto border-solid border-2 border-black p-2">
@@ -45,78 +56,6 @@
 </div>
 
 <h2 class="text-3xl text-center mt-3">Based on your Search History:</h2>
-<!-- Articles -->
-<!-- <div id="searchResultContainer">
-
-
-  <div id="tweetsContainer" class="grid justify-center">
-    <div class="container px-8 grid grid-cols-3 gap-4 text-black">
-
-      <div class="px-1 py-1 bg-lime-200">
-        <div><h2 class="text-xl text-center" id="tweetsPositive">Positive</h2></div>
-        {% if tweets[0] %}
-        <div class="overflow-y-auto h-96">
-
-          {% for t in tweets[0] %}
-            <div>
-              <div>
-                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-              </div>
-              {{t.embed_html|safe }}
-            </div>
-          {% endfor %}
-
-        </div>
-        {% else %}
-          <p>No results found for this category.</p>
-        {% endif %}
-      </div>
-
-      <div class="px-1 py-1 bg-stone-200">
-        <div><h2 class="text-center text-xl" id="tweetsNeutral">Neutral</h2></div>
-        {% if tweets[1] %}
-        <div class="overflow-y-auto h-96">
-
-            {% for t in tweets[1] %}
-              <div>
-                <div>
-                  <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-                </div>
-                {{t.embed_html|safe }}
-              </div>
-            {% endfor %}
-
-        </div>
-          {% else %}
-            <p>No results found for this category.</p>
-          {% endif %}
-      </div>
-
-      <div class="px-1 py-1 bg-red-300">
-        <div><h2 class="text-center text-xl" id="tweetsNegative">Negative</h2></div>
-        {% if tweets[2] %}
-        <div class="overflow-y-auto h-96">
-
-          {% for t in tweets[2] %}
-            <div>
-              <div>
-                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-              </div>
-              {{t.embed_html|safe }}
-            </div>
-          {% endfor %}
-
-        </div>
-        {% else %}
-          <p>No results found for this category.</p>
-          {% endif %}
-      </div>
-
-      </div>
-    </div>
-  </div> -->
-<!-- end Articles -->
-
 {% else %}
 <div>
   <h2 class="text-3xl text-center mt-3">Recommendations will appear here after you make a few searches.</h2>
@@ -124,84 +63,6 @@
 {% endif %}
 
 
-
-<!-- Test Area -->
-<!-- Flex Version -->
-<!-- <div class="flex flex-wrap mx-3">
-  <div class="w-full md:w-1/3 flex flex-col px-3 mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-xl text-center" id="tweetsPositive">Positive</h2></div>
-      {% if tweets[0] %}
-      <div class="overflow-y-auto h-96">
-
-        {% for t in tweets[0] %}
-          <div>
-            <div>
-              <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-          </div>
-        {% endfor %}
-
-      </div>
-      {% else %}
-        <p>No results found for this category.</p>
-      {% endif %}
-    </div>
-
-  </div>
-  <div class="w-full md:w-1/3 flex flex-col px-3 mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-center text-xl" id="tweetsNeutral">Neutral</h2></div>
-      {% if tweets[1] %}
-      <div class="overflow-y-auto h-96">
-
-          {% for t in tweets[1] %}
-            <div>
-              <div>
-                <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-              </div>
-              <div class="flex justify-center">
-                {{t.embed_html|safe }}
-              </div>
-            </div>
-          {% endfor %}
-
-      </div>
-        {% else %}
-          <p>No results found for this category.</p>
-        {% endif %}
-    </div>
-
-  </div>
-  <div class="w-full md:w-1/3 flex flex-col px-3 mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-center text-xl" id="tweetsNegative">Negative</h2></div>
-      {% if tweets[2] %}
-      <div class="overflow-y-auto h-96">
-
-        {% for t in tweets[2] %}
-          <div>
-            <div>
-              <span>Analysis: {{t.polarity}} ({{t.sentiment}})</span>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-          </div>
-        {% endfor %}
-
-      </div>
-      {% else %}
-        <p>No results found for this category.</p>
-        {% endif %}
-    </div>
-
-  </div>
-
-</div> -->
 
 <!-- Grid Version -->
 <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">

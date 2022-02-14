@@ -23,10 +23,10 @@ $(document).ready(async function() {
 	// 		$('#searchForm').submit();
 	// 	});
 
-	// 	$('#searchForm').on('submit', async function(e) {
-	// 		window.name = $('#searchInput').val();
-	// 		localStorage.clear();
-	// 	});
+	$('#searchForm').on('submit', async function(e) {
+		showLoadingView($('body'), 'search');
+	});
+
 	$('#queryTable').on('click', 'button', deleteQuery);
 });
 
@@ -90,18 +90,18 @@ const deleteQuery = async function(e) {
 // 	// $(`#${targetEl}Container`).show();
 // };
 
-// const showLoadingView = function($targetEl, tag) {
-// 	$('#searchBtn').text('Searching...').prop('disabled', true);
-// 	const $loadingIcon = $('<img>')
-// 		.attr({ src: '/static/images/loading-icon.jpeg', id: `loadingImg${tag}` })
-// 		.addClass('w-32 mx-auto mt-5');
-// 	$loadingIcon.insertAfter($targetEl);
-// };
+const showLoadingView = function($targetEl, tag) {
+	$('#searchBtn').text('Searching...').prop('disabled', true);
+	const $loadingIcon = $('<img>')
+		.attr({ src: '/static/images/loading-icon.jpeg', id: `loadingImg${tag}` })
+		.addClass('w-32 mx-auto mt-5');
+	$loadingIcon.insertAfter($targetEl);
+};
 
-// const hideLoadingView = function(tag) {
-// 	$(`#loadingImg${tag}`).remove();
-// 	$('#searchBtn').text('Search').prop('disabled', false);
-// };
+const hideLoadingView = function(tag) {
+	$(`#loadingImg${tag}`).remove();
+	$('#searchBtn').text('Search').prop('disabled', false);
+};
 
 // const asyncLocalStorage = {
 // 	setItem: async function(key, value) {

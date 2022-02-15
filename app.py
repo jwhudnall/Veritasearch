@@ -28,7 +28,7 @@ app.config["SECRET_KEY"] = FLASK_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 
 @app.before_request
@@ -72,6 +72,7 @@ def do_clear_search_cookies():
 def homepage():
     # form = SearchForm()
     do_clear_search_cookies()
+    session['hide_nav_search'] = True
 
     latest_queries = get_latest_queries(n=3)
     return render_template('index.html', queries=latest_queries)
@@ -81,6 +82,7 @@ def homepage():
 def handle_search():
 
     user = g.user if g.user else None
+    session['hide_nav_search'] = False
 
     # query = request.form['query']
     query = request.args.get('query')
@@ -117,6 +119,7 @@ def handle_search():
 
 @app.route('/search/<query>', methods=['GET'])
 def display_results(query):
+    session['hide_nav_search'] = False
     return redirect(url_for('handle_search', query=query))
 
 
@@ -128,6 +131,7 @@ def signup():
     """
 
     form = UserAddForm()
+    session['hide_nav_search'] = False
 
     if form.validate_on_submit():
         try:
@@ -186,6 +190,7 @@ def show_user_details(user_id):
     if user_id != session[CURR_USER_KEY]:
         return redirect(f'/users/{g.user.id}')
 
+    session['hide_nav_search'] = False
     # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]

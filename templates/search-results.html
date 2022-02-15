@@ -8,8 +8,8 @@ Veritas
 <h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
 
   <!-- New -->
-  <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+  <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 text-black">
+    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div><h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2></div>
         {% if tweets[0] %}
@@ -18,7 +18,7 @@ Veritas
           {% for t in tweets[0] %}
             <div class="relative">
               <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
-                  <span class="font-semibold text-base"><span class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="font-semibold text-base dark:text-black"><span class="font-semibold">{{t.sentiment.title()}}</span>
                   <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
               </div>
               <div class="flex justify-center">
@@ -34,7 +34,7 @@ Veritas
       </div>
 
     </div>
-    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2></div>
         {% if tweets[1] %}
@@ -59,7 +59,7 @@ Veritas
       </div>
 
     </div>
-    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+    <div class="px-3 w-3/4 lg:w-fit mx-4 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2></div>
         {% if tweets[2] %}

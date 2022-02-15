@@ -7,15 +7,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/flowbite@1.3.3/dist/flowbite.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="shortcut icon" type="image/x-icon" href="/static/images/logo/veritas-icon-1.png"/>
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body class="bg-white text-black dark:text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
 
 
-  <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
+  <nav class="bg-white border-gray-200 sticky top-0 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
     <div class="container flex flex-wrap justify-between items-center mx-auto">
     <a href="/" class="flex">
-      <svg class="mr-3 h-10" viewBox="0 0 52 72" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.87695 53H28.7791C41.5357 53 51.877 42.7025 51.877 30H24.9748C12.2182 30 1.87695 40.2975 1.87695 53Z" fill="#76A9FA"/><path d="M0.000409561 32.1646L0.000409561 66.4111C12.8618 66.4111 23.2881 55.9849 23.2881 43.1235L23.2881 8.87689C10.9966 8.98066 1.39567 19.5573 0.000409561 32.1646Z" fill="#A4CAFE"/><path d="M50.877 5H23.9748C11.2182 5 0.876953 15.2975 0.876953 28H27.7791C40.5357 28 50.877 17.7025 50.877 5Z" fill="#1C64F2"/></svg>
+      <!-- <svg class="mr-3 h-10" viewBox="0 0 52 72" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.87695 53H28.7791C41.5357 53 51.877 42.7025 51.877 30H24.9748C12.2182 30 1.87695 40.2975 1.87695 53Z" fill="#76A9FA"/><path d="M0.000409561 32.1646L0.000409561 66.4111C12.8618 66.4111 23.2881 55.9849 23.2881 43.1235L23.2881 8.87689C10.9966 8.98066 1.39567 19.5573 0.000409561 32.1646Z" fill="#A4CAFE"/><path d="M50.877 5H23.9748C11.2182 5 0.876953 15.2975 0.876953 28H27.7791C40.5357 28 50.877 17.7025 50.877 5Z" fill="#1C64F2"/></svg> -->
+      <img src="/static/images/logo/veritas-icon-1.png" width="72" height="52" alt="">
         <span class="self-center text-lg font-semibold whitespace-nowrap dark:text-white">Veritas</span>
     </a>
     <div class="flex items-center md:order-2">
@@ -102,24 +104,6 @@
 
 
 
-  <!-- {% if not session['hide_nav_search'] %}
-        <form action="/search" method="GET" id="searchForm">
-          <div class="flex items-center justify-center">
-            <div class="flex border-2 rounded">
-              <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
-              <button type="submit" class="flex items-center justify-center bg-white px-4 border-l">
-                  <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24">
-                      <path
-                          d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-                  </svg>
-              </button>
-            </div>
-          </div>
-        </form>
-      {% endif %} -->
-
-
 
 
   <!-- Flash Messages -->
@@ -152,6 +136,9 @@
   }(document, "script", "twitter-wjs"));</script>
   <script src="https://unpkg.com/flowbite@1.3.3/dist/flowbite.js"></script>
   <!-- Footer -->
+  <footer>
+
+  </footer>
 
   <!-- End Footer -->
 </body>

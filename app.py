@@ -20,8 +20,9 @@ import os
 CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    os.environ.get('DATABASE_URL', "postgresql:///veritas"))
+# app.config["SQLALCHEMY_DATABASE_URI"] = (
+#     os.environ.get('DATABASE_URL', "postgresql:///veritas"))
+app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql:///veritas'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = FLASK_KEY
@@ -297,7 +298,7 @@ def fetch_tweets():
 
 def get_latest_queries(n):
     """Retrieves the n latest queries in descending order. Returns a list of serialized query objects."""
-    return Query.query.order_by(Query.timestamp.desc()).limit(n).all()
+    return Query.query.order_by(Query.timestamp).limit(n).all()
 
 
 def get_headlines():

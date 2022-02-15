@@ -5,16 +5,12 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Article, Query, QueryUser, QueryArticle
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-# from nltk.corpus import stopwords
-# from nltk.tokenize import word_tokenize
 from forms import UserAddForm, LoginForm
 import nltk
 import requests
 import time
 import itertools
 import os
-# nltk.download('stopwords')
-# nltk.download('punkt')
 
 
 CURR_USER_KEY = 'cur_user'
@@ -71,7 +67,6 @@ def do_clear_search_cookies():
 
 @app.route('/')
 def homepage():
-    # form = SearchForm()
     do_clear_search_cookies()
     session['hide_nav_search'] = True
 
@@ -132,7 +127,7 @@ def signup():
     """
 
     form = UserAddForm()
-    session['hide_nav_search'] = False
+    session['hide_nav_search'] = True
 
     if form.validate_on_submit():
         try:
@@ -166,6 +161,7 @@ def login_user():
     """Logs user into website if account exists."""
 
     form = LoginForm()
+    session['hide_nav_search'] = True
 
     if form.validate_on_submit():
         user = User.authenticate(
@@ -204,7 +200,7 @@ def show_user_details(user_id):
     return render_template('users/user-details.html', user=user, queries=queries, tweets=tweets)
 
 
-@app.route('/users/<int:user_id>/delete', methods=['POST'])
+@app.route('/users/<int:user_id>/delete', methods=['DELETE'])
 def delete_user(user_id):
     """Delete user account."""
 
@@ -213,12 +209,12 @@ def delete_user(user_id):
     if user_id != session[CURR_USER_KEY]:
         return redirect(f'/users/{g.user.id}')
 
-    user = User.query.get_or_404(user_id)
-
-    db.session.delete(user)
+    db.session.delete(g.user)
     db.session.commit()
     do_logout()
-    return redirect('/')
+    # return redirect('/')
+    flash('Account Deleted.')
+    return jsonify(msg="Account Deleted.")
 
 # Queries
 
@@ -296,9 +292,20 @@ def fetch_tweets():
 # Helper Functions
 # ****************
 
+def remove_duplicates(queries):
+    """Removes duplicates from a list, whilst preserving the order."""
+    seen = set()
+    seen_add = seen.add
+    return [q for q in queries if not (q in seen or seen_add(q))]
+
+
 def get_latest_queries(n):
     """Retrieves the n latest queries in descending order. Returns a list of serialized query objects."""
-    return Query.query.order_by(Query.timestamp).limit(n).all()
+    queries = Query.query.order_by(Query.id.desc()).all()
+    queries_text = [q.text for q in queries]
+    filtered_queries = remove_duplicates(queries_text)
+
+    return filtered_queries[:n]
 
 
 def get_headlines():

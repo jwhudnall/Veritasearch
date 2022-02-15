@@ -28,7 +28,25 @@ $(document).ready(async function() {
 	});
 
 	$('#queryTable').on('click', 'button', deleteQuery);
+	$('#delActBtn').on('click', deleteAccount);
 });
+
+const deleteAccount = async function(e) {
+	const $tgt = $(e.target);
+	const userId = $tgt.data().uid;
+	console.log(`User Id: ${userId}`);
+	try {
+		const res = await axios({
+			url: `/users/${userId}/delete`,
+			method: 'DELETE'
+		});
+		console.log('Res: ');
+		console.dir(res);
+		location.href = '/';
+	} catch (e) {
+		alert(`Something went wrong during Query Deletion. Error info:${e}`);
+	}
+};
 
 const deleteQuery = async function(e) {
 	const $tgt = $(e.target);

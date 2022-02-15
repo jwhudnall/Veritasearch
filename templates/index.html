@@ -31,8 +31,8 @@ Veritas
   <h2 class="text-center mt-4">Latest Searches:</h2>
   <div id="headlineWords" class="flex flex-row justify-center">
       {% for query in queries %}
-        <a href="/search/{{query.text}}">
-        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{query.text}}</span>
+        <a href="/search/{{query}}">
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{query}}</span>
         </a>
       {% endfor %}
     {% endif %}

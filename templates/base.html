@@ -106,9 +106,12 @@
 
 
   <!-- Flash Messages -->
-  {% for category, msg in get_flashed_messages(with_categories=True) %}
+  <!-- {% for category, msg in get_flashed_messages(with_categories=True) %}
     <div class="text-center w-48 mx-auto p-2 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800" role="alert">{{ msg }}</div>
-    {% endfor %}
+    {% endfor %} -->
+
+
+
   {% block content %}
 
   {% endblock %}

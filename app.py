@@ -25,7 +25,7 @@ app.config["SECRET_KEY"] = FLASK_KEY
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
-# toolbar = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 
 @app.before_request
@@ -80,36 +80,45 @@ def handle_search():
     user = g.user if g.user else None
     session['hide_nav_search'] = False
 
-    # query = request.form['query']
     query = request.args.get('query')
-
+    query = query.lower()
     new_query = Query(text=query)
-    if user:
-        user_queries = [q.text for q in user.queries]
-        if query not in user_queries:
-            user.queries.append(new_query)
-            db.session.add(user)
-        # Add cookie for user_query? Any liked articles can then be linked to this query.
-    db.session.add(new_query)
-    db.session.commit()
+
+    # if user:
+    #     user_queries = [q.text for q in user.queries]
+    #     if query not in user_queries:
+    #         user.queries.append(new_query)
+    #         db.session.add(user)
+
+    # db.session.add(new_query)
+    # db.session.commit()
 
     q_start_time = time.time()
     raw_tweets = query_twitter_v1(query, count=20, lang='en')
+
     if raw_tweets:
         pruned_tweets = prune_tweets(raw_tweets)
         categorized_tweets = categorize_by_sentiment(pruned_tweets)
         q_time = round(time.time() - q_start_time, 2)
+
         if user:
+            user_queries = [q.text for q in user.queries]
+            if query not in user_queries:
+                user.queries.append(new_query)
+                db.session.add(user)
+
             append_to_db(pruned_tweets, new_query)
 
+        db.session.add(new_query)
+        db.session.commit()
+
         session['query'] = query
-        # return redirect(url_for('handle_search', tweets=json_tweets, query=query, q_time=q_time))
         return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time)
 
     else:
         do_clear_search_cookies()
         # form.search.errors.append('No results found. Try another term?')
-        flash('Nothing found. Try another term?')
+        flash('Nothing found. Try another term?', 'no-results')
         return redirect('/')
 
 
@@ -263,29 +272,29 @@ def delete_query(query_id):
 #     return response
 
 
-@app.route('/api/tweets')
-def fetch_tweets():
-    """Retrieve tweets and resturn as JSON."""
-    query = request.args.get('q', None)
-    if query:
-        # q_start_time = time.time()
-        raw_tweets = query_twitter_v1(query, count=20, lang='en')
-        if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets)
-            categorized_tweets = categorize_by_sentiment(pruned_tweets)
+# @app.route('/api/tweets')
+# def fetch_tweets():
+#     """Retrieve tweets and resturn as JSON."""
+#     query = request.args.get('q', None)
+#     if query:
+#         # q_start_time = time.time()
+#         raw_tweets = query_twitter_v1(query, count=20, lang='en')
+#         if raw_tweets:
+#             pruned_tweets = prune_tweets(raw_tweets)
+#             categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
-            # session['tweets'] = categorized_tweets
-            session['query'] = query
-            # return redirect('/search')
-            response = jsonify(tweets=categorized_tweets)
-        else:
-            response = jsonify(error='no articles found')
-            do_clear_search_cookies()
-            # form.search.errors.append('No results found. Try another term?')
-    else:
-        response = jsonify(error='No query args received by server')
+#             # session['tweets'] = categorized_tweets
+#             session['query'] = query
+#             # return redirect('/search')
+#             response = jsonify(tweets=categorized_tweets)
+#         else:
+#             response = jsonify(error='no articles found')
+#             do_clear_search_cookies()
+#             # form.search.errors.append('No results found. Try another term?')
+#     else:
+#         response = jsonify(error='No query args received by server')
 
-    return response
+#     return response
 
 
 # ****************
@@ -321,20 +330,25 @@ def get_headlines():
 
 
 def append_to_db(tweets, query):
+    articles = [a.serialize() for a in Article.query.all()]
+    existing_ids = [a['id'] for a in articles]
+
     for t in tweets:
-        try:
-            new_article = Article(
-                id=t['id'],
-                text=t['text'],
-                sentiment=t['sentiment'],
-                polarity=t['polarity'],
-                embed_html=t['embed_html']
-            )
-            db.session.add(new_article)
-            new_article.queries.append(query)
-            db.session.commit()
-        except IntegrityError:
-            db.session.rollback()
+        if t['id'] not in existing_ids:
+            try:
+                new_article = Article(
+                    id=t['id'],
+                    text=t['text'],
+                    sentiment=t['sentiment'],
+                    polarity=t['polarity'],
+                    embed_html=t['embed_html']
+                )
+                db.session.add(new_article)
+                new_article.queries.append(query)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                continue
 
 
 def get_headlines(count=3):

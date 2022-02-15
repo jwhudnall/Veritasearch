@@ -23,6 +23,13 @@ Veritas
         </button>
       </div>
     </div>
+    {% with errors = get_flashed_messages(category_filter=['no-results']) %}
+        {% if errors %}
+          {% for msg in errors %}
+          <p class="text-base text-center text-red-500">{{msg}}</p>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
   </form>
 
 </div>

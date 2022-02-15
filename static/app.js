@@ -27,7 +27,7 @@ $(document).ready(async function() {
 		showLoadingView($('body'), 'search');
 	});
 
-	$('#queryTable').on('click', 'button', deleteQuery);
+	$('#queryContainer').on('click', 'button', deleteQuery);
 	$('#delActBtn').on('click', deleteAccount);
 });
 
@@ -50,14 +50,14 @@ const deleteAccount = async function(e) {
 
 const deleteQuery = async function(e) {
 	const $tgt = $(e.target);
-	const dataId = $tgt.closest('li').data().qid;
+	const dataId = $tgt.closest('span').data().qid;
 	console.log(`Query Id: ${dataId}`);
 	try {
 		const res = await axios({
 			url: `/queries/${dataId}`,
 			method: 'DELETE'
 		});
-		$tgt.closest('li').remove();
+		$tgt.closest('span').remove();
 		console.log(`Query deleted!`);
 	} catch (e) {
 		alert(`Something went wrong during Query Deletion. Error info:${e}`);

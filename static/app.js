@@ -5,63 +5,102 @@
 // const neutralArticleContainer = document.getElementById('articlesNeutral');
 // const negativeArticleContainer = document.getElementById('articlesNegative');
 
-$(document).ready(async function() {
-	// 	if ($('#searchResultContainer').length > 0) {
-	// 		// Tweets
-	// 		if (localStorage.articles == undefined || localStorage.tweets == undefined) {
-	// 			fetchAndShowContent();
-	// 		} else {
-	// 			displayArticles();
-	// 			renderEmbedTweets();
-	// 		}
-	// 	}
+$(document).ready(async function () {
+  if ($("#searchResultContainer").length > 0) {
+    const $divs = $(".fade-in-div");
+    console.log("Page loaded!");
+    $divs.hide();
+    showLoadingView($divs, "tweetDivs");
+    setTimeout(function () {
+      $divs.show();
+      hideLoadingView("tweetDivs");
+    }, 3000);
+    console.log("Divs Rendered!");
 
-	// 	$('#headlineWords').on('click', 'span', async function() {
-	// 		localStorage.clear();
-	// 		query = $(this).text();
-	// 		window.name = $('#searchInput').val(query);
-	// 		$('#searchForm').submit();
-	// 	});
+    // twttr.widgets.load(
+    // 	document.getElementById('searchResultContainer')
+    // );
 
-	$('#searchForm').on('submit', async function(e) {
-		showLoadingView($('body'), 'search');
-	});
+    // if (localStorage.articles == undefined || localStorage.tweets == undefined) {
+    // 	fetchAndShowContent();
+    // } else {
+    // 	displayArticles();
+    // 	renderEmbedTweets();
+    // }
+  }
 
-	$('#queryContainer').on('click', 'button', deleteQuery);
-	$('#delActBtn').on('click', deleteAccount);
+  // 	$('#headlineWords').on('click', 'span', async function() {
+  // 		localStorage.clear();
+  // 		query = $(this).text();
+  // 		window.name = $('#searchInput').val(query);
+  // 		$('#searchForm').submit();
+  // 	});
+
+  $(".veritasSearchForm").on("submit", renderSearchLoading);
+
+  $("#queryContainer").on("click", "button", deleteQuery);
+  $("#delActBtn").on("click", deleteAccount);
+
+  $("#headlineWords").on(
+    "click",
+    ".veritasSearchSuggestion",
+    renderSearchLoading
+  );
 });
 
-const deleteAccount = async function(e) {
-	const $tgt = $(e.target);
-	const userId = $tgt.data().uid;
-	console.log(`User Id: ${userId}`);
-	try {
-		const res = await axios({
-			url: `/users/${userId}/delete`,
-			method: 'DELETE'
-		});
-		console.log('Res: ');
-		console.dir(res);
-		location.href = '/';
-	} catch (e) {
-		alert(`Something went wrong during Query Deletion. Error info:${e}`);
-	}
+const showLoadingView = function ($targetEl, tag) {
+  // $("#searchBtn").text("Searching...").prop("disabled", true);
+  const $loadingIcon = $("<img>")
+    .attr({
+      src: "/static/images/loading-icon.jpeg",
+      class: `loadingImg${tag}`,
+    })
+    .addClass("w-32 mx-auto mt-5");
+  $loadingIcon.insertAfter($targetEl);
 };
 
-const deleteQuery = async function(e) {
-	const $tgt = $(e.target);
-	const dataId = $tgt.closest('span').data().qid;
-	console.log(`Query Id: ${dataId}`);
-	try {
-		const res = await axios({
-			url: `/queries/${dataId}`,
-			method: 'DELETE'
-		});
-		$tgt.closest('span').remove();
-		console.log(`Query deleted!`);
-	} catch (e) {
-		alert(`Something went wrong during Query Deletion. Error info:${e}`);
-	}
+const hideLoadingView = function (tag) {
+  $(`.loadingImg${tag}`).remove();
+  // $("#searchBtn").text("Search").prop("disabled", false);
+};
+
+const renderSearchLoading = function () {
+  $(".searchBarIcon").attr("src", "/static/images/loading-icon.jpeg");
+  $(".veritasSearchForm").submit(false);
+  $(".veritasSearchInput").val("");
+};
+
+const deleteAccount = async function (e) {
+  const $tgt = $(e.target);
+  const userId = $tgt.data().uid;
+  console.log(`User Id: ${userId}`);
+  try {
+    const res = await axios({
+      url: `/users/${userId}/delete`,
+      method: "DELETE",
+    });
+    console.log("Res: ");
+    console.dir(res);
+    location.href = "/";
+  } catch (e) {
+    alert(`Something went wrong during Query Deletion. Error info:${e}`);
+  }
+};
+
+const deleteQuery = async function (e) {
+  const $tgt = $(e.target);
+  const dataId = $tgt.closest("span").data().qid;
+  console.log(`Query Id: ${dataId}`);
+  try {
+    const res = await axios({
+      url: `/queries/${dataId}`,
+      method: "DELETE",
+    });
+    $tgt.closest("span").remove();
+    console.log(`Query deleted!`);
+  } catch (e) {
+    alert(`Something went wrong during Query Deletion. Error info:${e}`);
+  }
 };
 
 // const fetchAndShowContent = async function() {
@@ -107,19 +146,6 @@ const deleteQuery = async function(e) {
 // 	$(`#${targetEl}Container`).append($msgSpan).show();
 // 	// $(`#${targetEl}Container`).show();
 // };
-
-const showLoadingView = function($targetEl, tag) {
-	$('#searchBtn').text('Searching...').prop('disabled', true);
-	const $loadingIcon = $('<img>')
-		.attr({ src: '/static/images/loading-icon.jpeg', id: `loadingImg${tag}` })
-		.addClass('w-32 mx-auto mt-5');
-	$loadingIcon.insertAfter($targetEl);
-};
-
-const hideLoadingView = function(tag) {
-	$(`#loadingImg${tag}`).remove();
-	$('#searchBtn').text('Search').prop('disabled', false);
-};
 
 // const asyncLocalStorage = {
 // 	setItem: async function(key, value) {

@@ -11,16 +11,17 @@ Veritas
     Veritas Search</h1>
   <div class="w-full max-w-sm mt-5 mx-auto">
 
-    <form action="/search" method="GET" id="searchForm">
+    <form action="/search" method="GET" class="veritasSearchForm">
       <div class="flex items-center justify-center">
         <div class="flex border-2 rounded">
-          <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
+          <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput" placeholder="Search...">
           <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
-            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+            <!-- <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24">
               <path
                 d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-            </svg>
+            </svg> -->
+            <img src="/static/images/primary-search-icon.png" class="searchBarIcon" height="20" width="20" alt="">
           </button>
         </div>
       </div>
@@ -45,7 +46,7 @@ Veritas
     {% for query in queries %}
     <a href="/search/{{query}}">
       <span
-        class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{query}}</span>
+        class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2 veritasSearchSuggestion">{{query}}</span>
     </a>
     {% endfor %}
     {% endif %}
@@ -147,7 +148,7 @@ Veritas
         <form action="/search" method="GET" id="searchForm">
           <div class="flex items-center justify-center">
             <div class="flex border-2 rounded">
-              <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80"
+              <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput"
                 placeholder="Search...">
               <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
                 <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"

@@ -6,14 +6,15 @@ Veritas
 
 {% block content %}
 <div class="h-screen lg:grid lg:content-start lg:mt-36">
-  <div class="max-w-screen-lg mx-auto">
+  <div class="max-w-screen-lg">
     <h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
   </div>
 
   <!-- New -->
-  <div id="searchResultContainer" class="w-full mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 text-black">
+  <div id="searchResultContainer"
+    class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
     <div
-      class="px-3 w-4/5 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
           <h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2>
@@ -44,7 +45,7 @@ Veritas
 
     </div>
     <div
-      class="px-3 w-4/5 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
           <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
@@ -74,7 +75,7 @@ Veritas
 
     </div>
     <div
-      class="px-3 w-4/5 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+      class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
           <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>

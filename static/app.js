@@ -66,8 +66,9 @@ const hideLoadingView = function (tag) {
 
 const renderSearchLoading = function () {
   $(".searchBarIcon").attr("src", "/static/images/loading-icon.jpeg");
-  $(".veritasSearchForm").submit(false);
-  $(".veritasSearchInput").val("");
+  // $(".veritasSearchInput").attr("disabled", "disabled"); this breaks query
+  $(".veritasSearchBtn").attr("disabled", "disabled");
+  $(".headlines").empty();
 };
 
 const deleteAccount = async function (e) {

@@ -80,21 +80,16 @@ def handle_search():
     user = g.user if g.user else None
     session['hide_nav_search'] = False
 
-    query = request.args.get('query')
-    query = query.lower()
-    new_query = Query(text=query)
-
-    # if user:
-    #     user_queries = [q.text for q in user.queries]
-    #     if query not in user_queries:
-    #         user.queries.append(new_query)
-    #         db.session.add(user)
-
-    # db.session.add(new_query)
-    # db.session.commit()
-
-    q_start_time = time.time()
-    raw_tweets = query_twitter_v1(query, count=20, lang='en')
+    query = request.args.get('query', None)
+    if query:
+        query = query.lower()
+        new_query = Query(text=query)
+        q_start_time = time.time()
+        raw_tweets = query_twitter_v1(query, count=25, lang='en')
+    else:
+        raw_tweets = None
+    # import pdb
+    # pdb.set_trace()
 
     if raw_tweets:
         pruned_tweets = prune_tweets(raw_tweets)
@@ -416,9 +411,9 @@ def query_twitter_v1(q, count=10, lang='en'):
     params = {
         'q': q,
         'lang': lang,
-        'count': count,
         'tweet_mode': 'extended',
-        'result_type': 'popular'
+        'result_type': 'popular',
+        'count': 22
     }
 
     res = requests.get(f'{base_url}', headers=headers,
@@ -441,7 +436,7 @@ def query_twitter_v1(q, count=10, lang='en'):
             return False
         else:
             return raw_tweets_2
-
+    print(f'Total results found: {len(raw_tweets)}')
     return raw_tweets
 
 

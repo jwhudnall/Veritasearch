@@ -4,200 +4,372 @@
 
 {% block content %}
 
-<!-- Test Area -->
-<h1 class="text-3xl text-center my-3">Welcome, {{user.username}}</h1>
+<!-- <h1 class="text-3xl text-center my-3">Welcome, {{user.username}}</h1> -->
+<!-- Welcome Section -->
+<!-- <section class="bg-white">
+  <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+    <div class="max-w-lg mx-auto text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Welcome, {{user.username}}</h2>
 
-<div class="w-full max-w-sm mx-auto">
+      <p class="mt-4 text-xl">
+        Here are some recommendations based on your previous searches.
+      </p>
+    </div>
+  </div>
+</section> -->
+<!-- END Welcome Section -->
+
+<!-- Start Test Grid Cols -->
+<div class="grid grid-cols-1 md:grid-cols-5">
+  <section class="bg-white md:col-start-2 md:col-span-4">
+    <div class="max-w-screen-xl px-2 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h2 class="text-3xl font-bold sm:text-4xl">Welcome, {{user.username}}</h2>
+
+        <p class="mt-4 text-xl">
+          Here are some recommendations based on your previous searches.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
 
 
+<div class="grid grid-cols-1 md:grid-cols-5">
 
-<div id="accordion-collapse" data-accordion="open">
-  <h2 id="accordion-collapse-heading-1">
-    <button type="button" class="flex items-center focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 justify-between p-5 w-full font-medium text-left border border-gray-200 dark:border-gray-700 border-b-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1">
-      <span>Search History</span>
-      <svg data-accordion-icon class="w-6 h-6 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-    </button>
-  </h2>
-  <div id="accordion-collapse-body-1" aria-labelledby="accordion-collapse-heading-1">
-    <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b-0">
-      <div>
-        {% if queries %}
-        <p class="mb-2 text-gray-500 dark:text-gray-400">Deleting search terms will change your recommendations.</p>
-        <div id="queryContainer" class="flex flex-row flex-wrap">
-          <!-- <ul id="queryTable"> -->
-            {% for q in queries %}
-            <span data-qid="{{q.id}}" class="m-1 bg-gray-200 text-black rounded-full px-3 py-1">
-              {{q.text}}
+  <div class="w-full max-w-sm col-span-1 mx-auto">
+    <div id="accordion-collapse" data-accordion="open">
+      <h2 id="accordion-collapse-heading-1">
+        <button type="button"
+          class="flex items-center focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 justify-between p-5 w-full font-medium text-left border border-gray-200 dark:border-gray-700 border-b-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl"
+          data-accordion-target="#accordion-collapse-body-1" aria-expanded="true"
+          aria-controls="accordion-collapse-body-1">
+          <span>Search History</span>
+          <svg data-accordion-icon class="w-6 h-6 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </h2>
+      <div id="accordion-collapse-body-1" aria-labelledby="accordion-collapse-heading-1">
+        <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b-0">
+          <div>
+            {% if queries %}
+            <p class="mb-2 text-gray-500 dark:text-gray-400 text-center">Deleting search terms will change your
+              recommendations.</p>
+            <div id="queryContainer" class="flex flex-row flex-wrap">
+              <!-- <ul id="queryTable"> -->
+              {% for q in queries %}
+              <span data-qid="{{q.id}}" class="m-1 bg-gray-200 text-black rounded-full px-3 py-1">
+                {{q.text}}
                 <button class="text-red-500">X</button>
-            </span>
-            {% endfor %}
-          <!-- </ul> -->
+              </span>
+              {% endfor %}
+              <!-- </ul> -->
+            </div>
+            {% else %}
+            <div>
+              <p>Your search terms will appear here.</p>
+            </div>
+            {% endif %}
+
+          </div>
+
         </div>
-        {% else %}
-        <div>
-          <p>Your search terms will appear here.</p>
-        </div>
-        {% endif %}
-
       </div>
-
-    </div>
-  </div>
-  <h2 id="accordion-collapse-heading-2">
-    <button type="button" class="flex items-center focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 justify-between p-5 w-full font-medium border border-gray-200 dark:border-gray-700 border-b-0 text-left text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800" data-accordion-target="#accordion-collapse-body-2" aria-expanded="false" aria-controls="accordion-collapse-body-2">
-      <span>Account Info</span>
-      <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-    </button>
-  </h2>
-  <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
-    <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b-0">
-
-
-      <div class="w-full max-w-sm mx-auto p-2">
-        <ul>
-          <li class="font-bold">Username: <span class="font-normal">{{user.username}}</span></li>
-          <li class="font-bold">First Name: <span class="font-normal">{{user.first_name}}</span></li>
-        </ul>
-      </div>
-
-      <button class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-2.5 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" type="button" data-modal-toggle="popup-modal">
-        Delete Account
-      </button>
+      <h2 id="accordion-collapse-heading-2">
+        <button type="button"
+          class="flex items-center focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 justify-between p-5 w-full font-medium border border-gray-200 dark:border-gray-700 border-b-0 text-left text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+          data-accordion-target="#accordion-collapse-body-2" aria-expanded="false"
+          aria-controls="accordion-collapse-body-2">
+          <span>Account Info</span>
+          <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </h2>
+      <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
+        <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b-0">
 
 
-      <!-- <p class="mb-2 text-gray-500 dark:text-gray-400">Flowbite is first conceptualized and designed using the Figma software so everything you see in the library has a design equivalent in our Figma file.</p>
+          <div class="w-full max-w-sm mx-auto p-2">
+            <ul>
+              <li class="font-bold">Username: <span class="font-normal">{{user.username}}</span></li>
+              <li class="font-bold">First Name: <span class="font-normal">{{user.first_name}}</span></li>
+            </ul>
+          </div>
+
+          <button
+            class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-2.5 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+            type="button" data-modal-toggle="popup-modal">
+            Delete Account
+          </button>
+
+
+          <!-- <p class="mb-2 text-gray-500 dark:text-gray-400">Flowbite is first conceptualized and designed using the Figma software so everything you see in the library has a design equivalent in our Figma file.</p>
       <p class="text-gray-500 dark:text-gray-400">Check out the <a href="https://flowbite.com/figma/" target="_blank" class="text-blue-600 dark:text-blue-500 hover:underline">Figma design system</a> based on the utility classes from Tailwind CSS and components from Flowbite.</p> -->
-    </div>
-  </div>
-</div>
-
-
-</div>
-<!-- End Test Area -->
-
-
-
-<!-- Delete Account Modal -->
-<!-- Modal toggle -->
-<!-- <button class="block text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" type="button" data-modal-toggle="popup-modal">
-  Delete Account
-</button> -->
-
-<div class="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full" id="popup-modal">
-    <div class="relative px-4 w-full max-w-md h-full md:h-auto">
-        <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-            <!-- Modal header -->
-            <div class="flex justify-end p-2">
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" data-modal-toggle="popup-modal">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
-            </div>
-            <!-- Modal body -->
-            <div class="p-6 pt-0 text-center">
-                <svg class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete your account?</h3>
-                <button data-uid="{{g.user.id}}" data-modal-toggle="popup-modal" id="delActBtn" type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
-                    Yes, I'm sure
-                </button>
-                <button data-modal-toggle="popup-modal" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600">No, cancel</button>
-            </div>
         </div>
-    </div>
-</div>
-<!-- END Delete Account Modal -->
-
-
-
-
-{% if queries %}
-<h2 class="text-3xl text-center mt-3">Based on your Search History:</h2>
-<!-- Grid Version -->
-<div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 dark:text-black">
-  <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsPositive">Positive</h2></div>
-      {% if tweets[0] %}
-      <div class="overflow-y-auto h-96">
-
-        {% for t in tweets[0] %}
-          <div class="relative">
-            <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
-                <span class="font-semibold text-base dark:text-black"><span class="font-semibold">{{t.sentiment.title()}}</span>
-                <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-          </div>
-        {% endfor %}
-
       </div>
-      {% else %}
-        <p class="text-center">No results found for this category.</p>
-      {% endif %}
     </div>
+
 
   </div>
-  <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2></div>
-      {% if tweets[1] %}
-      <div class="overflow-y-auto h-96">
+  <!-- End Test Area -->
 
-          {% for t in tweets[1] %}
-          <div class="relative">
-            <div class="absolute top-0 right-0 text-center px-1 bg-amber-50">
-                <span class="font-semibold text-base dark:text-black"><span class="font-semibold">{{t.sentiment.title()}}</span>
-                <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+
+  <!-- Delete Account Modal -->
+  <div
+    class="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
+    id="popup-modal">
+    <div class="relative px-4 w-full max-w-md h-full md:h-auto">
+      <!-- Modal content -->
+      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <!-- Modal header -->
+        <div class="flex justify-end p-2">
+          <button type="button"
+            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+            data-modal-toggle="popup-modal">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </div>
+        <!-- Modal body -->
+        <div class="p-6 pt-0 text-center">
+          <svg class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete your
+            account?</h3>
+          <button data-uid="{{g.user.id}}" data-modal-toggle="popup-modal" id="delActBtn" type="button"
+            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+            Yes, I'm sure
+          </button>
+          <button data-modal-toggle="popup-modal" type="button"
+            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600">No,
+            cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- END Delete Account Modal -->
+
+
+
+
+  {% if queries %}
+  <div class="col-span-1 md:col-span-4">
+
+    <h2 class="text-3xl text-center mt-8">Because you searched x, y, and z.</h2>
+    <!-- New -->
+    <div id="searchResultContainer"
+      class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
+      <div
+        class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2>
+          </div>
+          {% if tweets[0] %}
+          <div class="overflow-y-auto h-96 fade-in-div">
+
+            {% for t in tweets[0] %}
+            <div class="relative w-48 mx-auto">
+              <div
+                class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
             </div>
             <div class="flex justify-center">
               {{t.embed_html|safe }}
             </div>
-          </div>
-          {% endfor %}
+            <!-- </div> -->
+            {% endfor %}
 
-      </div>
-        {% else %}
+          </div>
+          {% else %}
           <p class="text-center">No results found for this category.</p>
-        {% endif %}
-    </div>
+          {% endif %}
+        </div>
 
-  </div>
-  <div class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-    <div class="px-1 py-1">
-      <div><h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2></div>
-      {% if tweets[2] %}
-      <div class="overflow-y-auto h-96">
-
-        {% for t in tweets[2] %}
-        <div class="relative">
-          <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
-              <span class="font-semibold text-base dark:text-black"><span class="font-semibold">{{t.sentiment.title()}}</span>
-              <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+      </div>
+      <div
+        class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
           </div>
+          {% if tweets[1] %}
+          <div class="overflow-y-auto h-96 fade-in-div">
+
+            {% for t in tweets[1] %}
+            <div class="relative w-48 mx-auto">
+              <div class="absolute top-0 right-0 border border-1 text-center px-1 bg-amber-50">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
+            </div>
             <div class="flex justify-center">
               {{t.embed_html|safe }}
             </div>
+            <!-- </div> -->
+            {% endfor %}
+
           </div>
-        {% endfor %}
+          {% else %}
+          <p class="text-center">No results found for this category.</p>
+          {% endif %}
+        </div>
 
       </div>
-      {% else %}
-        <p class="text-center">No results found for this category.</p>
-        {% endif %}
-    </div>
+      <div
+        class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>
+          </div>
+          {% if tweets[2] %}
+          <div class="overflow-y-auto h-96 fade-in-div">
 
+            {% for t in tweets[2] %}
+            <div class="relative w-48 mx-auto">
+              <div
+                class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              {{t.embed_html|safe }}
+            </div>
+            <!-- </div> -->
+            {% endfor %}
+
+          </div>
+          {% else %}
+          <p class="text-center">No results found for this category.</p>
+          {% endif %}
+        </div>
+
+      </div>
+
+    </div>
+    <!-- End Main Information Panels -->
+    <!-- OLD Grid Version -->
+    <!-- <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 dark:text-black">
+      <div
+        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsPositive">Positive</h2>
+          </div>
+          {% if tweets[0] %}
+          <div class="overflow-y-auto h-96">
+
+            {% for t in tweets[0] %}
+            <div class="relative">
+              <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
+              </div>
+            </div>
+            {% endfor %}
+
+          </div>
+          {% else %}
+          <p class="text-center">No results found for this category.</p>
+          {% endif %}
+        </div>
+
+      </div>
+      <div
+        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
+          </div>
+          {% if tweets[1] %}
+          <div class="overflow-y-auto h-96">
+
+            {% for t in tweets[1] %}
+            <div class="relative">
+              <div class="absolute top-0 right-0 text-center px-1 bg-amber-50">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
+              </div>
+            </div>
+            {% endfor %}
+
+          </div>
+          {% else %}
+          <p class="text-center">No results found for this category.</p>
+          {% endif %}
+        </div>
+
+      </div>
+      <div
+        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+        <div class="px-1 py-1">
+          <div>
+            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>
+          </div>
+          {% if tweets[2] %}
+          <div class="overflow-y-auto h-96">
+
+            {% for t in tweets[2] %}
+            <div class="relative">
+              <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
+                <span class="font-semibold text-base dark:text-black"><span
+                    class="font-semibold">{{t.sentiment.title()}}</span>
+                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
+              </div>
+              <div class="flex justify-center">
+                {{t.embed_html|safe }}
+              </div>
+            </div>
+            {% endfor %}
+
+          </div>
+          {% else %}
+          <p class="text-center">No results found for this category.</p>
+          {% endif %}
+        </div>
+
+      </div>
+
+    </div> -->
+
+    <!-- End Test Area -->
+
+    {% else %}
+    <div>
+      <h2 class="text-3xl text-center mt-3">Recommendations will appear here after you make a few searches.</h2>
+    </div>
+    {% endif %}
   </div>
 
 </div>
-
-<!-- End Test Area -->
-
-{% else %}
-<div>
-  <h2 class="text-3xl text-center mt-3">Recommendations will appear here after you make a few searches.</h2>
-</div>
-{% endif %}
+<!-- End Test Grid Cols -->
 
 {% endblock %}

@@ -346,36 +346,36 @@ def append_to_db(tweets, query):
                 continue
 
 
-def get_headlines(count=3):
-    """Retrieve top headlines."""
-    base_url = 'https://newsapi.org/v2/top-headlines'
-    headers = {'X-Api-Key': NEWS_API_KEY}
-    params = {
-        'country': 'us'
-    }
-    res = requests.get(f'{base_url}', headers=headers,
-                       params=params)
-    data = res.json()
-    if data.get('articles'):
-        headlines = []
-        for i in range(count):
-            title = data['articles'][i]['title']
-            truncated = remove_stop_words(title, n=2)
-            headlines.append(truncated)
-    else:
-        flash('Headlines API appears to be down')
-        return False
+# def get_headlines(count=3):
+#     """Retrieve top headlines."""
+#     base_url = 'https://newsapi.org/v2/top-headlines'
+#     headers = {'X-Api-Key': NEWS_API_KEY}
+#     params = {
+#         'country': 'us'
+#     }
+#     res = requests.get(f'{base_url}', headers=headers,
+#                        params=params)
+#     data = res.json()
+#     if data.get('articles'):
+#         headlines = []
+#         for i in range(count):
+#             title = data['articles'][i]['title']
+#             truncated = remove_stop_words(title, n=2)
+#             headlines.append(truncated)
+#     else:
+#         flash('Headlines API appears to be down')
+#         return False
 
-    return headlines
+#     return headlines
 
 
-def remove_stop_words(text, n=2):
-    """Uses nltk to remove stop words, returning a string of n words."""
-    text_tokens = word_tokenize(text)
-    text_tokens_no_sw = [
-        word for word in text_tokens if not word in stopwords.words()]
-    filtered_sentence = (" ").join(text_tokens_no_sw[0:n])
-    return filtered_sentence
+# def remove_stop_words(text, n=2):
+#     """Uses nltk to remove stop words, returning a string of n words."""
+#     text_tokens = word_tokenize(text)
+#     text_tokens_no_sw = [
+#         word for word in text_tokens if not word in stopwords.words()]
+#     filtered_sentence = (" ").join(text_tokens_no_sw[0:n])
+#     return filtered_sentence
 
 
 def query_twitter_oembed(id, max_width=400):

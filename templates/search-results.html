@@ -10,6 +10,19 @@ Veritas
     <h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
   </div>
 
+  <!-- Top Message -->
+  <section class="bg-white">
+    <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h2 class="text-3xl font-bold sm:text-4xl">Getting Your Results</h2>
+
+        <p class="mt-4 text-xl">
+          Here's what we found.
+        </p>
+      </div>
+    </div>
+  </section>
+
   <!-- New -->
   <div id="searchResultContainer"
     class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
@@ -108,6 +121,55 @@ Veritas
 
   </div>
   <!-- End Main Information Panels -->
+
+  <!-- Conditional CTA Display -->
+  {% if not session['cur_user'] %}
+  <section class="bg-white actSignupCTA">
+    <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h2 class="text-3xl font-bold sm:text-4xl">Even Better With an Account</h2>
+
+        <p class="mt-4 text-xl">
+          If you register, your profile page will show
+          recommendations based on your search history. You can delete past searches, and they're gone forever.
+        </p>
+        <a class="inline-block mt-5 px-5 py-3 text-sm text-white font-medium bg-blue-500 rounded-lg" href="/register">
+          Create an Account
+        </a>
+      </div>
+    </div>
+  </section>
+  {% else %}
+  <div class="max-w-screen-xl px-4 py-4 mx-auto text-black sm:px-6 lg:px-8">
+    <div class="max-w-lg mx-auto text-center">
+      <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
+
+      <p class="mt-4 text-xl mb-2">
+        How about another search?
+      </p>
+      <!-- Search Form -->
+      <form action="/search" method="GET" class="veritasSearchForm">
+        <div class="flex items-center justify-center">
+          <div class="flex border-2 rounded">
+            <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput" minlength="3"
+              placeholder="Search..." required>
+            <button type="submit" class="flex items-center justify-center bg-white px-4 border-l veritasSearchBtn">
+              <img src="/static/images/primary-search-icon.png" class="searchBarIcon" height="20" width="20" alt="">
+            </button>
+          </div>
+        </div>
+        {% with errors = get_flashed_messages(category_filter=['no-results']) %}
+        {% if errors %}
+        {% for msg in errors %}
+        <p class="text-base text-center text-red-500">{{msg}}</p>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+      </form>
+      <!-- End Search Form -->
+    </div>
+  </div>
+  {% endif %}
 
 
 

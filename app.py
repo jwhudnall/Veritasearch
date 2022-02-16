@@ -65,6 +65,11 @@ def do_clear_search_cookies():
             session.pop(cookie)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
 @app.route('/')
 def homepage():
     do_clear_search_cookies()

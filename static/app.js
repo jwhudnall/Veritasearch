@@ -14,8 +14,12 @@ $(document).ready(async function () {
     setTimeout(function () {
       $divs.show();
       hideLoadingView("tweetDivs");
+      $(".actSignupCTA").show();
     }, 3000);
     console.log("Divs Rendered!");
+
+    // Account Signup CTA
+    $(".actSignupCTA").hide();
 
     // twttr.widgets.load(
     // 	document.getElementById('searchResultContainer')

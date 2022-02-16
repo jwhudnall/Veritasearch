@@ -139,6 +139,7 @@ def signup():
     session['hide_nav_search'] = True
 
     if form.validate_on_submit():
+
         try:
             user = User.signup(
                 first_name=form.first_name.data,
@@ -147,13 +148,14 @@ def signup():
             )
 
         except IntegrityError:
-            form.username.errors.append('Username already exists.')
-            return render_template('/users/signup.html', form=form)
+            # form.username.errors.append('Username already exists.')
+            flash('Username already exists. Please try another.', 'error')
+            return redirect(request.referrer)
 
         do_login(user)
         return redirect('/')
     else:
-        return render_template('/users/signup.html', form=form)
+        return render_template('/users/register-new.html', form=form)
 
 
 @app.route('/logout', methods=['POST'])

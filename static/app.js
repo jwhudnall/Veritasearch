@@ -32,6 +32,10 @@ $(document).ready(async function () {
     // 	renderEmbedTweets();
     // }
   }
+  // $("#userRegistrationForm").on("submit", async function () {
+  //   const res = await submitRegisterForm();
+  //   console.dir(res);
+  // });
 
   // 	$('#headlineWords').on('click', 'span', async function() {
   // 		localStorage.clear();
@@ -50,7 +54,32 @@ $(document).ready(async function () {
     ".veritasSearchSuggestion",
     renderSearchLoading
   );
+
+  $("body").on("click", ".registrationModalBtn", async function () {
+    const html = await getRegisterFormHTML();
+    $("#userRegisterSection").append(html);
+  });
+  $("body").on("click", "#registerUserModalClose", function () {
+    $("#userRegisterSection").empty();
+    toggleModal("registration-modal", false);
+  });
 });
+
+const submitRegisterForm = async function () {
+  const res = await axios({
+    url: "/register",
+    method: "POST",
+  });
+  return res.data;
+};
+
+const getRegisterFormHTML = async function () {
+  const res = await axios({
+    url: "/register",
+    method: "GET",
+  });
+  return res.data;
+};
 
 const showLoadingView = function ($targetEl, tag) {
   // $("#searchBtn").text("Searching...").prop("disabled", true);

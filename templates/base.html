@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/flowbite@1.3.3/dist/flowbite.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="shortcut icon" type="image/x-icon" href="/static/images/veritas-icon-1.png" />
+  <link rel="stylesheet" href="/static/styles.css">
   <title>{% block title %}{% endblock %}</title>
 </head>
 
@@ -22,24 +23,7 @@
           class="self-center hidden md:inline-block text-2xl tracking-tight font-extrabold whitespace-nowrap dark:text-white">Veritas
           Search</span>
       </a>
-      <!-- Navbar here -->
-      {% if not session['hide_nav_search'] and session['cur_user'] %}
-      <form action="/search" method="GET" id="searchForm">
-        <div class="flex items-center justify-center">
-          <div class="flex border-2 rounded">
-            <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
-            <button type="submit" class="flex items-center justify-center bg-white px-4 border-l">
-              <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24">
-                <path
-                  d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </form>
-      {% endif %}
-      <!-- End Test Navbar -->
+      <!-- Navbar Used to go here -->
       <div class="flex flex-col sm:flex-row">
 
         <div class="flex items-center md:order-2">
@@ -100,7 +84,7 @@
       </div>
       <div class="hidden justify-between items-center w-full md:flex md:w-auto md:order-1" id="mobile-menu-2">
         <ul class="flex flex-col mx-4 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
-          {% if not session['hide_nav_search'] %}
+          <!-- {% if not session['hide_nav_search'] %}
           <li>
             <form action="/search" method="GET" id="searchForm">
               <div class="flex items-center justify-center">
@@ -118,7 +102,7 @@
               </div>
             </form>
           </li>
-          {% endif %}
+          {% endif %} -->
           <li>
             <a href="/login"
               class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Login</a>

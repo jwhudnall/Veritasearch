@@ -33,6 +33,10 @@ Veritas
       {% endwith %}
     </form>
 
+    <!-- test form -->
+
+    <!-- end test form -->
+
   </div>
 
   {% if queries %}
@@ -132,23 +136,33 @@ Veritas
 
     <!-- Call to Action -->
     <!-- If user is logged in, make a search -->
-
-
     {% if session['cur_user'] %}
-    <form action="/search" method="GET" id="searchForm">
-      <div class="flex items-center justify-center">
-        <div class="flex border-2 rounded">
-          <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
-          <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
-            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24">
-              <path
-                d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-            </svg>
-          </button>
-        </div>
+    <div class="max-w-screen-xl px-4 py-4 mx-auto text-black sm:px-6 lg:px-8">
+      <div class="max-w-lg mx-auto text-center">
+        <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
+
+        <p class="mt-4 text-xl mb-2">
+          Go ahead. We'll wait.
+        </p>
+        <form action="/search" method="GET" id="searchForm">
+          <div class="flex items-center justify-center">
+            <div class="flex border-2 rounded">
+              <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80"
+                placeholder="Search...">
+              <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
+                <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24">
+                  <path
+                    d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </div>
+
+
 
     <!-- Else, display register button -->
     {% else %}

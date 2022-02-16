@@ -70,7 +70,7 @@ def homepage():
     do_clear_search_cookies()
     session['hide_nav_search'] = True
 
-    latest_queries = get_latest_queries(n=3)
+    latest_queries = ['Tesla', 'Superbowl', 'Russia Ukraine']
     return render_template('index.html', queries=latest_queries)
 
 
@@ -317,16 +317,16 @@ def get_latest_queries(n):
     return filtered_queries[:n]
 
 
-def get_headlines():
-    """Retrieves the top 3 headlines to display on home page.
+# def get_headlines():
+#     """Retrieves the top 3 headlines to display on home page.
 
-    Query NewsAPI for top headlines. If headlines exist in cookies, those are retrieved instead (due to NewsAPI rate limitations.
-    """
-    if 'headlines' in session:
-        headlines = session['headlines']
-    else:
-        headlines = get_headlines(count=3)
-        session['headlines'] = headlines
+#     Query NewsAPI for top headlines. If headlines exist in cookies, those are retrieved instead (due to NewsAPI rate limitations.
+#     """
+#     if 'headlines' in session:
+#         headlines = session['headlines']
+#     else:
+#         headlines = get_headlines(count=3)
+#         session['headlines'] = headlines
 
 
 def append_to_db(tweets, query):
@@ -383,7 +383,7 @@ def remove_stop_words(text, n=2):
     return filtered_sentence
 
 
-def query_twitter_oembed(id, max_width=300):
+def query_twitter_oembed(id, max_width=400):
     """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
     base_url = 'https://publish.twitter.com/oembed'
     params = {

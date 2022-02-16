@@ -5,9 +5,8 @@ Veritas
 {% endblock %}
 
 {% block content %}
-<div class="h-screen lg:grid lg:content-start lg:mt-36">
+<div class="h-screen lg:grid lg:content-start lg:mt-18">
   <div class="max-w-screen-lg">
-    <h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
   </div>
 
   <!-- Top Message -->
@@ -23,6 +22,7 @@ Veritas
     </div>
   </section>
 
+  <h2 class="mx-5">Search for <i>"{{query}}"</i> took {{q_time}} seconds.</h2>
   <!-- New -->
   <div id="searchResultContainer"
     class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
@@ -140,7 +140,7 @@ Veritas
     </div>
   </section>
   {% else %}
-  <div class="max-w-screen-xl px-4 py-4 mx-auto text-black sm:px-6 lg:px-8">
+  <div class="max-w-screen-xl px-4 py-4 mx-auto text-black sm:px-6 lg:px-8 actSignupCTA">
     <div class="max-w-lg mx-auto text-center">
       <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
 

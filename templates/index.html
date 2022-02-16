@@ -6,7 +6,9 @@ Veritas
 
 {% block content %}
 <div class="h-96">
-  <h1 class="mt-56 text-center text-black dark:text-white text-4xl tracking-tight font-extrabold text-white sm:text-6xl lg:mt-56 xl:text-6xl">Veritas Search</h1>
+  <h1
+    class="mt-56 text-center text-black dark:text-white text-4xl tracking-tight font-extrabold text-white sm:text-6xl lg:mt-56 xl:text-6xl">
+    Veritas Search</h1>
   <div class="w-full max-w-sm mt-5 mx-auto">
 
     <form action="/search" method="GET" id="searchForm">
@@ -14,36 +16,37 @@ Veritas
         <div class="flex border-2 rounded">
           <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
           <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
-              <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24">
-                  <path
-                      d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-              </svg>
+            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24">
+              <path
+                d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+            </svg>
           </button>
         </div>
       </div>
       {% with errors = get_flashed_messages(category_filter=['no-results']) %}
-          {% if errors %}
-            {% for msg in errors %}
-            <p class="text-base text-center text-red-500">{{msg}}</p>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+      {% if errors %}
+      {% for msg in errors %}
+      <p class="text-base text-center text-red-500">{{msg}}</p>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
     </form>
 
   </div>
 
-    {% if queries %}
-    <h2 class="text-center mt-4">Latest Searches:</h2>
-    <div id="headlineWords" class="mt-1 flex flex-row justify-center">
-        {% for query in queries %}
-          <a href="/search/{{query}}">
-          <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{query}}</span>
-          </a>
-        {% endfor %}
-      {% endif %}
-    </div>
+  {% if queries %}
+  <h2 class="text-center mt-4">Latest Searches:</h2>
+  <div id="headlineWords" class="mt-1 flex flex-row justify-center">
+    {% for query in queries %}
+    <a href="/search/{{query}}">
+      <span
+        class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2">{{query}}</span>
+    </a>
+    {% endfor %}
+    {% endif %}
   </div>
+</div>
 </div>
 
 <!-- How it Works -->
@@ -53,84 +56,95 @@ Veritas
       <h2 class="text-3xl font-bold sm:text-4xl">Discover Truth</h2>
 
       <p class="mt-4 text-xl">
-        It's hard to source good information. Veritas attempts to fix this by providing clearly-labeled information from a variety of viewpoints. Here's how it works:
+        It's hard to source good information. Veritas attempts to fix this by providing clearly-labeled information from
+        a variety of viewpoints. Here's how it works:
       </p>
     </div>
 
     <div class="px-8 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/search-icon.png" height="30" width="30" alt="Search">
 
         <h3 class="mt-3 text-xl font-bold">1. Search a Topic</h3>
 
         <p class="mt-4 text-lg">
-          What's on your mind? Politics? A certain celebrity? Maybe that Bitcoin thing you keep hearing about? Whatever it is, you know the drill. Type it in and hit search. We'll do the rest.
+          What's on your mind? Politics? A certain celebrity? Maybe that Bitcoin thing you keep hearing about? Whatever
+          it is, you know the drill. Type it in and hit search. We'll do the rest.
         </p>
       </div>
 
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/conversion-icon.png" height="30" width="30" alt="Search">
 
         <h3 class="mt-3 text-xl font-bold">2. Talking to Twitter</h3>
 
         <p class="mt-4 text-lg">
-          Your search will be encoded, optimized and sent off to Twitter, a great source for direct information. First, we'll search for popular tweets. If we can't find those, we'll broaden our search to include all tweets. If we still strike out, we'll (gently) let you know.
+          Your search will be encoded, optimized and sent off to Twitter, a great source for direct information. First,
+          we'll search for popular tweets. If we can't find those, we'll broaden our search to include all tweets. If we
+          still strike out, we'll (gently) let you know.
         </p>
       </div>
 
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/update-icon.png" height="30" width="30" alt="Search">
         <h3 class="mt-3 text-xl font-bold">3. Twitter, Reloaded</h3>
 
         <p class="mt-4 text-lg">
-          Let's assume we received results. Next up, we prune the results of everything except the juicy stuff. We'll send off each tweet ID to Twitter's oEmbed API, giving us the html needed to eventually render the tweets.
+          Let's assume we received results. Next up, we prune the results of everything except the juicy stuff. We'll
+          send off each tweet ID to Twitter's oEmbed API, giving us the html needed to eventually render the tweets.
         </p>
       </div>
 
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/chip-icon.png" height="30" width="30" alt="Search">
 
         <h3 class="mt-3 text-xl font-bold">4. Discerning Signal from the Noise</h3>
 
         <p class="mt-4 text-lg">
-          Now the fun begins. The text from each tweet will be sent to a Machine Learning Natural Language Processing API, where it will categorized and assigned a sentiment score. That was a mouthful; suffice it to say that really cool things just took place on our end.
+          Now the fun begins. The text from each tweet will be sent to a Machine Learning Natural Language Processing
+          API, where it will categorized and assigned a sentiment score. That was a mouthful; suffice it to say that
+          really cool things just took place on our end.
         </p>
       </div>
 
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/categorize-icon.png" height="30" width="30" alt="Search">
 
         <h3 class="mt-3 text-xl font-bold">5. Categorizing Results</h3>
 
         <p class="mt-4 text-lg">
-          At this point, we've got a list of tweets that have been assigned sentiment scores. We take this list and distribute each into one of 3 buckets, sorted by polarity scores. Positives, Neutrals and Negatives.
+          At this point, we've got a list of tweets that have been assigned sentiment scores. We take this list and
+          distribute each into one of 3 buckets, sorted by polarity scores. Positives, Neutrals and Negatives.
         </p>
       </div>
 
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl" >
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/badge-icon.png" height="30" width="30" alt="Search">
 
         <h3 class="mt-3 text-xl font-bold">6. Final Verdict</h3>
 
         <p class="mt-4 text-lg">
-          The categorized results are now displayed for you to see. If you have an account, your profile page will show recommendations based on your search history. You can delete past searches, and they're gone forever.
+          The categorized results are now displayed for you to see. If you have an account, your profile page will show
+          recommendations based on your search history. You can delete past searches, and they're gone forever.
         </p>
       </div>
     </div>
 
     <!-- Call to Action -->
     <!-- If user is logged in, make a search -->
+
+
     {% if session['cur_user'] %}
     <form action="/search" method="GET" id="searchForm">
       <div class="flex items-center justify-center">
         <div class="flex border-2 rounded">
           <input type="text" id="searchInput" name="query" class="px-4 text-black py-2 w-80" placeholder="Search...">
           <button type="submit" id="searchBtn" class="flex items-center justify-center bg-white px-4 border-l">
-              <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24">
-                  <path
-                      d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
-              </svg>
+            <svg class="w-6 h-6 text-gray-600" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24">
+              <path
+                d="M16.32 14.9l5.39 5.4a1 1 0 0 1-1.42 1.4l-5.38-5.38a8 8 0 1 1 1.41-1.41zM10 16a6 6 0 1 0 0-12 6 6 0 0 0 0 12z" />
+            </svg>
           </button>
         </div>
       </div>
@@ -138,11 +152,23 @@ Veritas
 
     <!-- Else, display register button -->
     {% else %}
-    <div class="text-center">
-      <a class="inline-block px-5 py-3 text-sm text-white font-medium bg-blue-500 rounded-lg" href="/register">
-        Create an Account
-      </a>
-    </div>
+    <section class="bg-white">
+      <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+        <div class="max-w-lg mx-auto text-center">
+          <h2 class="text-3xl font-bold sm:text-4xl">Even Better With an Account</h2>
+
+          <p class="mt-4 text-xl">
+            If you register, your profile page will show
+            recommendations based on your search history. You can delete past searches, and they're gone forever.
+          </p>
+          <a class="inline-block mt-5 px-5 py-3 text-sm text-white font-medium bg-blue-500 rounded-lg" href="/register">
+            Create an Account
+          </a>
+        </div>
+      </div>
+    </section>
+
+
     {% endif %}
 
 

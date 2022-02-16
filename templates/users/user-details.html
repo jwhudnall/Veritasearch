@@ -5,13 +5,13 @@
 {% block content %}
 
 <!-- Test Area -->
-<h1 class="text-3xl text-center mt-3">Welcome, {{user.username}}</h1>
+<h1 class="text-3xl text-center my-3">Welcome, {{user.username}}</h1>
 
 <div class="w-full max-w-sm mx-auto">
 
 
 
-<div id="accordion-collapse" data-accordion="collapse">
+<div id="accordion-collapse" data-accordion="open">
   <h2 id="accordion-collapse-heading-1">
     <button type="button" class="flex items-center focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 justify-between p-5 w-full font-medium text-left border border-gray-200 dark:border-gray-700 border-b-0 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-xl" data-accordion-target="#accordion-collapse-body-1" aria-expanded="true" aria-controls="accordion-collapse-body-1">
       <span>Search History</span>
@@ -50,7 +50,7 @@
     </button>
   </h2>
   <div id="accordion-collapse-body-2" class="hidden" aria-labelledby="accordion-collapse-heading-2">
-    <div class="p-5 border border-gray-200 dark:border-gray-700 border-b-0">
+    <div class="p-5 border border-gray-200 dark:border-gray-700 dark:bg-gray-900 border-b-0">
 
 
       <div class="w-full max-w-sm mx-auto p-2">
@@ -109,31 +109,6 @@
 
 
 
-
-
-
-
-<!-- <h1 class="text-3xl text-center mt-3">Welcome, {{user.username}}</h1>
-<div class="w-full max-w-sm mt-5 mx-auto border-solid border-2 border-black p-2">
-  <ul>
-    <li class="font-bold">Username: <span class="font-normal">{{user.username}}</span></li>
-    <li class="font-bold">First Name: <span class="font-normal">{{user.first_name}}</span></li>
-
-  </ul>
-</div> -->
-
-
-<!-- <div id="queryContainer" class="">
-  <h3>Your Searches:</h3>
-  <ul id="queryTable">
-    {% for q in queries %}
-    <li data-qid="{{q.id}}">
-      {{q.text}}
-        <button class="text-red-500">X</button>
-    </li>
-    {% endfor %}
-  </ul>
-</div> -->
 
 {% if queries %}
 <h2 class="text-3xl text-center mt-3">Based on your Search History:</h2>

@@ -10,7 +10,8 @@
     </svg>
   </button>
 </div>
-<form id="userRegistrationForm" class="px-6 pb-4 space-y-6 lg:px-8 sm:pb-6 xl:pb-8" action="/register" method="POST">
+<form id="userRegistrationForm" class="px-6 pb-4 space-y-6 lg:px-8 sm:pb-6 xl:pb-8" action="/register/newUserSignup"
+  method="POST">
   {{ form.hidden_tag() }}
   <h3 class="text-xl font-medium text-gray-900 dark:text-white">Create an Account</h3>
   {% for field in form
@@ -28,6 +29,6 @@
   {% endfor %}
 
   <button type="submit"
-    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Login
-    to your account</button>
+    class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create
+    New Account</button>
 </form>

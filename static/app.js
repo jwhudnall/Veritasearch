@@ -65,17 +65,17 @@ $(document).ready(async function () {
   });
 });
 
-const submitRegisterForm = async function () {
-  const res = await axios({
-    url: "/register",
-    method: "POST",
-  });
-  return res.data;
-};
+// const submitRegisterForm = async function () {
+//   const res = await axios({
+//     url: "/register/newUserSignup",
+//     method: "POST",
+//   });
+//   return res.data;
+// };
 
 const getRegisterFormHTML = async function () {
   const res = await axios({
-    url: "/register",
+    url: "/register/newUserSignup",
     method: "GET",
   });
   return res.data;

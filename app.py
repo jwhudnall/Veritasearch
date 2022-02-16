@@ -128,7 +128,7 @@ def display_results(query):
     return redirect(url_for('handle_search', query=query))
 
 
-@app.route('/register', methods=["GET", "POST"])
+@app.route('/register/newUserSignup', methods=["GET", "POST"])
 def signup():
     """Handle user signup.
 

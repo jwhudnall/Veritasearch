@@ -73,7 +73,6 @@ def page_not_found(e):
 @app.route('/')
 def homepage():
     do_clear_search_cookies()
-    session['hide_nav_search'] = True
 
     latest_queries = ['Tesla', 'Superbowl', 'Russia Ukraine']
     return render_template('index.html', queries=latest_queries)
@@ -83,9 +82,8 @@ def homepage():
 def handle_search():
 
     user = g.user if g.user else None
-    session['hide_nav_search'] = False
-
     query = request.args.get('query', None)
+
     if query:
         query = query.lower()
         new_query = Query(text=query)
@@ -93,8 +91,6 @@ def handle_search():
         raw_tweets = query_twitter_v1(query, count=25, lang='en')
     else:
         raw_tweets = None
-    # import pdb
-    # pdb.set_trace()
 
     if raw_tweets:
         pruned_tweets = prune_tweets(raw_tweets)
@@ -124,7 +120,6 @@ def handle_search():
 
 @app.route('/search/<query>', methods=['GET'])
 def display_results(query):
-    session['hide_nav_search'] = False
     return redirect(url_for('handle_search', query=query))
 
 
@@ -136,7 +131,6 @@ def signup():
     """
 
     form = UserAddForm()
-    session['hide_nav_search'] = True
 
     if form.validate_on_submit():
 
@@ -164,7 +158,6 @@ def login_user():
     """Logs user into website if account exists."""
 
     form = LoginForm()
-    # session['hide_nav_search'] = True
 
     if form.validate_on_submit():
         user = User.authenticate(
@@ -174,7 +167,6 @@ def login_user():
 
         if user:
             do_login(user)
-            # flash(f'Welcome back, {user.username}')
             return redirect(request.referrer)
         else:
             flash('Incorrect username or password.', 'error')
@@ -202,8 +194,6 @@ def show_user_details(user_id):
     if user_id != session[CURR_USER_KEY]:
         return redirect(f'/users/{g.user.id}')
 
-    session['hide_nav_search'] = False
-    # Shouldn't need _or_404, as user_id already verified?
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
     articles_by_query = [q.articles for q in user.queries]

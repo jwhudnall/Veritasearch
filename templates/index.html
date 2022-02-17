@@ -5,9 +5,9 @@ Veritas
 {% endblock %}
 
 {% block content %}
-<div class="h-96">
+<div class="h-96 bg-slate-800">
   <h1
-    class="mt-56 text-center text-black dark:text-white text-4xl tracking-tight font-extrabold text-white sm:text-6xl lg:mt-56 xl:text-6xl">
+    class="mt-56 text-center text-white text-4xl tracking-tight font-extrabold text-white sm:text-6xl lg:mt-56 xl:text-6xl">
     Veritas Search</h1>
   <div class="w-full max-w-sm mt-5 mx-auto">
 
@@ -38,7 +38,7 @@ Veritas
 
   {% if queries %}
   <section class="headlines">
-    <h2 class="text-center mt-4">Latest Searches:</h2>
+    <h2 class="text-center mt-4 text-white">Suggested Searches:</h2>
     <div id="headlineWords" class="mt-1 flex flex-row justify-center">
       {% for query in queries %}
       <a href="/search/{{query}}">

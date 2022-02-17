@@ -121,10 +121,17 @@ const getTweetRecommendations = async function (query) {
 const selectQueriesForSearch = function () {
   // Currently returns a random query for search
   if ($("#queryContainer").length > 0) {
-    let queries = $("#queryContainer").find("span");
-    let randIdx = Math.floor(Math.random() * queries.length);
-    let choice = queries[randIdx].innerText.trim();
-    return choice;
+    let s = "";
+    const queries = $("#queryContainer").find("span");
+    for (let q of queries) {
+      let cur = q.innerText.trim();
+      s += cur + ",";
+    }
+    let queryString = s.substring(0, s.length - 1); // Remove trailing comma
+    return queryString;
+    // let randIdx = Math.floor(Math.random() * queries.length);
+    // let choice = queries[randIdx].innerText.trim();
+    // return choice;
   } else {
     return False;
   }

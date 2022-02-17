@@ -2,14 +2,13 @@ from email import header
 from flask import Flask, render_template, redirect, session, flash, request, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
-from models import db, connect_db, User, Article, Query, QueryUser, QueryArticle
+from models import db, connect_db, User, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 from forms import UserAddForm, LoginForm
-import nltk
 import requests
 import time
-import itertools
+import random
 import os
 import json
 
@@ -94,7 +93,8 @@ def handle_search():
         raw_tweets = None
 
     if raw_tweets:
-        pruned_tweets = prune_tweets(raw_tweets)
+        pruned_tweets = prune_tweets(
+            raw_tweets, id_key="id_str", text_key="full_text")
         categorized_tweets = categorize_by_sentiment(pruned_tweets)
         q_time = round(time.time() - q_start_time, 2)
 
@@ -197,14 +197,8 @@ def show_user_details(user_id):
 
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
-    # articles_by_query = [q.articles for q in user.queries]
-    # relevant_articles = list(itertools.chain(*articles_by_query))
-    # articles_formatted = [a.serialize() for a in relevant_articles]
 
-    # tweets = categorize_by_sentiment(articles_formatted)
-    tweets = ''
-
-    return render_template('users/user-details.html', user=user, queries=queries, tweets=tweets)
+    return render_template('users/user-details.html', user=user, queries=queries)
 
 
 @app.route('/users/<int:user_id>/delete', methods=['DELETE'])
@@ -254,9 +248,20 @@ def fetch_tweets():
 
     if query:
         # q_start_time = time.time()
-        raw_tweets = query_twitter_v1(query, count=20, lang='en')
+        # Split string on commas. Depending on length, select 2 or 3 random items
+        q_split = query.split(',')
+        if len(q_split) == 1:
+            query = q_split[0]
+        else:
+            first = random.choice(q_split)
+            q_split.remove(first)
+            second = random.choice(q_split)
+            query = f'({first} OR {second})'
+
+        raw_tweets = query_twitter_v2(query, count=20)
         if raw_tweets:
-            pruned_tweets = prune_tweets(raw_tweets)
+            pruned_tweets = prune_tweets(
+                raw_tweets, id_key="id", text_key="text")
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
             # session['tweets'] = categorized_tweets
@@ -264,7 +269,7 @@ def fetch_tweets():
             # return redirect('/search')
             response = jsonify(tweets=categorized_tweets)
         else:
-            response = jsonify(error='no articles found')
+            response = jsonify(error='no tweets found')
             do_clear_search_cookies()
             # form.search.errors.append('No results found. Try another term?')
     else:
@@ -293,89 +298,42 @@ def get_latest_queries(n):
     return filtered_queries[:n]
 
 
-# def get_headlines():
-#     """Retrieves the top 3 headlines to display on home page.
-
-#     Query NewsAPI for top headlines. If headlines exist in cookies, those are retrieved instead (due to NewsAPI rate limitations.
-#     """
-#     if 'headlines' in session:
-#         headlines = session['headlines']
-#     else:
-#         headlines = get_headlines(count=3)
-#         session['headlines'] = headlines
-
-
-def append_to_db(tweets, query):
-    articles = [a.serialize() for a in Article.query.all()]
-    existing_ids = [a['id'] for a in articles]
-
-    for t in tweets:
-        if t['id'] not in existing_ids:
-            try:
-                new_article = Article(
-                    id=t['id'],
-                    text=t['text'],
-                    sentiment=t['sentiment'],
-                    polarity=t['polarity']
-                    # embed_html=t['embed_html']
-                )
-                db.session.add(new_article)
-                new_article.queries.append(query)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                continue
-
-
-# def get_headlines(count=3):
-#     """Retrieve top headlines."""
-#     base_url = 'https://newsapi.org/v2/top-headlines'
-#     headers = {'X-Api-Key': NEWS_API_KEY}
+# def query_twitter_oembed(id, max_width=400):
+#     """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
+#     base_url = 'https://publish.twitter.com/oembed'
 #     params = {
-#         'country': 'us'
+#         'url': f'https://twitter.com/Interior/status/{id}',
+#         'maxwidth': max_width,
+#         'omit_script': 'true'
 #     }
-#     res = requests.get(f'{base_url}', headers=headers,
-#                        params=params)
-#     data = res.json()
-#     if data.get('articles'):
-#         headlines = []
-#         for i in range(count):
-#             title = data['articles'][i]['title']
-#             truncated = remove_stop_words(title, n=2)
-#             headlines.append(truncated)
-#     else:
-#         flash('Headlines API appears to be down')
-#         return False
+#     res = requests.get(base_url, params=params)
+#     html = False
+#     if res.status_code == 200:
+#         data = res.json()
+#         html = data.get('html')
 
-#     return headlines
+#     if html and res.status_code == 200:
+#         return html
+#     return False
 
-
-# def remove_stop_words(text, n=2):
-#     """Uses nltk to remove stop words, returning a string of n words."""
-#     text_tokens = word_tokenize(text)
-#     text_tokens_no_sw = [
-#         word for word in text_tokens if not word in stopwords.words()]
-#     filtered_sentence = (" ").join(text_tokens_no_sw[0:n])
-#     return filtered_sentence
-
-
-def query_twitter_oembed(id, max_width=400):
-    """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
-    base_url = 'https://publish.twitter.com/oembed'
+def query_twitter_v2(q, count=10):
+    base_url = 'https://api.twitter.com/2/tweets/search/recent'
+    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
+    # add_flags = ' is:verified lang:en -is:retweet'
+    add_flags = ' is:verified lang:en -is:retweet'
+    q = q + add_flags
+    print(f'Query url-encoded: {q}')
     params = {
-        'url': f'https://twitter.com/Interior/status/{id}',
-        'maxwidth': max_width,
-        'omit_script': 'true'
+        'query': q,
+        'max_results': count
     }
-    res = requests.get(base_url, params=params)
-    html = False
-    if res.status_code == 200:
-        data = res.json()
-        html = data.get('html')
+    res = requests.get(f'{base_url}', headers=headers,
+                       params=params)
 
-    if html and res.status_code == 200:
-        return html
-    return False
+    data = res.json()
+    raw_tweets = data.get('data', None)
+    print(f'Total v2 results found: {len(raw_tweets)}')
+    return raw_tweets if raw_tweets else False
 
 
 def query_twitter_v1(q, count=10, lang='en'):
@@ -421,7 +379,7 @@ def query_twitter_v1(q, count=10, lang='en'):
     return raw_tweets
 
 
-def prune_tweets(raw_tweets):
+def prune_tweets(raw_tweets, id_key, text_key):
     """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets.
 
     Keys to be returned: id, text, polarity, sentiment, embed_html
@@ -430,8 +388,8 @@ def prune_tweets(raw_tweets):
 
     for tweet in raw_tweets:
         cur_tweet = {
-            "id": tweet["id_str"],
-            "text": tweet["full_text"]
+            "id": tweet.get(id_key),
+            "text": tweet.get(text_key)
         }
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
@@ -444,85 +402,36 @@ def prune_tweets(raw_tweets):
     return unassigned_tweets
 
 
-def query_newsAPI(q, min_results=10, count=20, lang='en'):
-    """Searches the newsAPI for q. If results found, returns a list of article objects; else False."""
-    base_url = 'https://newsapi.org/v2/everything'
-    headers = {'X-Api-Key': NEWS_API_KEY}
-    params = {
-        'q': q,
-        'language': lang,
-        'searchIn': 'title',
-        'pageSize': count,
-        'sortBy': 'publishedAt'
-    }
+# def query_newsAPI(q, min_results=10, count=20, lang='en'):
+#     """Searches the newsAPI for q. If results found, returns a list of article objects; else False."""
+#     base_url = 'https://newsapi.org/v2/everything'
+#     headers = {'X-Api-Key': NEWS_API_KEY}
+#     params = {
+#         'q': q,
+#         'language': lang,
+#         'searchIn': 'title',
+#         'pageSize': count,
+#         'sortBy': 'publishedAt'
+#     }
 
-    res = requests.get(base_url, headers=headers,
-                       params=params)
-    data = res.json()
-    num_results = data['totalResults']
-    if not num_results or num_results < min_results:
-        print('*******************************************')
-        print('Not found in title. Searching content...')
-        print('*******************************************')
-        params["searchIn"] = "content"
+#     res = requests.get(base_url, headers=headers,
+#                        params=params)
+#     data = res.json()
+#     num_results = data['totalResults']
+#     if not num_results or num_results < min_results:
+#         print('*******************************************')
+#         print('Not found in title. Searching content...')
+#         print('*******************************************')
+#         params["searchIn"] = "content"
 
-        res_2 = requests.get(base_url, headers=headers, params=params)
-        data = res_2.json()
-        num_results_2 = data["totalResults"]
-        if not num_results_2:
-            print("NO RESULTS FOUND ANYWHERE!")
-            return False
+#         res_2 = requests.get(base_url, headers=headers, params=params)
+#         data = res_2.json()
+#         num_results_2 = data["totalResults"]
+#         if not num_results_2:
+#             print("NO RESULTS FOUND ANYWHERE!")
+#             return False
 
-    return data["articles"]
-
-
-# def prune_articles(raw_articles):
-#     """Prunes superfluous fields from the raw article response. Returns a list of pruned articles."""
-#     article_lst = []
-
-#     for article in raw_articles:
-#         cur_article = {
-#             # Create unique id incorporating datatime?
-#             "type": "article",
-#             "url": article["url"],
-#             "img_url": article.get("urlToImage", None),
-#             "published": article["publishedAt"],
-#             "source": article.get("author", "unknown"),
-#             "title": article["title"],
-#             "description": article["description"],
-#             "content": article["content"]
-#         }
-#         # sentiment_search_str = ' . '.join(
-#         #     [cur_article['title'], cur_article['description'], cur_article['content']])
-#         sentiment_search_str = f"{cur_article['title']}. {cur_article['description']}"
-#         # sentiment_search_str = cur_article["title"]
-
-#         sentiment = query_sentim_API(sentiment_search_str)
-#         cur_article["polarity"] = sentiment.get("polarity")
-#         cur_article["sentiment"] = sentiment.get("type")
-
-#         article_lst.append(cur_article)
-
-#     return article_lst
-
-
-# def query_twitter_v2(id):
-#     """Query Twitter v2 API. If success, returns the full tweet text; else False"""
-
-#     print('Twitter v2 API called!')
-#     base_url = 'https://api.twitter.com/2/tweets'
-#     headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
-#     res = requests.get(f'{base_url}/{id}', headers=headers)
-
-#     if res.status_code == 200:
-#         data = res.json()
-#         text = data['data']['text']
-#         print('Text updated:')
-#         print(text)
-#         print('***************')
-#         return text
-
-#     return False
+#     return data["articles"]
 
 
 def categorize_by_sentiment(obj_lst):

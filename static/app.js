@@ -32,10 +32,6 @@ $(document).ready(async function () {
     // 	renderEmbedTweets();
     // }
   }
-  // $("#userRegistrationForm").on("submit", async function () {
-  //   const res = await submitRegisterForm();
-  //   console.dir(res);
-  // });
 
   // 	$('#headlineWords').on('click', 'span', async function() {
   // 		localStorage.clear();
@@ -54,7 +50,7 @@ $(document).ready(async function () {
     ".veritasSearchSuggestion",
     renderSearchLoading
   );
-
+  // User Registration Action
   $("body").on("click", ".registrationModalBtn", async function () {
     const html = await getRegisterFormHTML();
     $("#userRegisterSection").append(html);
@@ -63,15 +59,25 @@ $(document).ready(async function () {
     $("#userRegisterSection").empty();
     toggleModal("registration-modal", false);
   });
+
+  // User Login Action
+  $("body").on("click", ".loginModalBtn", async function () {
+    const html = await getLoginFormHTML();
+    $("#userLoginSection").append(html);
+  });
+  $("body").on("click", "#loginUserModalClose", function () {
+    $("#userLoginSection").empty();
+    toggleModal("login-modal", false);
+  });
 });
 
-// const submitRegisterForm = async function () {
-//   const res = await axios({
-//     url: "/register/newUserSignup",
-//     method: "POST",
-//   });
-//   return res.data;
-// };
+const getLoginFormHTML = async function () {
+  const res = await axios({
+    url: "/login",
+    method: "GET",
+  });
+  return res.data;
+};
 
 const getRegisterFormHTML = async function () {
   const res = await axios({

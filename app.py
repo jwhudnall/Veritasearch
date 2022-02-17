@@ -158,21 +158,12 @@ def signup():
         return render_template('/users/register-new.html', form=form)
 
 
-@app.route('/logout', methods=['POST'])
-def logout_user():
-    """Logs out user from website."""
-    do_logout()
-
-    # flash('Successfully logged out.')
-    return redirect('/')
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     """Logs user into website if account exists."""
 
     form = LoginForm()
-    session['hide_nav_search'] = True
+    # session['hide_nav_search'] = True
 
     if form.validate_on_submit():
         user = User.authenticate(
@@ -183,10 +174,22 @@ def login_user():
         if user:
             do_login(user)
             # flash(f'Welcome back, {user.username}')
-            return redirect('/')
+            return redirect(request.referrer)
+        else:
+            flash('Incorrect username or password.', 'error')
+            return redirect(request.referrer)
 
     do_clear_search_cookies()
-    return render_template('users/login.html', form=form)
+    return render_template('users/login-new.html', form=form)
+
+
+@app.route('/logout', methods=['POST'])
+def logout_user():
+    """Logs out user from website."""
+    do_logout()
+
+    # flash('Successfully logged out.')
+    return redirect('/')
 
 
 @app.route('/users/<int:user_id>')

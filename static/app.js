@@ -105,7 +105,6 @@ const hideLoadingView = function (tag) {
 
 const renderSearchLoading = function () {
   $(".searchBarIcon").attr("src", "/static/images/loading-icon.jpeg");
-  // $(".veritasSearchInput").attr("disabled", "disabled"); this breaks query
   $(".veritasSearchBtn").attr("disabled", "disabled");
   $(".headlines").empty();
 };
@@ -129,17 +128,29 @@ const deleteAccount = async function (e) {
 
 const deleteQuery = async function (e) {
   const $tgt = $(e.target);
-  const dataId = $tgt.closest("span").data().qid;
+  const dataId = $tgt.closest("div").data().qid;
   console.log(`Query Id: ${dataId}`);
   try {
     const res = await axios({
       url: `/queries/${dataId}`,
       method: "DELETE",
     });
-    $tgt.closest("span").remove();
+    $tgt.closest("div").remove();
     console.log(`Query deleted!`);
   } catch (e) {
     alert(`Something went wrong during Query Deletion. Error info:${e}`);
+  }
+};
+
+const selectQueriesForSearch = function () {
+  // Currently returns a random query for search
+  if ($("#queryContainer").length > 0) {
+    let queries = $("#queryContainer").find("span");
+    let randIdx = Math.floor(Math.random() * queries.length);
+    let choice = queries[randIdx].innerText.trim();
+    return choice;
+  } else {
+    return False;
   }
 };
 

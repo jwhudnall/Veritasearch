@@ -181,7 +181,7 @@ def logout_user():
     """Logs out user from website."""
     do_logout()
 
-    # flash('Successfully logged out.')
+    flash('Successfully logged out.', 'success')
     return redirect('/')
 
 

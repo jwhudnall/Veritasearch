@@ -8,18 +8,13 @@ const negativeTweetContainer = document.getElementById(
 
 $(document).ready(async function () {
   if ($("#searchResultContainer").length > 0) {
-    const $divs = $(".fade-in-div");
-    setTimeout(renderEmbedTweets, 500);
-    $divs.hide();
-    showLoadingView($divs, "tweetDivs");
-    setTimeout(function () {
-      $divs.show();
-      hideLoadingView("tweetDivs");
-      $(".actSignupCTA").show();
-    }, 3000);
+    fetchAndShowContent();
+  }
 
-    // Account Signup CTA
-    $(".actSignupCTA").hide();
+  if ($("#personalizedResultContainer").length > 0) {
+    console.log("Personal result container located!");
+    $("#personalizedResultContainer").hide();
+    // fetchAndShowRecommendations();
   }
 
   $(".veritasSearchForm").on("submit", renderSearchLoading);
@@ -51,7 +46,89 @@ $(document).ready(async function () {
     $("#userLoginSection").empty();
     toggleModal("login-modal", false);
   });
+  $("#getUserContent").on("click", async function () {
+    console.log("Recommendations btn clicked!");
+    $("#personalizedResultContainer").show();
+    $("#getUserContent").prop("disabled", true);
+    $("#getUserContent").text("Searching...");
+    await fetchAndShowRecommendations();
+    $("#getUserContent").hide();
+  });
 });
+const emptyTweetContainers = function () {
+  const containers = [
+    positiveTweetContainer,
+    neutralTweetContainer,
+    negativeTweetContainer,
+  ];
+  containers.forEach((c) => {
+    c.innerHTML = "";
+  });
+};
+const fetchAndShowContent = async function () {
+  const $divs = $(".fade-in-div");
+  setTimeout(function () {
+    renderEmbedTweets(tweetsPositive, tweetsNeutral, tweetsNegative);
+  }, 500);
+  $divs.hide();
+  showLoadingView($divs, "tweetDivs");
+  setTimeout(function () {
+    $divs.show();
+    hideLoadingView("tweetDivs");
+    $(".actSignupCTA").show();
+  }, 3000);
+  // Account Signup CTA
+  $(".actSignupCTA").hide();
+};
+
+const fetchAndShowRecommendations = async function () {
+  emptyTweetContainers();
+  const query = selectQueriesForSearch();
+  const $divs = $(".fade-in-div");
+  $divs.hide();
+  showLoadingView($divs, "tweetDivs");
+  const res = await getTweetRecommendations(query);
+  setTimeout(function () {
+    $divs.show();
+    hideLoadingView("tweetDivs");
+    // $(".actSignupCTA").show();
+  }, 2000);
+
+  if (res.error !== undefined) {
+    // Handle case with no results. Query another?
+    console.log("No Tweets found.");
+    return false;
+  }
+  if (res.tweets !== undefined) {
+    const recTweets = res.tweets;
+    console.log("Rendering Tweets...");
+    renderEmbedTweets(recTweets[0], recTweets[1], recTweets[2]);
+    console.log("Finished rendering!");
+  }
+};
+
+const getTweetRecommendations = async function (query) {
+  try {
+    const res = await axios.get("/api/tweets", { params: { query } });
+    return res.data;
+  } catch (e) {
+    alert(
+      `Something went wrong during Personalized Tweet Recommendation Search. Error info:${e}`
+    );
+  }
+};
+
+const selectQueriesForSearch = function () {
+  // Currently returns a random query for search
+  if ($("#queryContainer").length > 0) {
+    let queries = $("#queryContainer").find("span");
+    let randIdx = Math.floor(Math.random() * queries.length);
+    let choice = queries[randIdx].innerText.trim();
+    return choice;
+  } else {
+    return False;
+  }
+};
 
 const getLoginFormHTML = async function () {
   const res = await axios({
@@ -124,38 +201,35 @@ const deleteQuery = async function (e) {
   }
 };
 
-const selectQueriesForSearch = function () {
-  // Currently returns a random query for search
-  if ($("#queryContainer").length > 0) {
-    let queries = $("#queryContainer").find("span");
-    let randIdx = Math.floor(Math.random() * queries.length);
-    let choice = queries[randIdx].innerText.trim();
-    return choice;
-  } else {
-    return False;
-  }
-};
-
-const fetchAndShowContent = async function () {
-  // Main page loading sequence here
-};
-
-const renderEmbedTweets = function () {
-  if (tweetsPositive.length > 0) {
-    for (let t of tweetsPositive) {
+const renderEmbedTweets = function (positive, neutral, negative) {
+  if (positive.length > 0) {
+    for (let t of positive) {
       createAndAppendTweetWidget(t, positiveTweetContainer, "lime");
     }
+  } else {
+    createAndAppendNoResults(positiveTweetContainer);
   }
-  if (tweetsNeutral.length > 0) {
-    for (let t of tweetsNeutral) {
+  if (neutral.length > 0) {
+    for (let t of neutral) {
       createAndAppendTweetWidget(t, neutralTweetContainer, "amber");
     }
+  } else {
+    createAndAppendNoResults(neutralTweetContainer);
   }
-  if (tweetsNegative.length > 0) {
-    for (let t of tweetsNegative) {
+  if (negative.length > 0) {
+    for (let t of negative) {
       createAndAppendTweetWidget(t, negativeTweetContainer, "red");
     }
+  } else {
+    createAndAppendNoResults(negativeTweetContainer);
   }
+};
+
+const createAndAppendNoResults = function (target) {
+  const msg = document.createElement("p");
+  msg.classList.add("text-center");
+  msg.innerText = "No results found for this category.";
+  target.append(msg);
 };
 
 const createAndAppendTweetWidget = function (tweet, targetContainer, divColor) {

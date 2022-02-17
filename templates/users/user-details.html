@@ -68,7 +68,13 @@
         <h2 class="text-3xl font-bold sm:text-4xl">Welcome, {{user.username}}</h2>
         <p class="mt-4 text-xl">
           {% if queries %}
-          Here are some recommendations based on your previous searches.
+          Click below to receive content recommendations.
+
+          <button id="getUserContent"
+            class="inline-block mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            type="button">
+            View
+          </button>
           {% else %}
           Recommendations will appear below after you've made a few searches.
         </p>
@@ -165,198 +171,39 @@
   {% if queries %}
   <div class="col-span-1 md:col-span-4">
 
-    <h2 class="text-3xl text-center mt-8">Because you searched x, y, and z.</h2>
-    <!-- New -->
-    <div id="searchResultContainer"
+    <!-- Main Search Result Section-->
+    <section id="personalizedResultContainer"
       class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
       <div
         class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
         <div class="px-1 py-1">
           <div>
-            <h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2>
+            <h2 class="text-xl text-center font-extrabold mb-3">Positive</h2>
           </div>
-          {% if tweets[0] %}
-          <div class="overflow-y-auto h-96 fade-in-div">
-
-            {% for t in tweets[0] %}
-            <div class="relative w-48 mx-auto">
-              <div
-                class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-            <!-- </div> -->
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
+          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsPositiveContainer"></div>
         </div>
-
       </div>
       <div
         class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
         <div class="px-1 py-1">
           <div>
-            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
+            <h2 class="text-center text-xl font-extrabold mb-3">Neutral</h2>
           </div>
-          {% if tweets[1] %}
-          <div class="overflow-y-auto h-96 fade-in-div">
-
-            {% for t in tweets[1] %}
-            <div class="relative w-48 mx-auto">
-              <div class="absolute top-0 right-0 border border-1 text-center px-1 bg-amber-50">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-            <!-- </div> -->
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
+          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNeutralContainer"></div>
         </div>
-
       </div>
       <div
         class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
         <div class="px-1 py-1">
           <div>
-            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>
+            <h2 class="text-center text-xl font-extrabold mb-3">Negative</h2>
           </div>
-          {% if tweets[2] %}
-          <div class="overflow-y-auto h-96 fade-in-div">
-
-            {% for t in tweets[2] %}
-            <div class="relative w-48 mx-auto">
-              <div
-                class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              {{t.embed_html|safe }}
-            </div>
-            <!-- </div> -->
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
+          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNegativeContainer"></div>
         </div>
-
       </div>
-
-    </div>
+    </section>
     <!-- End Main Information Panels -->
-    <!-- OLD Grid Version -->
-    <!-- <div class="max-w-screen-lg mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 dark:text-black">
-      <div
-        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-        <div class="px-1 py-1">
-          <div>
-            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsPositive">Positive</h2>
-          </div>
-          {% if tweets[0] %}
-          <div class="overflow-y-auto h-96">
 
-            {% for t in tweets[0] %}
-            <div class="relative">
-              <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-              <div class="flex justify-center">
-                {{t.embed_html|safe }}
-              </div>
-            </div>
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
-        </div>
-
-      </div>
-      <div
-        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-        <div class="px-1 py-1">
-          <div>
-            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
-          </div>
-          {% if tweets[1] %}
-          <div class="overflow-y-auto h-96">
-
-            {% for t in tweets[1] %}
-            <div class="relative">
-              <div class="absolute top-0 right-0 text-center px-1 bg-amber-50">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-              <div class="flex justify-center">
-                {{t.embed_html|safe }}
-              </div>
-            </div>
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
-        </div>
-
-      </div>
-      <div
-        class="px-3 mx-4 justify-self-center md:mx-4 max-w-xl mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
-        <div class="px-1 py-1">
-          <div>
-            <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>
-          </div>
-          {% if tweets[2] %}
-          <div class="overflow-y-auto h-96">
-
-            {% for t in tweets[2] %}
-            <div class="relative">
-              <div class="absolute top-0 right-0 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
-                <span class="font-semibold text-base dark:text-black"><span
-                    class="font-semibold">{{t.sentiment.title()}}</span>
-                  <span class="italic text-xs">(Polarity: {{t.polarity}})</span></span>
-              </div>
-              <div class="flex justify-center">
-                {{t.embed_html|safe }}
-              </div>
-            </div>
-            {% endfor %}
-
-          </div>
-          {% else %}
-          <p class="text-center">No results found for this category.</p>
-          {% endif %}
-        </div>
-
-      </div>
-
-    </div> -->
-
-    <!-- End Test Area -->
 
     {% endif %}
     <div class="col-span-1 md:col-span-4">

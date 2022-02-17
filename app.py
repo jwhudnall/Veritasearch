@@ -197,11 +197,12 @@ def show_user_details(user_id):
 
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
-    articles_by_query = [q.articles for q in user.queries]
-    relevant_articles = list(itertools.chain(*articles_by_query))
-    articles_formatted = [a.serialize() for a in relevant_articles]
+    # articles_by_query = [q.articles for q in user.queries]
+    # relevant_articles = list(itertools.chain(*articles_by_query))
+    # articles_formatted = [a.serialize() for a in relevant_articles]
 
-    tweets = categorize_by_sentiment(articles_formatted)
+    # tweets = categorize_by_sentiment(articles_formatted)
+    tweets = ''
 
     return render_template('users/user-details.html', user=user, queries=queries, tweets=tweets)
 
@@ -246,52 +247,30 @@ def delete_query(query_id):
 # API
 # ****************
 
+@app.route('/api/tweets')
+def fetch_tweets():
+    """Retrieve tweets and resturn as JSON."""
+    query = request.args.get('query', None)
 
-# @app.route('/api/articles')
-# def fetch_articles():
-#     """Retrieve articles and return as JSON."""
-#     # TODO: Protect this route in any scenarios?
-#     query = request.args.get('q', None)
-#     if query:
-#         # q_start_time = time.time()
-#         raw_articles = query_newsAPI(query, count=20)
-#         if raw_articles:
-#             pruned_articles = prune_articles(raw_articles)
-#             categorized_articles = categorize_by_sentiment(pruned_articles)
+    if query:
+        # q_start_time = time.time()
+        raw_tweets = query_twitter_v1(query, count=20, lang='en')
+        if raw_tweets:
+            pruned_tweets = prune_tweets(raw_tweets)
+            categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
-#             session['query'] = query
-#             response = jsonify(articles=categorized_articles)
-#         else:
-#             response = jsonify(error='no articles found')
-#     else:
-#         response = jsonify(error='No query args received by server')
+            # session['tweets'] = categorized_tweets
+            session['query'] = query
+            # return redirect('/search')
+            response = jsonify(tweets=categorized_tweets)
+        else:
+            response = jsonify(error='no articles found')
+            do_clear_search_cookies()
+            # form.search.errors.append('No results found. Try another term?')
+    else:
+        response = jsonify(error='No query args received by server')
 
-#     return response
-
-
-# @app.route('/api/tweets')
-# def fetch_tweets():
-#     """Retrieve tweets and resturn as JSON."""
-#     query = request.args.get('q', None)
-#     if query:
-#         # q_start_time = time.time()
-#         raw_tweets = query_twitter_v1(query, count=20, lang='en')
-#         if raw_tweets:
-#             pruned_tweets = prune_tweets(raw_tweets)
-#             categorized_tweets = categorize_by_sentiment(pruned_tweets)
-
-#             # session['tweets'] = categorized_tweets
-#             session['query'] = query
-#             # return redirect('/search')
-#             response = jsonify(tweets=categorized_tweets)
-#         else:
-#             response = jsonify(error='no articles found')
-#             do_clear_search_cookies()
-#             # form.search.errors.append('No results found. Try another term?')
-#     else:
-#         response = jsonify(error='No query args received by server')
-
-#     return response
+    return response
 
 
 # ****************

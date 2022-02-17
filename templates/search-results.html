@@ -142,38 +142,41 @@ Veritas
     </div>
   </section>
   {% else %}
-  <div class="max-w-screen-xl px-4 py-4 mx-auto text-black sm:px-6 lg:px-8 actSignupCTA">
-    <div class="max-w-lg mx-auto text-center">
-      <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
+  <div class="w-full bg-white">
+    <div class="max-w-screen-xl bg-white px-4 py-4 mx-auto text-black sm:px-6 lg:px-8 actSignupCTA">
+      <div class="max-w-lg mx-auto text-center mb-8">
+        <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
 
-      <p class="mt-4 text-xl mb-2">
-        How about another search?
-      </p>
-      <!-- Search Form -->
-      <form action="/search" method="GET" class="veritasSearchForm">
-        <div class="flex items-center justify-center">
-          <div class="flex border-2 rounded">
-            <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput" minlength="3"
-              placeholder="Search..." required>
-            <button type="submit" class="flex items-center justify-center bg-white px-4 border-l veritasSearchBtn">
-              <img src="/static/images/primary-search-icon.png" class="searchBarIcon" height="20" width="20" alt="">
-            </button>
+        <p class="mt-4 text-xl mb-2">
+          How about another search?
+        </p>
+        <!-- Search Form -->
+        <form action="/search" method="GET" class="veritasSearchForm">
+          <div class="flex items-center justify-center">
+            <div class="flex border-2 rounded">
+              <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput" minlength="3"
+                placeholder="Search..." required>
+              <button type="submit" class="flex items-center justify-center bg-white px-4 border-l veritasSearchBtn">
+                <img src="/static/images/primary-search-icon.png" class="searchBarIcon" height="20" width="20" alt="">
+              </button>
+            </div>
           </div>
-        </div>
-        {% with errors = get_flashed_messages(category_filter=['no-results']) %}
-        {% if errors %}
-        {% for msg in errors %}
-        <p class="text-base text-center text-red-500">{{msg}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-      </form>
-      <!-- End Search Form -->
+          {% with errors = get_flashed_messages(category_filter=['no-results']) %}
+          {% if errors %}
+          {% for msg in errors %}
+          <p class="text-base text-center text-red-500">{{msg}}</p>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+        </form>
+        <!-- End Search Form -->
+      </div>
     </div>
+    {% endif %}
+
+
+
   </div>
-  {% endif %}
-
-
 
 </div>
 

@@ -153,9 +153,10 @@ def signup():
             return redirect(request.referrer)
 
         do_login(user)
+        flash(f'Account successfully created.', 'success')
         return redirect('/')
     else:
-        return render_template('/users/register-new.html', form=form)
+        return render_template('/users/register.html', form=form)
 
 
 @app.route('/login/returningUser', methods=['GET', 'POST'])
@@ -180,7 +181,7 @@ def login_user():
             return redirect(request.referrer)
 
     do_clear_search_cookies()
-    return render_template('users/login-new.html', form=form)
+    return render_template('users/login.html', form=form)
 
 
 @app.route('/logout', methods=['POST'])
@@ -227,7 +228,7 @@ def delete_user(user_id):
     db.session.commit()
     do_logout()
     # return redirect('/')
-    flash('Account Deleted.')
+    flash(f'Account successfully deleted.', 'success')
     return jsonify(msg="Account Deleted.")
 
 # Queries

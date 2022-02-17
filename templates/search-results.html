@@ -10,8 +10,8 @@ Veritas
   </div>
 
   <!-- Top Message -->
-  <section class="bg-white">
-    <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+  <section class="bg-white dark:bg-slate-800">
+    <div class="max-w-screen-xl px-4 py-16 mx-auto text-black dark:text-white space-y-8 sm:px-6 lg:px-8">
       <div class="max-w-lg mx-auto text-center">
         <h2 class="text-3xl font-bold sm:text-4xl">Getting Your Results</h2>
 
@@ -133,9 +133,11 @@ Veritas
           If you register, your profile page will show
           recommendations based on your search history. You can delete past searches, and they're gone forever.
         </p>
-        <a class="inline-block mt-5 px-5 py-3 text-sm text-white font-medium bg-blue-500 rounded-lg" href="/register">
+        <button
+          class="inline-block mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 registrationModalBtn"
+          type="button" data-modal-toggle="registration-modal">
           Create an Account
-        </a>
+        </button>
       </div>
     </div>
   </section>

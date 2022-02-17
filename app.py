@@ -158,7 +158,7 @@ def signup():
         return render_template('/users/register-new.html', form=form)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login/returningUser', methods=['GET', 'POST'])
 def login_user():
     """Logs user into website if account exists."""
 

@@ -73,7 +73,7 @@ $(document).ready(async function () {
 
 const getLoginFormHTML = async function () {
   const res = await axios({
-    url: "/login",
+    url: "/login/returningUser",
     method: "GET",
   });
   return res.data;

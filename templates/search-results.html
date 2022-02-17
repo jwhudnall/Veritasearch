@@ -5,6 +5,13 @@ Veritas
 {% endblock %}
 
 {% block content %}
+<script>
+  const tweets = JSON.parse('{{test_tweets | tojson | safe}}');
+  const tweetsPositive = tweets[0];
+  const tweetsNeutral = tweets[1];
+  const tweetsNegative = tweets[2];
+</script>
+
 <div class="h-screen lg:grid lg:content-start lg:mt-18">
   <div class="max-w-screen-lg">
   </div>
@@ -30,12 +37,12 @@ Veritas
       class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
-          <h2 class="text-xl text-center font-extrabold mb-3" id="tweetsPositive">Positive</h2>
+          <h2 class="text-xl text-center font-extrabold mb-3">Positive</h2>
         </div>
         {% if tweets[0] %}
-        <div class="overflow-y-auto h-96 fade-in-div">
+        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsPositiveContainer">
 
-          {% for t in tweets[0] %}
+          <!-- {% for t in tweets[0] %}
           <div class="relative w-48 mx-auto">
             <div
               class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-lime-100 to-lime-500">
@@ -45,10 +52,11 @@ Veritas
             </div>
           </div>
           <div class="flex justify-center">
-            {{t.embed_html|safe }}
+
+
           </div>
-          <!-- </div> -->
-          {% endfor %}
+
+          {% endfor %} -->
 
         </div>
         {% else %}
@@ -61,12 +69,12 @@ Veritas
       class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
-          <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNeutral">Neutral</h2>
+          <h2 class="text-center text-xl font-extrabold mb-3">Neutral</h2>
         </div>
-        {% if tweets[1] %}
-        <div class="overflow-y-auto h-96 fade-in-div">
+        <!-- {% if tweets[1] %} -->
+        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNeutralContainer">
 
-          {% for t in tweets[1] %}
+          <!-- {% for t in tweets[1] %}
           <div class="relative w-48 mx-auto">
             <div class="absolute top-0 right-0 border border-1 text-center px-1 bg-amber-50">
               <span class="font-semibold text-base dark:text-black"><span
@@ -75,10 +83,9 @@ Veritas
             </div>
           </div>
           <div class="flex justify-center">
-            {{t.embed_html|safe }}
+
           </div>
-          <!-- </div> -->
-          {% endfor %}
+          {% endfor %} -->
 
         </div>
         {% else %}
@@ -91,12 +98,12 @@ Veritas
       class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
-          <h2 class="text-center text-xl font-extrabold mb-3" id="tweetsNegative">Negative</h2>
+          <h2 class="text-center text-xl font-extrabold mb-3">Negative</h2>
         </div>
         {% if tweets[2] %}
-        <div class="overflow-y-auto h-96 fade-in-div">
+        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNegativeContainer">
 
-          {% for t in tweets[2] %}
+          <!-- {% for t in tweets[2] %}
           <div class="relative w-48 mx-auto">
             <div
               class="absolute top-0 right-0 border border-1 text-center px-1 bg-gradient-to-r from-red-100 to-red-500">
@@ -106,10 +113,10 @@ Veritas
             </div>
           </div>
           <div class="flex justify-center">
-            {{t.embed_html|safe }}
+           <t.embed_html|safe>
           </div>
-          <!-- </div> -->
-          {% endfor %}
+
+          {% endfor %} -->
 
         </div>
         {% else %}

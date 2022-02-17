@@ -11,6 +11,7 @@ import requests
 import time
 import itertools
 import os
+import json
 
 
 CURR_USER_KEY = 'cur_user'
@@ -103,13 +104,13 @@ def handle_search():
                 user.queries.append(new_query)
                 db.session.add(user)
 
-            append_to_db(pruned_tweets, new_query)
+            # append_to_db(pruned_tweets, new_query)
 
         db.session.add(new_query)
         db.session.commit()
 
         session['query'] = query
-        return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time)
+        return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time, test_tweets=categorized_tweets)
 
     else:
         do_clear_search_cookies()
@@ -336,8 +337,8 @@ def append_to_db(tweets, query):
                     id=t['id'],
                     text=t['text'],
                     sentiment=t['sentiment'],
-                    polarity=t['polarity'],
-                    embed_html=t['embed_html']
+                    polarity=t['polarity']
+                    # embed_html=t['embed_html']
                 )
                 db.session.add(new_article)
                 new_article.queries.append(query)
@@ -455,8 +456,9 @@ def prune_tweets(raw_tweets):
         }
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
-        cur_tweet["sentiment"] = sentiment.get("type")
-        cur_tweet['embed_html'] = query_twitter_oembed(cur_tweet.get('id'))
+        cur_tweet["sentiment"] = sentiment.get("type").title()
+        # cur_tweet['embed_html'] = query_twitter_oembed(cur_tweet.get('id'))
+        del cur_tweet['text']
 
         unassigned_tweets.append(cur_tweet)
 
@@ -555,11 +557,11 @@ def categorize_by_sentiment(obj_lst):
     positive = []
 
     for obj in obj_lst:
-        if obj['sentiment'] == 'positive':
+        if obj['sentiment'] == 'Positive':
             positive.append(obj)
-        elif obj['sentiment'] == 'negative':
+        elif obj['sentiment'] == 'Negative':
             negative.append(obj)
-        elif obj['sentiment'] == 'neutral':
+        elif obj['sentiment'] == 'Neutral':
             neutral.append(obj)
 
     negative.sort(key=lambda obj: obj['polarity'])

@@ -55,7 +55,7 @@ Veritas
 <section class="bg-white">
   <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
     <div class="max-w-lg mx-auto text-center">
-      <h2 class="text-3xl font-bold sm:text-4xl">Discover Truth</h2>
+      <h2 class="text-3xl font-bold sm:text-4xl">How it Works</h2>
 
       <p class="mt-4 text-xl">
         It's hard to source good information. Veritas attempts to fix this by providing clearly-labeled information from
@@ -81,42 +81,42 @@ Veritas
         <h3 class="mt-3 text-xl font-bold">2. Talking to Twitter</h3>
 
         <p class="mt-4 text-lg">
-          Your search will be encoded, optimized and sent off to Twitter, a great source for direct information. First,
-          we'll search for popular tweets. If we can't find those, we'll broaden our search to include all tweets. If we
-          still strike out, we'll (gently) let you know.
-        </p>
-      </div>
-
-      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
-        <img src="/static/images/update-icon.png" height="30" width="30" alt="Search">
-        <h3 class="mt-3 text-xl font-bold">3. Twitter, Reloaded</h3>
-
-        <p class="mt-4 text-lg">
-          Let's assume we received results. Next up, we prune the results of everything except the juicy stuff. We'll
-          send off each tweet ID to Twitter's oEmbed API, giving us the html needed to eventually render the tweets.
+          Your search will be sent off to Twitter, a great source for direct information. First,
+          we'll search for popular tweets. If we can't find those, we'll broaden our search to include any that might be
+          relevant.
         </p>
       </div>
 
       <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/chip-icon.png" height="30" width="30" alt="Search">
-
-        <h3 class="mt-3 text-xl font-bold">4. Discerning Signal from the Noise</h3>
+        <h3 class="mt-3 text-xl font-bold">3. Discerning Signal from the Noise</h3>
 
         <p class="mt-4 text-lg">
-          Now the fun begins. The text from each tweet will be sent to a Machine Learning Natural Language Processing
-          API, where it will categorized and assigned a sentiment score. That was a mouthful; suffice it to say that
-          really cool things just took place on our end.
+          Now the fun begins. We prune the results of everything except the juicy stuff. The text from each
+          returned tweet is then sent to a Machine Learning Natural Language Processing API, where they receive
+          individual sentiment scores.
         </p>
       </div>
 
       <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
         <img src="/static/images/categorize-icon.png" height="30" width="30" alt="Search">
 
-        <h3 class="mt-3 text-xl font-bold">5. Categorizing Results</h3>
+        <h3 class="mt-3 text-xl font-bold">4. Categorizing Results</h3>
 
         <p class="mt-4 text-lg">
-          At this point, we've got a list of tweets that have been assigned sentiment scores. We take this list and
-          distribute each into one of 3 buckets, sorted by polarity scores. Positives, Neutrals and Negatives.
+          At this point, we've got a list of tweets that have been checked for sentiment. We take this list and
+          distribute each into one of 3 buckets; Positives, Neutrals and Negatives.
+        </p>
+      </div>
+
+      <div class="block p-8 border border-gray-800 shadow-xl rounded-xl">
+        <img src="/static/images/update-icon.png" height="30" width="30" alt="Search">
+
+        <h3 class="mt-3 text-xl font-bold">5. Twitter, Reloaded</h3>
+
+        <p class="mt-4 text-lg">
+          The categorized tweets are sent from our server to the results page. We then leverage a second
+          Twitter API to render each tweet, along with a nice sentiment label atop each.
         </p>
       </div>
 
@@ -126,8 +126,8 @@ Veritas
         <h3 class="mt-3 text-xl font-bold">6. Final Verdict</h3>
 
         <p class="mt-4 text-lg">
-          The categorized results are now displayed for you to see. If you have an account, your profile page will show
-          recommendations based on your search history. You can delete past searches, and they're gone forever.
+          The categorized results are then displayed for you to see. Ideally, you will be presented with information
+          from multiple angles, allowing you to form your own opinion.
         </p>
       </div>
     </div>
@@ -175,8 +175,9 @@ Veritas
           <h2 class="text-3xl font-bold sm:text-4xl">Even Better With an Account</h2>
 
           <p class="mt-4 text-xl">
-            If you register, your profile page will show
-            recommendations based on your search history. You can delete past searches, and they're gone forever.
+            If you have an account, your profile page will show recommendations based on your search history. You can
+            delete past searches, and they're gone forever. You can also delete your account at any time. That would
+            make us sad.
           </p>
 
           <button

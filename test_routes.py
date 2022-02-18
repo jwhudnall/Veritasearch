@@ -2,7 +2,7 @@
 
 import os
 from unittest import TestCase
-from models import db, User, Article, Query, QueryUser, QueryArticle
+from models import db, User, Query, QueryUser
 from flask import g
 
 os.environ['DATABASE_URL'] = "postgresql:///veritas-test"
@@ -80,7 +80,7 @@ class RoutesTestCase(TestCase):
             html = res.get_data(as_text=True)
 
             self.assertEqual(res.status_code, 200)
-            self.assertIn('Recommendations will appear here', html)
+            self.assertIn('Welcome,', html)
 
             # verify user cannot view other peoples profiles
     def test_user_profile_unauthorized(self):
@@ -124,7 +124,7 @@ class RoutesTestCase(TestCase):
                 sess['username'] = self.user1.username
                 g.user = User.query.get(sess[CURR_USER_KEY])
 
-            res = c.post('/users/2/delete', follow_redirects=True)
+            res = c.delete('/users/2', follow_redirects=True)
             html = res.get_data(as_text=True)
 
             self.assertEqual(res.status_code, 200)
@@ -135,7 +135,7 @@ class RoutesTestCase(TestCase):
 
         with self.client as c:
 
-            res = c.post('/users/1/delete')
+            res = c.delete('/users/1')
             html = res.get_data(as_text=True)
 
             self.assertEqual(res.status_code, 401)

@@ -5,7 +5,7 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from requests.exceptions import JSONDecodeError
+from requests.exceptions import JSONDecodeError, ConnectionError
 from forms import UserAddForm, LoginForm
 import requests
 import time
@@ -17,9 +17,9 @@ import json
 CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
 # app.config["SQLALCHEMY_DATABASE_URI"] = (
-#     os.environ.get('DATABASE_URL', "postgresql:///veritas"))
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql:///veritas'
+#     os.environ.get('DATABASE_URL', "postgresql:///veritas-test"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = FLASK_KEY
@@ -258,8 +258,7 @@ def fetch_tweets():
     query = request.args.get('query', None)
 
     if query:
-        # q_start_time = time.time()
-        # Split string on commas. Depending on length, select 2 or 3 random items
+        # Move into separate function
         q_split = query.split(',')
         if len(q_split) == 1:
             query = q_split[0]
@@ -268,8 +267,12 @@ def fetch_tweets():
             q_split.remove(first)
             second = random.choice(q_split)
             query = f'({first} OR {second})'
+        try:
+            raw_tweets = query_twitter_v2(query, count=20)
+        except ConnectionError:
+            flash("Something went wrong. Please refresh and try again.")
+            return jsonify(error="Something Went Wrong")
 
-        raw_tweets = query_twitter_v2(query, count=20)
         if raw_tweets:
             pruned_tweets = prune_tweets(
                 raw_tweets, id_key="id", text_key="text")
@@ -372,9 +375,9 @@ def query_twitter_v1(q, count=10, lang='en'):
 
 
 def prune_tweets(raw_tweets, id_key, text_key):
-    """Prunes superfluous fields from the raw tweet response. Returns a list of pruned tweets.
+    """Aggregates desired fields from each raw tweet response. Returns a list of pruned tweets.
 
-    Keys to be returned: id, text, polarity, sentiment, embed_html
+    Keys to be returned: id, polarity, sentiment
     """
     unassigned_tweets = []
 
@@ -385,7 +388,7 @@ def prune_tweets(raw_tweets, id_key, text_key):
                 "text": tweet[text_key]
             }
         except KeyError:
-            flash('It appears the Twitter API has key-value pairs.', 'error')
+            flash('It appears the Twitter API has changed its key-value pairs.', 'error')
             return False
 
         sentiment = query_sentim_API(cur_tweet["text"])

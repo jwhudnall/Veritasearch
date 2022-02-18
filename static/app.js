@@ -78,13 +78,13 @@ const fetchAndShowContent = async function () {
   }, 500);
   $divs.hide();
   showLoadingView($divs, "tweetDivs");
+  $(".actSignupCTA").hide();
   setTimeout(function () {
     $divs.show();
     hideLoadingView("tweetDivs");
     $(".actSignupCTA").show();
   }, 3000);
   // Account Signup CTA
-  $(".actSignupCTA").hide();
 };
 
 const fetchAndShowRecommendations = async function () {
@@ -93,6 +93,7 @@ const fetchAndShowRecommendations = async function () {
   const $divs = $(".fade-in-div");
   $divs.hide();
   showLoadingView($divs, "tweetDivs");
+  // Query API for recommended tweets
   const res = await getTweetRecommendations(query);
   setTimeout(function () {
     $("#getUserContent").text("Done!");

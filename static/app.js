@@ -25,9 +25,6 @@ $(document).ready(async function () {
     $("#getUserContent").prop("disabled", true);
     $("#getUserContent").text("Searching...");
     await fetchAndShowRecommendations();
-    // $("#getUserContent").text("Done!");
-    // $("#getUserContent").hide();
-    // $(".searchForTruthBlock").show();
   });
 
   $(".veritasSearchForm").on("submit", renderSearchLoading);
@@ -97,7 +94,10 @@ const fetchAndShowRecommendations = async function () {
   // Query API for recommended tweets
   const res = await getTweetRecommendations(query);
   setTimeout(function () {
-    $("#getUserContent").text("Done!");
+    $("#getUserContent").text("Complete");
+    $("#userRecMsg").text(
+      "Your recommendations change daily. Check back later for more!"
+    );
     $divs.show();
     hideLoadingView("tweetDivs");
     $(".searchForTruthBlock").show();
@@ -266,7 +266,8 @@ const createAndAppendTweetWidget = function (tweet, targetContainer, divColor) {
     "px-1",
     "bg-gradient-to-r",
     `from-${divColor}-100`,
-    `to-${divColor}-500`
+    `to-${divColor}-500`,
+    "fade-in-block"
   );
 
   const resultSpan = document.createElement("span");

@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
 from requests.exceptions import JSONDecodeError, ConnectionError
 from forms import UserAddForm, LoginForm
+from helpers import get_search_suggestions, convert_query_string, query_twitter_v2, prune_tweets, categorize_by_sentiment, query_sentim_API
 import requests
 import time
 import random
@@ -49,14 +50,15 @@ def do_login(user):
 
 def do_logout():
     """Logout user."""
+    cookies = [CURR_USER_KEY, 'username',
+               'headlines', 'csrf_token', 'hide_nav_search']
+    for cookie in cookies:
+        if cookie in session:
+            session.pop(cookie)
+    do_clear_search_cookies()
 
     if CURR_USER_KEY in session:
         del session[CURR_USER_KEY]
-    if 'username' in session:
-        session.pop('username')
-    if 'headlines' in session:
-        session.pop('headlines')
-    do_clear_search_cookies()
 
 
 def do_clear_search_cookies():
@@ -75,8 +77,8 @@ def page_not_found(e):
 def homepage():
     do_clear_search_cookies()
 
-    latest_queries = ['Tesla', 'Superbowl', 'Russia Ukraine']
-    return render_template('index.html', queries=latest_queries)
+    search_suggestions = get_search_suggestions()
+    return render_template('index.html', suggestions=search_suggestions)
 
 
 @app.route('/search')
@@ -89,14 +91,11 @@ def handle_search():
         query = query.lower()
         new_query = Query(text=query)
         q_start_time = time.time()
-        # raw_tweets = query_twitter_v1(query, count=25, lang='en')
         raw_tweets = query_twitter_v2(query, count=22)
     else:
         raw_tweets = None
 
     if raw_tweets:
-        # pruned_tweets = prune_tweets(
-        #     raw_tweets, id_key="id_str", text_key="full_text")
         pruned_tweets = prune_tweets(
             raw_tweets, id_key="id", text_key="text")
         if pruned_tweets:
@@ -111,8 +110,6 @@ def handle_search():
                 user.queries.append(new_query)
                 db.session.add(user)
 
-            # append_to_db(pruned_tweets, new_query)
-
         db.session.add(new_query)
         db.session.commit()
 
@@ -121,7 +118,6 @@ def handle_search():
 
     else:
         do_clear_search_cookies()
-        # form.search.errors.append('No results found. Try another term?')
         flash('Nothing found. Try another term?', 'no-results')
         return redirect('/')
 
@@ -174,7 +170,7 @@ def login_user():
 
         if user:
             do_login(user)
-            return redirect(f'/users/{g.user.id}')
+            return redirect(f'/users/{user.id}')
         else:
             flash('Incorrect username or password.', 'error')
             return redirect(request.referrer)
@@ -219,11 +215,8 @@ def delete_user(user_id):
     db.session.delete(g.user)
     db.session.commit()
     do_logout()
-    # return redirect('/')
     flash(f'Account successfully deleted.', 'success')
     return jsonify(msg="Account Deleted.")
-
-# Queries
 
 
 @app.route('/queries/<int:query_id>', methods=['DELETE'])
@@ -240,35 +233,27 @@ def delete_query(query_id):
     q = Query.query.get_or_404(query_id)
     db.session.delete(q)
     db.session.commit()
-    flash('Query removed.', 'success')
     return jsonify(message="Query deleted")
 
 
 @app.route('/privacy')
 def display_privacy_policy():
     return render_template('privacy.html')
+
+
 # ****************
 # API
 # ****************
-
-
 @app.route('/api/tweets')
 def fetch_tweets():
-    """Retrieve tweets and resturn as JSON."""
+    """Retrieve tweets and return as JSON."""
     query = request.args.get('query', None)
 
     if query:
         # Move into separate function
-        q_split = query.split(',')
-        if len(q_split) == 1:
-            query = q_split[0]
-        else:
-            first = random.choice(q_split)
-            q_split.remove(first)
-            second = random.choice(q_split)
-            query = f'({first} OR {second})'
+        formatted_query = convert_query_string(query)
         try:
-            raw_tweets = query_twitter_v2(query, count=20)
+            raw_tweets = query_twitter_v2(formatted_query, count=25)
         except ConnectionError:
             flash("Something went wrong. Please refresh and try again.")
             return jsonify(error="Something Went Wrong")
@@ -278,197 +263,12 @@ def fetch_tweets():
                 raw_tweets, id_key="id", text_key="text")
             categorized_tweets = categorize_by_sentiment(pruned_tweets)
 
-            # session['tweets'] = categorized_tweets
-            session['query'] = query
-            # return redirect('/search')
+            session['query'] = formatted_query
             response = jsonify(tweets=categorized_tweets)
         else:
             response = jsonify(error='no tweets found')
             do_clear_search_cookies()
-            # form.search.errors.append('No results found. Try another term?')
     else:
         response = jsonify(error='No query args received by server')
 
     return response
-
-
-# ****************
-# Helper Functions
-# ****************
-
-def remove_duplicates(queries):
-    """Removes duplicates from a list, whilst preserving the order."""
-    seen = set()
-    seen_add = seen.add
-    return [q for q in queries if not (q in seen or seen_add(q))]
-
-
-def get_latest_queries(n):
-    """Retrieves the n latest queries in descending order. Returns a list of serialized query objects."""
-    queries = Query.query.order_by(Query.id.desc()).all()
-    queries_text = [q.text for q in queries]
-    filtered_queries = remove_duplicates(queries_text)
-
-    return filtered_queries[:n]
-
-
-def query_twitter_v2(q, count=10):
-    base_url = 'https://api.twitter.com/2/tweets/search/recent'
-    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
-    add_flags = ' is:verified lang:en -is:retweet'
-    q += add_flags
-    print(f'Query url-encoded: {q}')
-    params = {
-        'query': q,
-        'max_results': count
-    }
-    res = requests.get(f'{base_url}', headers=headers,
-                       params=params)
-
-    data = res.json()
-    raw_tweets = data.get('data', None)
-    print(f'Total v2 results found: {len(raw_tweets)}')
-    return raw_tweets if raw_tweets else False
-
-
-def query_twitter_v1(q, count=10, lang='en'):
-    """Accepts a user search query. If results found, returns a list of tweet objects; else False.
-
-    API is first queried for popular results. If none found, a second query is sent for all results.
-    """
-    base_url = 'https://api.twitter.com/1.1/search/tweets.json'
-    headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
-    add_flags = ' -filter:retweets'
-    q = requests.utils.quote(q + add_flags)  # urlencodes query
-    print(f'Query url-encoded: {q}')
-
-    params = {
-        'q': q,
-        'lang': lang,
-        'tweet_mode': 'extended',
-        'result_type': 'popular',
-        'count': 22
-    }
-
-    res = requests.get(f'{base_url}', headers=headers,
-                       params=params)
-    data = res.json()
-    raw_tweets = data['statuses']
-
-    if not raw_tweets:
-        print('*******************************************')
-        print('No popular results. Searching all tweets...')
-        print('*******************************************')
-        del params['result_type']
-        res_2 = requests.get(f'{base_url}', headers=headers,
-                             params=params)
-        data_2 = res_2.json()
-        raw_tweets_2 = data_2['statuses']
-
-        if not raw_tweets_2:
-            print('NO RESULTS!')
-            return False
-        else:
-            return raw_tweets_2
-    print(f'Total results found: {len(raw_tweets)}')
-    return raw_tweets
-
-
-def prune_tweets(raw_tweets, id_key, text_key):
-    """Aggregates desired fields from each raw tweet response. Returns a list of pruned tweets.
-
-    Keys to be returned: id, polarity, sentiment
-    """
-    unassigned_tweets = []
-
-    for tweet in raw_tweets:
-        try:
-            cur_tweet = {
-                "id": tweet[id_key],
-                "text": tweet[text_key]
-            }
-        except KeyError:
-            flash('It appears the Twitter API has changed its key-value pairs.', 'error')
-            return False
-
-        sentiment = query_sentim_API(cur_tweet["text"])
-        cur_tweet["polarity"] = sentiment.get("polarity")
-        cur_tweet["sentiment"] = sentiment.get("type").title()
-        del cur_tweet['text']
-
-        unassigned_tweets.append(cur_tweet)
-
-    return unassigned_tweets
-
-
-# def query_newsAPI(q, min_results=10, count=20, lang='en'):
-#     """Searches the newsAPI for q. If results found, returns a list of article objects; else False."""
-#     base_url = 'https://newsapi.org/v2/everything'
-#     headers = {'X-Api-Key': NEWS_API_KEY}
-#     params = {
-#         'q': q,
-#         'language': lang,
-#         'searchIn': 'title',
-#         'pageSize': count,
-#         'sortBy': 'publishedAt'
-#     }
-
-#     res = requests.get(base_url, headers=headers,
-#                        params=params)
-#     data = res.json()
-#     num_results = data['totalResults']
-#     if not num_results or num_results < min_results:
-#         print('*******************************************')
-#         print('Not found in title. Searching content...')
-#         print('*******************************************')
-#         params["searchIn"] = "content"
-
-#         res_2 = requests.get(base_url, headers=headers, params=params)
-#         data = res_2.json()
-#         num_results_2 = data["totalResults"]
-#         if not num_results_2:
-#             print("NO RESULTS FOUND ANYWHERE!")
-#             return False
-
-#     return data["articles"]
-
-
-def categorize_by_sentiment(obj_lst):
-    """Runs each obj in list through a NLP API and categorizes each based on sentiment, by polarity score.
-
-    Accepts: a list of information dicts.
-    Returns: a tuple comprised of 3 lists: positive, neutral, negative.
-    """
-    negative = []
-    neutral = []
-    positive = []
-
-    for obj in obj_lst:
-        if obj['sentiment'] == 'Positive':
-            positive.append(obj)
-        elif obj['sentiment'] == 'Negative':
-            negative.append(obj)
-        elif obj['sentiment'] == 'Neutral':
-            neutral.append(obj)
-
-    negative.sort(key=lambda obj: obj['polarity'])
-    positive.sort(key=lambda obj: obj['polarity'], reverse=True)
-
-    return (positive, neutral, negative)
-
-
-def query_sentim_API(text):
-    """Query the sentim API. Text is passed and analyzed for sentiment.
-
-    Returns a dictionary with keys: 'polarity' and 'positive'
-      ex: {'polarity': 0.4, 'type': 'positive'}
-    """
-
-    base_url = 'https://sentim-api.herokuapp.com/api/v1/'
-    headers = {'Accept': 'application/json',
-               'Content-Type': 'application/json'}
-    json = {'text': text}
-
-    res = requests.post(base_url, headers=headers, json=json)
-    data = res.json()
-    return data['result'] or False

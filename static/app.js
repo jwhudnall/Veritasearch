@@ -103,16 +103,19 @@ const fetchAndShowRecommendations = async function () {
     $(".searchForTruthBlock").show();
   }, 3000);
 
-  if (res.error !== undefined) {
-    // Handle case with no results. Query another?
-    console.log("No Tweets found.");
-    return false;
-  }
-  if (res.tweets !== undefined) {
-    const recTweets = res.tweets;
-    console.log("Rendering Tweets...");
-    renderEmbedTweets(recTweets[0], recTweets[1], recTweets[2]);
-    console.log("Finished rendering!");
+  try {
+    if (res.error !== undefined) {
+      console.log("No Tweets found.");
+      return false;
+    }
+    if (res.tweets !== undefined) {
+      const recTweets = res.tweets;
+      console.log("Rendering Tweets...");
+      renderEmbedTweets(recTweets[0], recTweets[1], recTweets[2]);
+      console.log("Finished rendering!");
+    }
+  } catch (e) {
+    alert("Something went wrong. Please try again.");
   }
 };
 
@@ -122,7 +125,7 @@ const getTweetRecommendations = async function (query) {
     return res.data;
   } catch (e) {
     alert(
-      `Something went wrong during Personalized Tweet Recommendation Search. Error info:${e}`
+      `Something went wrong during Personalized Tweet Recommendation Search. Please try again later.Error info:${e}`
     );
   }
 };

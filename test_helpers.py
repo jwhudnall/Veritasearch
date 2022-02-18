@@ -3,6 +3,7 @@ from unittest import TestCase
 import os
 os.environ['DATABASE_URL'] = "postgresql:///veritas-test"
 from app import categorize_by_sentiment, prune_tweets
+from helpers import convert_query_string, get_search_suggestions
 
 
 class TestHelperFunctions(TestCase):
@@ -57,12 +58,32 @@ class TestHelperFunctions(TestCase):
         self.assertIn('sentiment', result_v1[0])
         self.assertEqual(len(result_v1[0].keys()), 3)
 
-    # def test_remove_stop_words(self):
-    #     """Test remove_stop_words function. Uses nltk to remove stop words, returning a string of n words. """
+    def test_get_search_suggestions(self):
+        """Test get_search_suggestions function."""
+        result = get_search_suggestions()
+        result_2 = get_search_suggestions()
 
-    #     raw_sentence = "This is a sentence that includes stop words."
+        self.assertEqual(len(result), 3)
+        self.assertNotEqual(result, result_2)
 
-    #     result_1 = remove_stop_words(raw_sentence)
-    #     self.assertEqual(result_1, 'This sentence')
-    #     result_2 = remove_stop_words(raw_sentence, n=3)
-    #     self.assertEqual(result_2, 'This sentence includes')
+    def test_convert_query_string(self):
+        """Tests convert_query_string function. Should return a formatted string ready to send to Twitter's V2 API.
+
+        If one comma: returns first
+        If two commas: returns (first OR second)
+        If more than two commas:  returns (random_item OR another_item OR third_item)
+        """
+        query = "bitcoin,tesla,china"
+        result = convert_query_string(query)
+
+        self.assertIn('bitcoin', result)
+        self.assertIn('tesla', result)
+        self.assertIn('china', result)
+        self.assertIn('OR', result)
+
+        query2 = "bitcoin,tesla"
+        result2 = convert_query_string(query2)
+
+        self.assertIn('bitcoin', result2)
+        self.assertIn('tesla', result2)
+        self.assertEqual(result2, '(bitcoin OR tesla)')

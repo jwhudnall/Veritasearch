@@ -1,3 +1,4 @@
+/* Fade in Animation */
 .fade-in-div {
   animation: fadeIn 5s;
   -webkit-animation: fadeIn 5s;
@@ -48,4 +49,15 @@
   100% {
     opacity: 1;
   }
+}
+
+/* Hiding Vertical Scroll Bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

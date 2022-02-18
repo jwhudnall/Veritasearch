@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="bg-white text-white dark:bg-slate-800 dark:text-gray-200 text-sm">
+<html lang="en" class="bg-white text-sm">
 
 <head>
   <meta charset="UTF-8">
@@ -113,7 +113,7 @@
   {% if errors %}
   {%- for msg in errors %}
   <div
-    class="text-center w-fit mx-auto p-2 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800"
+    class="text-center w-fit mx-auto p-2 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800 flashMessage"
     role="alert">{{ msg }}</div>
   {% endfor -%}
   {% endif %}
@@ -124,7 +124,7 @@
   {% if successMsgs %}
   {%- for msg in successMsgs %}
   <div
-    class="text-center w-fit mx-auto p-2 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800"
+    class="text-center w-fit mx-auto p-2 mb-4 text-sm text-green-700 bg-green-100 rounded-lg dark:bg-green-200 dark:text-green-800 flashMessage"
     role="alert">{{ msg }}</div>
   {% endfor -%}
   {% endif %}

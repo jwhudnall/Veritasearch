@@ -7,6 +7,7 @@ const negativeTweetContainer = document.getElementById(
 );
 
 $(document).ready(async function () {
+  $(".flashMessage").delay(2000).slideUp();
   if ($("#searchResultContainer").length > 0) {
     fetchAndShowContent();
   }
@@ -14,6 +15,7 @@ $(document).ready(async function () {
   if ($("#personalizedResultContainer").length > 0) {
     console.log("Personal result container located!");
     $("#personalizedResultContainer").hide();
+    $(".searchForTruthBlock").hide();
     // fetchAndShowRecommendations();
   }
 
@@ -53,6 +55,7 @@ $(document).ready(async function () {
     $("#getUserContent").text("Searching...");
     await fetchAndShowRecommendations();
     $("#getUserContent").hide();
+    // $(".searchForTruthBlock").show();
   });
 });
 const emptyTweetContainers = function () {
@@ -91,7 +94,7 @@ const fetchAndShowRecommendations = async function () {
   setTimeout(function () {
     $divs.show();
     hideLoadingView("tweetDivs");
-    // $(".actSignupCTA").show();
+    $(".searchForTruthBlock").show();
   }, 2000);
 
   if (res.error !== undefined) {
@@ -280,24 +283,3 @@ const createAndAppendTweetWidget = function (tweet, targetContainer, divColor) {
 
   targetContainer.append(sentimentContainer, tweetDiv);
 };
-
-// const getTweets = async function(query) {
-// 	try {
-// 		const res = await axios({
-// 			method: 'GET',
-// 			url: '/api/tweets',
-// 			params: {
-// 				q: query
-// 			}
-// 		});
-// 		if (res.data.error) {
-// 			console.log('No tweets found!');
-// 			return;
-// 		}
-// 		asyncLocalStorage.setItem('tweets', JSON.stringify(res.data));
-// 		console.log('localStorage["tweets"] updated!');
-// 		// return res.data;
-// 	} catch (e) {
-// 		alert(`Internal API issue Fetching Tweets. Error Info: ${e}`);
-// 	}
-// };

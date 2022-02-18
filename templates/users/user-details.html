@@ -4,21 +4,6 @@
 
 {% block content %}
 
-<!-- <h1 class="text-3xl text-center my-3">Welcome, {{user.username}}</h1> -->
-<!-- Welcome Section -->
-<!-- <section class="bg-white">
-  <div class="max-w-screen-xl px-4 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
-    <div class="max-w-lg mx-auto text-center">
-      <h2 class="text-3xl font-bold sm:text-4xl">Welcome, {{user.username}}</h2>
-
-      <p class="mt-4 text-xl">
-        Here are some recommendations based on your previous searches.
-      </p>
-    </div>
-  </div>
-</section> -->
-<!-- END Welcome Section -->
-
 <!-- Delete Account Modal -->
 <div
   class="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
@@ -61,14 +46,14 @@
 <!-- END Delete Account Modal -->
 
 <!-- Start Test Grid Cols -->
-<div class="grid grid-cols-1 md:grid-cols-5 bg-white">
-  <section class="bg-white dark:bg-gray-800 md:col-start-2 md:col-span-4">
+<div class="grid grid-cols-1 md:grid-cols-5 bg-white dark:bg-slate-800">
+  <section class="bg-gray-800 md:col-start-2 md:col-span-4">
     <div class="max-w-screen-xl px-2 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
-      <div class="max-w-lg mx-auto text-center dark:text-white">
+      <div class="max-w-lg mx-auto text-center text-white">
         <h2 class="text-3xl font-bold sm:text-4xl">Welcome, {{user.username}}</h2>
         <p class="mt-4 text-xl">
           {% if queries %}
-          Click below to receive content recommendations.
+          Click to see your recommendations.
 
           <button id="getUserContent"
             class="block mx-auto mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
@@ -88,13 +73,12 @@
 <div class="grid grid-cols-1 md:grid-cols-5 bg-white">
 
   <div class="w-full max-w-sm col-span-1 mx-auto">
-    <!-- Accordian Start -->
-    <div id="accordion-flush" data-accordion="open" class="ml-1"
-      data-active-classes="bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-      data-inactive-classes="text-gray-500 dark:text-gray-400">
+    <!-- Accordion Start -->
+    <div id="accordion-flush" data-accordion="open" class="md:ml-2" data-active-classes="bg-white text-gray-900"
+      data-inactive-classes="text-gray-500">
       <h2 id="accordion-flush-heading-1">
         <button type="button"
-          class="flex items-center justify-between py-5 w-full font-medium text-left border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-t-xl"
+          class="flex items-center justify-between py-5 w-full font-medium text-left border-b border-gray-200 text-gray-900 rounded-t-xl"
           data-accordion-target="#accordion-flush-body-1" aria-expanded="true" aria-controls="accordion-flush-body-1">
           <span class="ml-2">Search History</span>
           <svg data-accordion-icon class="w-6 h-6 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20"
@@ -106,10 +90,10 @@
         </button>
       </h2>
       <div id="accordion-flush-body-1" aria-labelledby="accordion-flush-heading-1">
-        <div class="py-5 border-b border-gray-200 dark:border-gray-700">
+        <div class="py-5 border-b border-gray-200">
           <div>
             {% if queries %}
-            <p class="mb-2 text-gray-500 dark:text-gray-400 text-center">Deleting search terms will change your
+            <p class="mb-2 text-gray-800 text-center">Deleting search terms will change your
               recommendations.</p>
             <div id="queryContainer" class="flex flex-row flex-wrap justify-center">
 
@@ -124,7 +108,7 @@
 
             </div>
             {% else %}
-            <div class="text-center">
+            <div class="text-center text-black">
               <p>Your search terms will appear here.</p>
             </div>
             {% endif %}
@@ -133,7 +117,7 @@
       </div>
       <h2 id="accordion-flush-heading-2">
         <button type="button"
-          class="flex items-center justify-between py-5 w-full font-medium border-b border-gray-200 dark:border-gray-700 text-left text-gray-500 dark:text-gray-400"
+          class="flex items-center justify-between py-5 w-full font-medium border-b border-gray-200 text-left text-gray-500"
           data-accordion-target="#accordion-flush-body-2" aria-expanded="false" aria-controls="accordion-flush-body-2">
           <span class="ml-2">Account Info</span>
           <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20"
@@ -145,8 +129,8 @@
         </button>
       </h2>
       <div id="accordion-flush-body-2" class="hidden" aria-labelledby="accordion-flush-heading-2">
-        <div class="py-5 border-b border-gray-200 dark:border-gray-700">
-          <div class="w-full text-center max-w-sm mx-auto p-2">
+        <div class="py-5 border-b border-gray-200">
+          <div class="w-full text-center max-w-sm mx-auto p-2 text-black">
             <ul>
               <li class="font-bold">Username: <span class="font-normal">{{user.username}}</span></li>
               <li class="font-bold">First Name: <span class="font-normal">{{user.first_name}}</span></li>
@@ -180,7 +164,7 @@
           <div>
             <h2 class="text-xl text-center font-extrabold mb-3">Positive</h2>
           </div>
-          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsPositiveContainer"></div>
+          <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsPositiveContainer"></div>
         </div>
       </div>
       <div
@@ -189,7 +173,7 @@
           <div>
             <h2 class="text-center text-xl font-extrabold mb-3">Neutral</h2>
           </div>
-          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNeutralContainer"></div>
+          <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNeutralContainer"></div>
         </div>
       </div>
       <div
@@ -198,7 +182,7 @@
           <div>
             <h2 class="text-center text-xl font-extrabold mb-3">Negative</h2>
           </div>
-          <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNegativeContainer"></div>
+          <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNegativeContainer"></div>
         </div>
       </div>
     </section>
@@ -206,13 +190,13 @@
 
 
     {% endif %}
-    <div class="col-span-1 md:col-span-4">
-      <div class="max-w-lg mx-auto text-center">
-        <!-- <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
+    <div class="col-span-1 md:col-span-4 mt-5 mb-8 searchForTruthBlock">
+      <div class="max-w-lg mx-auto text-center text-black">
+        <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
 
         <p class="mt-4 text-xl mb-2">
-          Information is power. Get some.
-        </p> -->
+          Information is power.
+        </p>
         <!-- Search Form -->
         <form action="/search" method="GET" class="veritasSearchForm">
           <div class="flex items-center justify-center">
@@ -232,7 +216,7 @@
           {% endif %}
           {% endwith %}
         </form>
-
+        <!-- End Search Form -->
       </div>
 
     </div>

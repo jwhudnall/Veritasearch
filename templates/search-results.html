@@ -33,14 +33,14 @@ Veritas
 
   <!-- Main Search Result Section-->
   <section id="searchResultContainer"
-    class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
+    class="w-full max-w-screen-xl mt-5 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black bg-white">
     <div
       class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
       <div class="px-1 py-1">
         <div>
           <h2 class="text-xl text-center font-extrabold mb-3">Positive</h2>
         </div>
-        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsPositiveContainer"></div>
+        <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsPositiveContainer"></div>
       </div>
     </div>
     <div
@@ -49,7 +49,7 @@ Veritas
         <div>
           <h2 class="text-center text-xl font-extrabold mb-3">Neutral</h2>
         </div>
-        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNeutralContainer"></div>
+        <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNeutralContainer"></div>
       </div>
     </div>
     <div
@@ -58,7 +58,7 @@ Veritas
         <div>
           <h2 class="text-center text-xl font-extrabold mb-3">Negative</h2>
         </div>
-        <div class="overflow-y-auto h-96 fade-in-div" id="tweetsNegativeContainer"></div>
+        <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNegativeContainer"></div>
       </div>
     </div>
   </section>

@@ -1,7 +1,6 @@
 """SQLAlchemy models for Project Veritas."""
 
 from datetime import datetime
-from enum import auto
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask import flash
@@ -26,9 +25,6 @@ class User(db.Model):
     first_name = db.Column(db.String(50))
     username = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.Text, nullable=False)
-
-    # liked_articles = db.relationship('Article', secondary='likes',
-    #                                  backref='liked_users')
 
     queries = db.relationship(
         'Query', secondary='queries_users', backref='users')
@@ -68,50 +64,6 @@ class User(db.Model):
         return False
 
 
-class Article(db.Model):
-    """Article Model."""
-
-    __tablename__ = 'articles'
-    # id, text, sentiment, polarity, oembed_url, timestamp
-    id = db.Column(db.String(25), primary_key=True)
-    text = db.Column(db.Text, nullable=False)
-    sentiment = db.Column(db.String(15), nullable=False)
-    polarity = db.Column(db.Numeric(precision=3, scale=2), nullable=False)
-    embed_html = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False,
-                          default=datetime.utcnow())
-
-    # type = db.Column(db.String(10), nullable=False)
-    # url = db.Column(db.Text, nullable=False)
-    # published = db.Column(db.DateTime, nullable=False)
-    # source = db.Column(db.String(50), nullable=False)
-
-    queries = db.relationship(
-        'Query', secondary='queries_articles', backref='articles')
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'text': self.text,
-            'sentiment': self.sentiment,
-            'polarity': self.polarity,
-            'embed_html': self.embed_html,
-            'timestamp': self.timestamp
-        }
-
-
-# class Like(db.Model):
-#     """Maps user likes to articles."""
-
-#     __tablename__ = 'likes'
-
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey(
-#         'users.id', ondelete='cascade'), primary_key=True)
-#     article_id = db.Column(db.String(25), db.ForeignKey(
-#         'articles.id', ondelete='cascade'), primary_key=True)
-
-
 class Query(db.Model):
     """Query model."""
 
@@ -145,15 +97,3 @@ class QueryUser(db.Model):
         'queries.id', ondelete='cascade'), primary_key=True)
     timestamp = db.Column(db.DateTime, nullable=False,
                           default=datetime.utcnow())
-
-
-class QueryArticle(db.Model):
-    """Maps queries to articles."""
-
-    __tablename__ = 'queries_articles'
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    article_id = db.Column(db.String(25), db.ForeignKey(
-        'articles.id', ondelete='cascade'), primary_key=True)
-    query_id = db.Column(db.Integer, db.ForeignKey(
-        'queries.id', ondelete='cascade'), primary_key=True)

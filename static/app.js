@@ -16,7 +16,6 @@ $(document).ready(async function () {
     console.log("Personal result container located!");
     $("#personalizedResultContainer").hide();
     $(".searchForTruthBlock").hide();
-    // fetchAndShowRecommendations();
   }
 
   $(".veritasSearchForm").on("submit", renderSearchLoading);

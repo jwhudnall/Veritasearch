@@ -143,7 +143,6 @@ def signup():
             )
 
         except IntegrityError:
-            # form.username.errors.append('Username already exists.')
             flash('Username already exists. Please try another.', 'error')
             return redirect(request.referrer)
 
@@ -237,9 +236,13 @@ def delete_query(query_id):
     return jsonify(message="Query deleted")
 
 
+@app.route('/privacy')
+def display_privacy_policy():
+    return render_template('privacy.html')
 # ****************
 # API
 # ****************
+
 
 @app.route('/api/tweets')
 def fetch_tweets():

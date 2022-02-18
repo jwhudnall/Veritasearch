@@ -83,6 +83,7 @@ const fetchAndShowContent = async function () {
     $divs.show();
     hideLoadingView("tweetDivs");
     $(".actSignupCTA").show();
+    $("#convertingMsg").hide();
   }, 3000);
   // Account Signup CTA
 };

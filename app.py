@@ -174,7 +174,7 @@ def login_user():
 
         if user:
             do_login(user)
-            return redirect(request.referrer)
+            return redirect(f'/users/{g.user.id}')
         else:
             flash('Incorrect username or password.', 'error')
             return redirect(request.referrer)

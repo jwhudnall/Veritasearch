@@ -5,6 +5,7 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
+from requests.exceptions import JSONDecodeError
 from forms import UserAddForm, LoginForm
 import requests
 import time
@@ -88,15 +89,21 @@ def handle_search():
         query = query.lower()
         new_query = Query(text=query)
         q_start_time = time.time()
-        raw_tweets = query_twitter_v1(query, count=25, lang='en')
+        # raw_tweets = query_twitter_v1(query, count=25, lang='en')
+        raw_tweets = query_twitter_v2(query, count=22)
     else:
         raw_tweets = None
 
     if raw_tweets:
+        # pruned_tweets = prune_tweets(
+        #     raw_tweets, id_key="id_str", text_key="full_text")
         pruned_tweets = prune_tweets(
-            raw_tweets, id_key="id_str", text_key="full_text")
-        categorized_tweets = categorize_by_sentiment(pruned_tweets)
-        q_time = round(time.time() - q_start_time, 2)
+            raw_tweets, id_key="id", text_key="text")
+        if pruned_tweets:
+            categorized_tweets = categorize_by_sentiment(pruned_tweets)
+            q_time = round(time.time() - q_start_time, 2)
+        else:
+            return redirect(request.referrer)
 
         if user:
             user_queries = [q.text for q in user.queries]
@@ -302,30 +309,11 @@ def get_latest_queries(n):
     return filtered_queries[:n]
 
 
-# def query_twitter_oembed(id, max_width=400):
-#     """Embeds a tweet using the tweet id. Returns embed HTML if id exists; else False."""
-#     base_url = 'https://publish.twitter.com/oembed'
-#     params = {
-#         'url': f'https://twitter.com/Interior/status/{id}',
-#         'maxwidth': max_width,
-#         'omit_script': 'true'
-#     }
-#     res = requests.get(base_url, params=params)
-#     html = False
-#     if res.status_code == 200:
-#         data = res.json()
-#         html = data.get('html')
-
-#     if html and res.status_code == 200:
-#         return html
-#     return False
-
 def query_twitter_v2(q, count=10):
     base_url = 'https://api.twitter.com/2/tweets/search/recent'
     headers = {'Authorization': f'Bearer {BEARER_TOKEN}'}
-    # add_flags = ' is:verified lang:en -is:retweet'
     add_flags = ' is:verified lang:en -is:retweet'
-    q = q + add_flags
+    q += add_flags
     print(f'Query url-encoded: {q}')
     params = {
         'query': q,
@@ -391,14 +379,18 @@ def prune_tweets(raw_tweets, id_key, text_key):
     unassigned_tweets = []
 
     for tweet in raw_tweets:
-        cur_tweet = {
-            "id": tweet.get(id_key),
-            "text": tweet.get(text_key)
-        }
+        try:
+            cur_tweet = {
+                "id": tweet[id_key],
+                "text": tweet[text_key]
+            }
+        except KeyError:
+            flash('It appears the Twitter API has key-value pairs.', 'error')
+            return False
+
         sentiment = query_sentim_API(cur_tweet["text"])
         cur_tweet["polarity"] = sentiment.get("polarity")
         cur_tweet["sentiment"] = sentiment.get("type").title()
-        # cur_tweet['embed_html'] = query_twitter_oembed(cur_tweet.get('id'))
         del cur_tweet['text']
 
         unassigned_tweets.append(cur_tweet)

@@ -200,7 +200,7 @@ def show_user_details(user_id):
     return render_template('users/user-details.html', user=user, queries=queries)
 
 
-@app.route('/users/<int:user_id>/delete', methods=['DELETE'])
+@app.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
     """Delete user account."""
 
@@ -233,6 +233,7 @@ def delete_query(query_id):
     q = Query.query.get_or_404(query_id)
     db.session.delete(q)
     db.session.commit()
+    flash('Query removed.', 'success')
     return jsonify(message="Query deleted")
 
 

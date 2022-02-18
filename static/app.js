@@ -18,6 +18,18 @@ $(document).ready(async function () {
     $(".searchForTruthBlock").hide();
   }
 
+  // Personalized User Content Action
+  $("#getUserContent").on("click", async function () {
+    console.log("Recommendations btn clicked!");
+    $("#personalizedResultContainer").show();
+    $("#getUserContent").prop("disabled", true);
+    $("#getUserContent").text("Searching...");
+    await fetchAndShowRecommendations();
+    // $("#getUserContent").text("Done!");
+    // $("#getUserContent").hide();
+    // $(".searchForTruthBlock").show();
+  });
+
   $(".veritasSearchForm").on("submit", renderSearchLoading);
 
   $("#queryContainer").on("click", "button", deleteQuery);
@@ -47,15 +59,6 @@ $(document).ready(async function () {
     $("#userLoginSection").empty();
     toggleModal("login-modal", false);
   });
-  $("#getUserContent").on("click", async function () {
-    console.log("Recommendations btn clicked!");
-    $("#personalizedResultContainer").show();
-    $("#getUserContent").prop("disabled", true);
-    $("#getUserContent").text("Searching...");
-    await fetchAndShowRecommendations();
-    $("#getUserContent").hide();
-    // $(".searchForTruthBlock").show();
-  });
 });
 const emptyTweetContainers = function () {
   const containers = [
@@ -67,6 +70,7 @@ const emptyTweetContainers = function () {
     c.innerHTML = "";
   });
 };
+
 const fetchAndShowContent = async function () {
   const $divs = $(".fade-in-div");
   setTimeout(function () {
@@ -91,10 +95,11 @@ const fetchAndShowRecommendations = async function () {
   showLoadingView($divs, "tweetDivs");
   const res = await getTweetRecommendations(query);
   setTimeout(function () {
+    $("#getUserContent").text("Done!");
     $divs.show();
     hideLoadingView("tweetDivs");
     $(".searchForTruthBlock").show();
-  }, 2000);
+  }, 3000);
 
   if (res.error !== undefined) {
     // Handle case with no results. Query another?
@@ -183,7 +188,7 @@ const deleteAccount = async function (e) {
   console.log(`User Id: ${userId}`);
   try {
     const res = await axios({
-      url: `/users/${userId}/delete`,
+      url: `/users/${userId}`,
       method: "DELETE",
     });
     console.log("Res: ");

@@ -162,13 +162,16 @@ const getRegisterFormHTML = async function () {
 
 const showLoadingView = function ($targetEl, tag) {
   // $("#searchBtn").text("Searching...").prop("disabled", true);
+  const $loadingDiv = $("<div>")
+    .addClass("h-96 flex flex-col justify-center")
+    .addClass(`loadingImg${tag}`);
   const $loadingIcon = $("<img>")
     .attr({
       src: "/static/images/loading-icon.jpeg",
-      class: `loadingImg${tag}`,
     })
     .addClass("w-32 mx-auto mt-5");
-  $loadingIcon.insertAfter($targetEl);
+  $loadingDiv.append($loadingIcon);
+  $loadingDiv.insertAfter($targetEl);
 };
 
 const hideLoadingView = function (tag) {

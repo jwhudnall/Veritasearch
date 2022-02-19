@@ -11,7 +11,6 @@ import time
 import os
 import re
 
-BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 CURR_USER_KEY = 'cur_user'
 
 

@@ -5,6 +5,8 @@ from flask import flash
 from models import Query
 import requests
 
+BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
+
 
 def get_search_suggestions():
     """Returns a list of 3 options from a pre-defined topic list."""

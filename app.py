@@ -13,9 +13,8 @@ BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
-# app.config["SQLALCHEMY_DATABASE_URI"] = (
-#     os.environ.get('DATABASE_URL', "postgresql:///veritas-test"))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    'DATABASE_URL', 'postgresql:///veritas')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "defaultsecretkeybutnotreally!")

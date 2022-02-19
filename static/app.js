@@ -13,14 +13,13 @@ $(document).ready(async function () {
   }
 
   if ($("#personalizedResultContainer").length > 0) {
-    console.log("Personal result container located!");
+    // Runs on personal results page only
     $("#personalizedResultContainer").hide();
     $(".searchForTruthBlock").hide();
   }
 
   // Personalized User Content Action
   $("#getUserContent").on("click", async function () {
-    console.log("Recommendations btn clicked!");
     $("#personalizedResultContainer").show();
     $("#getUserContent").prop("disabled", true);
     $("#getUserContent").text("Searching...");
@@ -105,14 +104,11 @@ const fetchAndShowRecommendations = async function () {
 
   try {
     if (res.error !== undefined) {
-      console.log("No Tweets found.");
       return false;
     }
     if (res.tweets !== undefined) {
       const recTweets = res.tweets;
-      console.log("Rendering Tweets...");
       renderEmbedTweets(recTweets[0], recTweets[1], recTweets[2]);
-      console.log("Finished rendering!");
     }
   } catch (e) {
     alert("Something went wrong. Please try again.");

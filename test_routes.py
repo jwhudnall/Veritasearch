@@ -55,7 +55,7 @@ class RoutesTestCase(TestCase):
             self.assertEqual(res.status_code, 200)
             self.assertIn('Veritas', html)
             self.assertIn('<input type="text"', html)
-            self.assertIn(self.user1.username, html)
+            self.assertIn(self.user1.first_name, html)
 
     def test_root_route_logged_out(self):
         """Check main page with no user logged in."""

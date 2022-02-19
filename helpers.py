@@ -10,7 +10,7 @@ import requests
 def get_search_suggestions():
     """Returns a list of 3 options from a pre-defined topic list."""
     q_list = ['Tesla', 'Superbowl', 'Russia Ukraine', 'Donald Trump',
-              'Joe Biden', 'Global Warming', 'Stock Market', 'Joe Rogan', 'Cancel Culture', 'Vaccine', 'Inflation', 'Bitcoin']
+              'Joe Biden', 'Global Warming', 'Stock Market', 'Joe Rogan', 'Cancel Culture', 'Vaccine', 'Inflation', 'Bitcoin', 'Taylor Swift']
     random.shuffle(q_list)
     return q_list[:3]
 

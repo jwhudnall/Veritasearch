@@ -1,4 +1,3 @@
-from email import header
 from flask import Flask, render_template, redirect, session, flash, request, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, User, Query

@@ -5,14 +5,11 @@ from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
-from requests.exceptions import JSONDecodeError, ConnectionError
+from requests.exceptions import ConnectionError
 from forms import UserAddForm, LoginForm
-from helpers import get_search_suggestions, convert_query_string, query_twitter_v2, prune_tweets, categorize_by_sentiment, query_sentim_API
-import requests
+from helpers import get_search_suggestions, convert_query_string, query_twitter_v2, prune_tweets, categorize_by_sentiment
 import time
-import random
 import os
-import json
 
 
 CURR_USER_KEY = 'cur_user'
@@ -24,10 +21,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SECRET_KEY"] = FLASK_KEY
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
-toolbar = DebugToolbarExtension(app)
+# toolbar = DebugToolbarExtension(app)
 
 
 @app.before_request
@@ -127,7 +124,13 @@ def display_results(query):
     return redirect(url_for('handle_search', query=query))
 
 
-@app.route('/register/newUserSignup', methods=["GET", "POST"])
+@app.route('/register')
+def redirect_from_register():
+    flash('Please use the menu to create an account.', 'error')
+    return redirect('/')
+
+
+@app.route('/register', methods=["PUT", "POST"])
 def signup():
     """Handle user signup.
 
@@ -156,7 +159,7 @@ def signup():
         return render_template('/users/register.html', form=form)
 
 
-@app.route('/login/returningUser', methods=['GET', 'POST'])
+@app.route('/login', methods=['PUT', 'POST'])
 def login_user():
     """Logs user into website if account exists."""
 
@@ -177,6 +180,12 @@ def login_user():
 
     do_clear_search_cookies()
     return render_template('users/login.html', form=form)
+
+
+@app.route('/login')
+def redirect_from_login():
+    flash('Please use the menu to login.', 'error')
+    return redirect('/')
 
 
 @app.route('/logout', methods=['POST'])
@@ -222,7 +231,6 @@ def delete_user(user_id):
 @app.route('/queries/<int:query_id>', methods=['DELETE'])
 def delete_query(query_id):
     """Deletes a user query. Returns confirmation message in JSON format."""
-    # TODO: Protect via authentication to verify user "owns" query
     query = Query.query.get_or_404(query_id)
     query_users = [u.id for u in query.users]
     cur_user = session.get(CURR_USER_KEY, None)
@@ -250,7 +258,6 @@ def fetch_tweets():
     query = request.args.get('query', None)
 
     if query:
-        # Move into separate function
         formatted_query = convert_query_string(query)
         try:
             raw_tweets = query_twitter_v2(formatted_query, count=25)

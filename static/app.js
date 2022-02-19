@@ -151,22 +151,21 @@ const selectQueriesForSearch = function () {
 
 const getLoginFormHTML = async function () {
   const res = await axios({
-    url: "/login/returningUser",
-    method: "GET",
+    url: "/login",
+    method: "PUT",
   });
   return res.data;
 };
 
 const getRegisterFormHTML = async function () {
   const res = await axios({
-    url: "/register/newUserSignup",
-    method: "GET",
+    url: "/register",
+    method: "PUT",
   });
   return res.data;
 };
 
 const showLoadingView = function ($targetEl, tag) {
-  // $("#searchBtn").text("Searching...").prop("disabled", true);
   const $loadingDiv = $("<div>")
     .addClass("h-96 flex flex-col justify-center")
     .addClass(`loadingImg${tag}`);
@@ -181,7 +180,6 @@ const showLoadingView = function ($targetEl, tag) {
 
 const hideLoadingView = function (tag) {
   $(`.loadingImg${tag}`).remove();
-  // $("#searchBtn").text("Search").prop("disabled", false);
 };
 
 const renderSearchLoading = function () {
@@ -193,31 +191,26 @@ const renderSearchLoading = function () {
 const deleteAccount = async function (e) {
   const $tgt = $(e.target);
   const userId = $tgt.data().uid;
-  console.log(`User Id: ${userId}`);
   try {
     const res = await axios({
       url: `/users/${userId}`,
       method: "DELETE",
     });
-    console.log("Res: ");
-    console.dir(res);
     location.href = "/";
   } catch (e) {
-    alert(`Something went wrong during Query Deletion. Error info:${e}`);
+    alert(`Something went wrong during Account Deletion. Error info:${e}`);
   }
 };
 
 const deleteQuery = async function (e) {
   const $tgt = $(e.target);
   const dataId = $tgt.closest("div").data().qid;
-  console.log(`Query Id: ${dataId}`);
   try {
     const res = await axios({
       url: `/queries/${dataId}`,
       method: "DELETE",
     });
     $tgt.closest("div").remove();
-    console.log(`Query deleted!`);
   } catch (e) {
     alert(`Something went wrong during Query Deletion. Error info:${e}`);
   }
@@ -257,7 +250,6 @@ const createAndAppendNoResults = function (target) {
 const createAndAppendTweetWidget = function (tweet, targetContainer, divColor) {
   const sentimentContainer = document.createElement("div");
   sentimentContainer.classList.add("relative", "w-48", "mx-auto");
-
   const sentDiv = document.createElement("div");
   sentDiv.classList.add(
     "absolute",

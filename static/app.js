@@ -96,8 +96,9 @@ const fetchAndShowRecommendations = async function () {
   const res = await getTweetRecommendations(query);
   setTimeout(function () {
     $("#getUserContent").text("Complete");
+    // $("#getUserContent").animate({ opacity: 0 }, 3000);
     $("#userRecMsg").text(
-      "Your recommendations change daily, and improve as you make more searches. Check back later for more!"
+      "Your recommendations change over time, and improve as you make more searches."
     );
     $divs.show();
     hideLoadingView("tweetDivs");

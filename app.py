@@ -53,8 +53,7 @@ def do_login(user):
 
 def do_logout():
     """Logout user."""
-    cookies = [CURR_USER_KEY, 'username',
-               'headlines', 'csrf_token', 'hide_nav_search']
+    cookies = [CURR_USER_KEY, 'username', 'csrf_token']
     for cookie in cookies:
         if cookie in session:
             session.pop(cookie)
@@ -65,8 +64,8 @@ def do_logout():
 
 
 def do_clear_search_cookies():
-    cookies = ['tweets', 'q_time', 'query_response', 'q', 'query']
-    for cookie in cookies:
+    search_cookies = ['query']
+    for cookie in search_cookies:
         if cookie in session:
             session.pop(cookie)
 

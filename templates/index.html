@@ -47,8 +47,8 @@ Veritas
       </a>
       {% endfor %}
     </div>
-    {% endif %}
   </section>
+  {% endif %}
 </div>
 
 <!-- How it Works -->
@@ -81,9 +81,8 @@ Veritas
         <h3 class="mt-3 text-xl font-bold">2. Talking to Twitter</h3>
 
         <p class="mt-4 text-lg">
-          Your search will be sent off to Twitter, a great source for direct information. First,
-          we'll search for popular tweets. If we can't find those, we'll broaden our search to include any that might be
-          relevant.
+          Your search is sent off to Twitter, a great source for direct information. Everything except the juicy
+          stuff gets stripped away.
         </p>
       </div>
 
@@ -92,7 +91,7 @@ Veritas
         <h3 class="mt-3 text-xl font-bold">3. Discerning Signal from the Noise</h3>
 
         <p class="mt-4 text-lg">
-          Now the fun begins. We prune the results of everything except the juicy stuff. The text from each
+          Now the fun begins. The text from each
           returned tweet is then sent to a Machine Learning Natural Language Processing API, where they receive
           individual sentiment scores.
         </p>

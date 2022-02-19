@@ -111,7 +111,8 @@ def handle_search():
         db.session.commit()
 
         session['query'] = query
-        return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time, test_tweets=categorized_tweets)
+        search_suggestions = get_search_suggestions()
+        return render_template('search-results.html', tweets=categorized_tweets, query=query, q_time=q_time, test_tweets=categorized_tweets, suggestions=search_suggestions)
 
     else:
         do_clear_search_cookies()
@@ -208,8 +209,9 @@ def show_user_details(user_id):
 
     user = User.query.get_or_404(user_id)
     queries = [q.serialize() for q in user.queries]
+    search_suggestions = get_search_suggestions()
 
-    return render_template('users/user-details.html', user=user, queries=queries)
+    return render_template('users/user-details.html', user=user, queries=queries, suggestions=search_suggestions)
 
 
 @app.route('/users/<int:user_id>', methods=['DELETE'])

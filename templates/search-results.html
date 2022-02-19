@@ -22,15 +22,14 @@ Veritas
       <div class="max-w-lg mx-auto text-center">
         <h2 class="text-3xl font-bold sm:text-4xl">Getting Your Results</h2>
 
-        <p class="mt-4 text-xl">
-          Here's what we found.
+        <p class="mt-4 text-xl" id="searchResultsUsrMsg">
+          Processing...
         </p>
       </div>
     </div>
   </section>
 
-  <p class="text-black text-center p-3">Search for <i>"{{query}}"</i> took {{q_time}} seconds.
-    <span id="convertingMsg">Converting your results...</span>
+  <p class="text-black text-center p-3" id="convertingMsg">Search for <i>"{{query}}"</i> took {{q_time}} seconds.
   </p>
 
   <!-- Main Search Result Section-->
@@ -75,7 +74,7 @@ Veritas
 
         <p class="mt-4 text-xl">
           If you register, your profile page will show
-          recommendations based on your search history. You can delete past searches, and they're gone forever.
+          recommendations based on your search history.
         </p>
         <button
           class="inline-block mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 registrationModalBtn"

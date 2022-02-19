@@ -69,6 +69,7 @@ const emptyTweetContainers = function () {
 
 const fetchAndShowContent = async function () {
   const $divs = $(".fade-in-div");
+  $("#convertingMsg").hide();
   setTimeout(function () {
     renderEmbedTweets(tweetsPositive, tweetsNeutral, tweetsNegative);
   }, 500);
@@ -76,12 +77,13 @@ const fetchAndShowContent = async function () {
   showLoadingView($divs, "tweetDivs");
   $(".actSignupCTA").hide();
   setTimeout(function () {
+    // Post rendering actions
     $divs.show();
     hideLoadingView("tweetDivs");
     $(".actSignupCTA").show();
-    $("#convertingMsg").hide();
+    $("#convertingMsg").addClass("fade-in-block").show();
+    $("#searchResultsUsrMsg").text("Here's what we found:");
   }, 3000);
-  // Account Signup CTA
 };
 
 const fetchAndShowRecommendations = async function () {
@@ -284,3 +286,16 @@ const createAndAppendTweetWidget = function (tweet, targetContainer, divColor) {
 
   targetContainer.append(sentimentContainer, tweetDiv);
 };
+
+function searchText(speed, txt) {
+  let i = 0;
+  function typeWriter() {
+    if (i < txt.length) {
+      document.getElementsByClassName("veritasSearchInput")[0].value +=
+        txt.charAt(i);
+      i++;
+      setTimeout(typeWriter, speed);
+    }
+  }
+  typeWriter();
+}

@@ -13,14 +13,12 @@ import re
 
 CURR_USER_KEY = 'cur_user'
 
-
+# Postgres / Heroku compatibility fix
 uri = os.getenv("DATABASE_URL")  # or other relevant config var
 if uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-#     'DATABASE_URL', 'postgresql:///veritas')
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 DATABASE_URL = uri
@@ -30,7 +28,7 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get(
-    "SECRET_KEY", "defaultsecretkeybutnotreally!")
+    "FLASK_SECRET_KEY", "defaultsecretkeybutnotreally!")
 
 connect_db(app)
 
@@ -160,7 +158,7 @@ def signup():
 
         except IntegrityError:
             flash('Username already exists. Please try another.', 'error')
-            return redirect(request.referrer)
+            return redirect('/')
 
         do_login(user)
         flash(f'Account successfully created.', 'success')

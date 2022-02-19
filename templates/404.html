@@ -24,17 +24,22 @@ Something Went Wrong
             </button>
           </div>
         </div>
-        {% with errors = get_flashed_messages(category_filter=['no-results']) %}
-        {% if errors %}
-        {% for msg in errors %}
-        <p class="text-base text-center text-red-500">{{msg}}</p>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
       </form>
       <!-- End Search Form -->
-
     </div>
+    {% if suggestions %}
+    <section class="headlines mb-8">
+      <h2 class="text-center mt-4 text-black">Suggested Searches:</h2>
+      <div id="headlineWords" class="mt-1 flex flex-row justify-center">
+        {% for suggestion in suggestions %}
+        <a href="/search/{{suggestion}}">
+          <span
+            class="inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2 veritasSearchSuggestion">{{suggestion}}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
   </div>
 </section>
 

@@ -67,7 +67,8 @@ def do_clear_search_cookies():
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html'), 404
+    search_suggestions = get_search_suggestions()
+    return render_template('404.html', suggestions=search_suggestions), 404
 
 
 @app.route('/')

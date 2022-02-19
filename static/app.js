@@ -96,7 +96,7 @@ const fetchAndShowRecommendations = async function () {
   setTimeout(function () {
     $("#getUserContent").text("Complete");
     $("#userRecMsg").text(
-      "Your recommendations change daily. Check back later for more!"
+      "Your recommendations change daily, and improve as you make more searches. Check back later for more!"
     );
     $divs.show();
     hideLoadingView("tweetDivs");

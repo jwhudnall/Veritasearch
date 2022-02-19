@@ -9,20 +9,27 @@ from helpers import get_search_suggestions, convert_query_string, query_twitter_
 import psycopg2
 import time
 import os
+import re
 
 BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 CURR_USER_KEY = 'cur_user'
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
-    'DATABASE_URL', 'postgresql:///veritas')
 
-DATABASE_URL = os.environ['DATABASE_URL']
+uri = os.getenv("DATABASE_URL")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+#     'DATABASE_URL', 'postgresql:///veritas')
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
+
+DATABASE_URL = uri
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SQLALCHEMY_ECHO"] = False
+app.config["SQLALCHEMY_ECHO"] = True
 app.config["SECRET_KEY"] = os.environ.get(
     "SECRET_KEY", "defaultsecretkeybutnotreally!")
 

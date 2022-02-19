@@ -6,6 +6,7 @@ from werkzeug.exceptions import Unauthorized
 from requests.exceptions import ConnectionError
 from forms import UserAddForm, LoginForm
 from helpers import get_search_suggestions, convert_query_string, query_twitter_v2, prune_tweets, categorize_by_sentiment
+import psycopg2
 import time
 import os
 
@@ -15,6 +16,10 @@ CURR_USER_KEY = 'cur_user'
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
     'DATABASE_URL', 'postgresql:///veritas')
+
+DATABASE_URL = os.environ['DATABASE_URL']
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False

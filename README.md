@@ -36,9 +36,11 @@ If a user has an account and is signed in, their search queries are saved and us
 ## Main Features
 
 - **Side-by-Side Viewpoint Perspective** - On desktop, results are presented side-by-side. The goal is to present different perspectives through which the user can search:
+
   <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-results.jpg?raw=true" alt="Veritas Search Results" width="250px">
 
 - **Suggested Searches** - I use python to randomly select 3 search-topics from a predefined list. Users can click a suggestion to trigger a search of that topic. I implemented this to reduce friction when users are first introduced to the platform:
+ 
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-suggested-searches.jpg" alt="Veritas Search Suggestions" width="250px">
 
 - **How it Works Section** - I added this to help the user understand what was going on behind the scenes. I believe it's a good high-level overview for those that don't read this documentation:
@@ -46,6 +48,7 @@ If a user has an account and is signed in, their search queries are saved and us
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-how-it-works.jpg" alt="Veritas How it Works" width="250px">
 
 - **Personal Recommendations** - This was implemented to offer the user incentive to continue using the platform. Recommendations are based on previous queries:
+ 
   <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-recommendations.jpg?raw=true" alt="Veritas Search Suggestions" width="250px">
 
 - **Past Search Removal Options** - I felt it important that the user be able to remove past searches:
@@ -53,10 +56,12 @@ If a user has an account and is signed in, their search queries are saved and us
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-query-removal.jpg" alt="Veritas Search Deletion" width="250px">
 
 - **Account Removal** - I also felt it important that the user could delete their account, removing any trace of information related to their searches:
+ 
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-delete-account.jpg" alt="Veritas Account Removal" width="250px">
 
 - **Login and Register Modals** - I felt like this gave the site a more professional feel, vs the standard landing page for login and registration handling:
-<img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal" width="250px">
+
+  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal" width="250px">
 <hr>
 
 ## API's Used

@@ -1,7 +1,6 @@
 from email import header
 from flask import Flask, render_template, redirect, session, flash, request, g, url_for, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from config import FLASK_KEY, BEARER_TOKEN, NEWS_API_KEY
 from models import db, connect_db, User, Query
 from sqlalchemy.exc import IntegrityError
 from werkzeug.exceptions import Unauthorized
@@ -11,7 +10,7 @@ from helpers import get_search_suggestions, convert_query_string, query_twitter_
 import time
 import os
 
-
+BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 CURR_USER_KEY = 'cur_user'
 
 app = Flask(__name__)
@@ -20,11 +19,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///veritas"
 #     os.environ.get('DATABASE_URL', "postgresql:///veritas-test"))
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
-app.config["SECRET_KEY"] = FLASK_KEY
-# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "defaultsecretkeybutnotreally!")
 
 connect_db(app)
-# toolbar = DebugToolbarExtension(app)
+
 
 
 @app.before_request

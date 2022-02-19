@@ -3,7 +3,6 @@
 import random
 from flask import flash
 from models import Query
-from config import BEARER_TOKEN
 import requests
 
 

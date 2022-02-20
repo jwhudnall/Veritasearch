@@ -1,4 +1,4 @@
-# Project Veritas
+# Veritas Search
 
 _Discover Truth._
 
@@ -16,21 +16,21 @@ Original Proposal: <a href="https://github.com/jwhudnall/Springboard-Capstone-1/
 
 The backend is implemented with python and served via Flask. Users are guided to search a topic using one of the main search bars. The search query is then sent to the <a href="https://developer.twitter.com/en/docs/twitter-api">Twitter API v2</a>, returning tweets related to the user's query. The search is optimized to exclude retweets, and source tweets from verified accounts only.
 
-Once results are returned, they are pruned to remove superfluous fields. The text from each tweet is then sent to <a href="https://sentim-api.herokuapp.com/">Sentim API</a>, a Machine Learning Natural Language Processing tool that returns a sentiment and polarity score. Together, these fields are aggregated to construct and return a list of unordered tweet objects. The list of unordered tweets is then categorized into a tuple comprised of 3 buckets; Positives, Neutrals and Negatives, sorted by polarity score.
+Once results are returned, they are pruned to remove superfluous fields. The text from each tweet is then sent to <a href="https://sentim-api.herokuapp.com/">Sentim API</a>, a Machine Learning Natural Language Processing API that returns a sentiment and polarity score. Together, these fields are aggregated to construct and return a list of unordered tweet objects. This list is then converted into a tuple comprised of 3 tweet types; Positives, Neutrals and Negatives, sorted by polarity score.
 
-This tuple is served from Flask on the backend to Javascript on the front end, where each tweet id is used to leverage <a href="https://developer.twitter.com/en/docs/twitter-for-websites/javascript-api/guides/scripting-factory-functions">Twitter's Javascript API</a> to render tweets in their familiar form. Sentiment labels with the overall sentiment and polarity score is also created and added atop each resulting tweet, rendering clearly-labelled information to the user.
+The final list is served from Flask on the backend to Javascript on the front end, where each tweet id is used to leverage <a href="https://developer.twitter.com/en/docs/twitter-for-websites/javascript-api/guides/scripting-factory-functions">Twitter's Javascript API</a> to render tweets in their ubiquitous form. Labels displaying the overall sentiment and polarity score are also created and added atop each resulting tweet as they are rendered, resulting in clearly-labelled information for the user.
 
-If a user has an account and is signed in, their search queries are saved and used to display recommended information based on their search history. User's have the ability to delete individual queries, which in turn affects their recommendations.
+If a user has an account and is signed in, their search queries are saved and used to display recommended information based on their search history. This is implemented by taking a random sample of user queries and constructing a specialized search with content related to these queries. User's have the ability to delete individual queries, which in turn affects their recommendations.
 
 <hr>
 
 ## Standard User Flow
 
-1. A user lands on the page, and enters a search term (most likely from a pre-selected option).
+1. A user lands on the page, and enters a search term (most likely clicking a pre-selected option).
 2. After reviewing the results, the user is gently encouraged to create an account in order to receive personalized recommendations.
-3. Once a user registers, any queries they make will be tied to their account. When they visit their profile page, they will be able to click a button to receive recommendations. Currently, these recommendations are a search for randomized variants of previous user-queries. The end result is categorized content from more than one topic.
+3. Once a user registers, any queries they make will be tied to their account. When they visit their profile page, they will be able to click a button to receive recommendations. The end result is categorized content from more than one topic, congruent with the interest of the user.
 4. From their profile page, users can delete individual queries. Doing so removes related searches as potential recommendation material.
-5. Users can also delete their account from a drop-down accordion, removing all queries tied to their account.
+5. Users can also delete their account from a drop-down accordion, removing all information tied to their account.
 <hr>
 
 ## Main Features
@@ -43,7 +43,7 @@ If a user has an account and is signed in, their search queries are saved and us
  
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-suggested-searches.jpg" alt="Veritas Search Suggestions" width="250px">
 
-- **How it Works Section** - I added this to help the user understand what was going on behind the scenes. I believe it's a good high-level overview for those that don't read this documentation:
+- **"How it Works" Section** - I added this to help the user understand what was going on behind the scenes. I believe it's a good high-level overview for those that don't read this documentation:
 
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-how-it-works.jpg" alt="Veritas How it Works" width="250px">
 
@@ -59,7 +59,7 @@ If a user has an account and is signed in, their search queries are saved and us
  
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-delete-account.jpg" alt="Veritas Account Removal" width="250px">
 
-- **Login and Register Modals** - I felt like this gave the site a more professional feel, vs the standard landing page for login and registration handling:
+- **Login and Register Modals** - This was a stretch goal, which I believe gives the site a more professional feel:
 
   <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal" width="250px">
 <hr>

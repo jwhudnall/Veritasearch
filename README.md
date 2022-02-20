@@ -53,7 +53,7 @@ If a user has an account and is signed in, their search queries are saved and us
  
   <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-recommendations.jpg?raw=true" alt="Veritas Search Suggestions" width="250px">
 
-- **Past Search Removal Options** - I felt it important that the user be able to remove past searches:
+- **Past Search Removal Option** - I felt it important that the user be able to remove past searches:
 
   <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-query-removal.jpg" alt="Veritas Search Deletion" width="250px">
 

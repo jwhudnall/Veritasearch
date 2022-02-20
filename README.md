@@ -10,6 +10,8 @@ Live link: http://www.veritasearch.com/
 
 Original Proposal: <a href="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/Project%20Veritas%20-%20Capstone%201%20Project%20Proposal.pdf">Project Veritas - Project Proposal.pdf</a>
 
+Link to Deployment Work Flow: <a href="https://trello.com/b/cRnB6FPG/capstone-1">Trello Board</a>
+
 <hr>
 
 ## How it Works

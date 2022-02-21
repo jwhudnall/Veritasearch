@@ -12,7 +12,7 @@ BEARER_TOKEN = os.environ.get("BEARER_TOKEN")
 def get_search_suggestions():
     """Returns a list of 3 options from a pre-defined topic list."""
     q_list = ['Tesla', 'Politics', 'Russia Ukraine', 'Donald Trump',
-              'Joe Biden', 'Global Warming', 'Stock Market', 'Joe Rogan', 'Cancel Culture', 'Vaccine', 'Inflation', 'Bitcoin', 'Taylor Swift', 'Cybersecurity', 'Financial Independence']
+              'Joe Biden', 'Global Warming', 'Stock Market', 'Joe Rogan', 'Cancel Culture', 'Vaccine', 'Inflation', 'Bitcoin', 'Taylor Swift', 'Cybersecurity', 'Financial Independence', 'Juwan Howard', 'Prince Charles', 'AMC Stock']
     random.shuffle(q_list)
     return q_list[:3]
 

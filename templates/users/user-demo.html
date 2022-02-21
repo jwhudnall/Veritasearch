@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}Demo Account Details{% endblock %}
+
+{% block content %}
+
+<!-- Delete Account Modal -->
+<div
+  class="hidden overflow-y-auto overflow-x-hidden fixed right-0 left-0 top-4 z-50 justify-center items-center md:inset-0 h-modal sm:h-full"
+  id="popup-modal">
+  <div class="relative px-4 w-full max-w-md h-full md:h-auto">
+    <!-- Modal content -->
+    <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <!-- Modal header -->
+      <div class="flex justify-end p-2">
+        <button type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+          data-modal-toggle="popup-modal">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <div class="p-6 pt-0 text-center">
+        <svg class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete your
+          account?</h3>
+        <button data-modal-toggle="popup-modal" id="delActBtn" type="button"
+          class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+          disabled>
+          Disabled in Demo
+        </button>
+        <button data-modal-toggle="popup-modal" type="button"
+          class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600">No,
+          cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END Delete Account Modal -->
+
+<!-- Start Test Grid Cols -->
+<div class="bg-white h-max">
+
+  <div class="grid grid-cols-1 md:grid-cols-5 bg-white dark:bg-slate-800">
+    <section class="bg-gray-800 md:col-start-1 md:col-span-5">
+      <div class="max-w-screen-xl px-2 py-16 mx-auto text-black space-y-8 sm:px-6 lg:px-8">
+        <div class="max-w-lg mx-auto text-center text-white">
+          <h2 class="text-3xl font-bold sm:text-4xl fade-in-block">Welcome, VeritasSearcher</h2>
+          <p class="mt-4 text-xl fade-in-block" id="userRecMsg">
+            {% if queries %}
+            Click to see your recommendations.
+          </p>
+          <button id="getDemoUserContent"
+            class="block mx-auto mt-3 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 fade-in-block"
+            type="button">
+            View
+          </button>
+          {% else %}
+          Recommendations will appear below after you've made a few searches.
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <div class="grid grid-cols-1 md:grid-cols-5 bg-white">
+
+    <div class="w-full max-w-sm col-span-1 mx-auto border border-gray-200 md:border-0">
+      <!-- Accordion Start -->
+      <div id="accordion-flush" data-accordion="open" class="md:ml-2" data-active-classes="bg-white text-gray-900"
+        data-inactive-classes="text-gray-500">
+        <h2 id="accordion-flush-heading-1">
+          <button type="button"
+            class="flex items-center justify-between py-5 w-full font-medium text-left border-b border-gray-200 text-gray-900 rounded-t-xl"
+            data-accordion-target="#accordion-flush-body-1" aria-expanded="true" aria-controls="accordion-flush-body-1">
+            <span class="ml-2">Search History</span>
+            <svg data-accordion-icon class="w-6 h-6 shrink-0 rotate-180" fill="currentColor" viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </h2>
+        <div id="accordion-flush-body-1" aria-labelledby="accordion-flush-heading-1" class="p-1">
+          <div class="py-5 border-b border-gray-200">
+            <div>
+              {% if queries %}
+              <p class="mb-2 text-gray-800 text-center">Deleting search terms will change your
+                recommendations.</p>
+              <div id="queryContainerDemo" class="flex flex-row flex-wrap justify-center queryContainerDemo">
+
+                {% for q in queries %}
+                <div class="m-1 bg-gray-200 text-black rounded-full px-3 py-1">
+                  <span>
+                    {{q}}
+                  </span>
+                  <button class="text-red-500">X</button>
+                </div>
+                {% endfor %}
+
+              </div>
+              {% else %}
+              <div class="text-center text-black">
+                <p>Your search terms will appear here.</p>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <h2 id="accordion-flush-heading-2">
+          <button type="button"
+            class="flex items-center justify-between py-5 w-full font-medium border-b border-gray-200 text-left text-gray-500"
+            data-accordion-target="#accordion-flush-body-2" aria-expanded="false"
+            aria-controls="accordion-flush-body-2">
+            <span class="ml-2">Account Info</span>
+            <svg data-accordion-icon class="w-6 h-6 shrink-0" fill="currentColor" viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clip-rule="evenodd"></path>
+            </svg>
+          </button>
+        </h2>
+        <div id="accordion-flush-body-2" class="hidden" aria-labelledby="accordion-flush-heading-2">
+          <div class="py-5 border-b border-gray-200">
+            <div class="w-full text-center max-w-sm mx-auto p-2 text-black">
+              <ul>
+                <li class="font-bold">Username: <span class="font-normal">Jane Doe</span></li>
+                <li class="font-bold">First Name: <span class="font-normal">VeritasSearcher</span></li>
+              </ul>
+            </div>
+
+            <button
+              class="block mx-auto text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-xs px-2.5 py-1.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800"
+              type="button" data-modal-toggle="popup-modal">
+              Delete Account
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Test Area -->
+
+
+
+
+
+    {% if queries %}
+    <div class="col-span-1 md:col-span-4">
+
+      <!-- Main Search Result Section-->
+      <section id="personalizedResultContainer"
+        class="w-full max-w-screen-xl mt-8 mx-auto grid grid-cols-1 lg:grid-cols-3 gap-2 text-black">
+        <div
+          class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+          <div class="px-1 py-1">
+            <div>
+              <h2 class="text-xl text-center font-extrabold mb-3">Positive</h2>
+            </div>
+            <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsPositiveContainer"></div>
+          </div>
+        </div>
+        <div
+          class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+          <div class="px-1 py-1">
+            <div>
+              <h2 class="text-center text-xl font-extrabold mb-3">Neutral</h2>
+            </div>
+            <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNeutralContainer"></div>
+          </div>
+        </div>
+        <div
+          class="px-3 w-11/12 justify-self-center md:mx-4 max-w-lg mb-16 no-underline bg-white transition shadow-lg hover:shadow hover:-translateY-sm flex flex-1 flex-col rounded-lg">
+          <div class="px-1 py-1">
+            <div>
+              <h2 class="text-center text-xl font-extrabold mb-3">Negative</h2>
+            </div>
+            <div class="overflow-y-auto h-96 fade-in-div no-scrollbar" id="tweetsNegativeContainer"></div>
+          </div>
+        </div>
+      </section>
+      <!-- End Main Information Panels -->
+
+
+      {% endif %}
+      <!-- <div class="col-span-1 md:col-span-4 mt-5 mb-16 searchForTruthBlock">
+        <div class="max-w-lg mt-16 mx-auto text-center text-black">
+          <h2 class="text-3xl font-bold sm:text-4xl">Search For Truth</h2>
+
+          <p class="mt-4 text-xl mb-2">
+            Information is power.
+          </p>
+
+          <form action="/search" method="GET" class="veritasSearchForm">
+            <div class="flex items-center justify-center">
+              <div class="flex border-2 rounded">
+                <input type="text" name="query" class="px-4 text-black py-2 w-80 veritasSearchInput" minlength="3"
+                  placeholder="Search..." required>
+                <button type="submit" class="flex items-center justify-center bg-white px-4 border-l veritasSearchBtn">
+                  <img src="/static/images/primary-search-icon.png" class="searchBarIcon" height="20" width="20" alt="">
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+        {% if suggestions %}
+        <section class="headlines mb-8">
+          <h2 class="text-center mt-4 text-black">Suggested Searches:</h2>
+          <div id="headlineWords" class="mt-1 flex flex-row justify-center">
+            {% for suggestion in suggestions %}
+            <a href="/search/{{suggestion}}">
+              <span
+                class="inline-block bg-gray-200 rounded-full px-2 py-1 text-xs font-semibold text-gray-700 hover:cursor-pointer mr-2 mb-2 veritasSearchSuggestion">{{suggestion}}</span>
+            </a>
+            {% endfor %}
+          </div>
+        </section>
+        {% endif %}
+      </div> -->
+    </div>
+  </div>
+</div>
+{% endblock %}

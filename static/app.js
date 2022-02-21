@@ -23,12 +23,34 @@ $(document).ready(async function () {
     $("#personalizedResultContainer").show();
     $("#getUserContent").prop("disabled", true);
     $("#getUserContent").text("Searching...");
-    await fetchAndShowRecommendations();
+    await fetchAndShowRecommendations("#queryContainer", "#getUserContent");
+  });
+  // Demo User Content Action
+  $("#getDemoUserContent").on("click", async function () {
+    if ($("#queryContainerDemo").children().length > 0) {
+      $("#personalizedResultContainer").show();
+      $("#getDemoUserContent").prop("disabled", true);
+      $("#getDemoUserContent").text("Searching...");
+      await fetchAndShowRecommendations(
+        "#queryContainerDemo",
+        "#getDemoUserContent"
+      );
+    } else {
+      $refresh = $(
+        '<span class="text-blue-400"><a href="/users/demo">Click to refresh page.</a></span>'
+      );
+      $("#userRecMsg")
+        .text("Past search history is needed to provide recommendations. ")
+        .append($refresh);
+      $("#getDemoUserContent").hide();
+    }
   });
 
   $(".veritasSearchForm").on("submit", renderSearchLoading);
 
   $("#queryContainer").on("click", "button", deleteQuery);
+  $("#queryContainerDemo").on("click", "button", deleteQueryDemo);
+
   $("#delActBtn").on("click", deleteAccount);
 
   $("#headlineWords").on(
@@ -86,17 +108,19 @@ const fetchAndShowContent = async function () {
   }, 3000);
 };
 
-const fetchAndShowRecommendations = async function () {
+const fetchAndShowRecommendations = async function (target, btn) {
   emptyTweetContainers();
-  const query = selectQueriesForSearch();
+  const query = selectQueriesForSearch(target);
   const $divs = $(".fade-in-div");
   $divs.hide();
   showLoadingView($divs, "tweetDivs");
   // Query API for recommended tweets
   const res = await getTweetRecommendations(query);
   setTimeout(function () {
-    $("#getUserContent").text("Complete");
+    $(btn).text("Complete");
+    $(btn).fadeTo(5000, 0);
     // $("#getUserContent").animate({ opacity: 0 }, 3000);
+
     $("#userRecMsg").text(
       "Your recommendations change over time, and improve as you make more searches."
     );
@@ -129,20 +153,17 @@ const getTweetRecommendations = async function (query) {
   }
 };
 
-const selectQueriesForSearch = function () {
-  // Currently returns a random query for search
-  if ($("#queryContainer").length > 0) {
+const selectQueriesForSearch = function (target) {
+  // Sends all queries to the backend for processing
+  if ($(target).length > 0) {
     let s = "";
-    const queries = $("#queryContainer").find("span");
+    const queries = $(target).find("span");
     for (let q of queries) {
       let cur = q.innerText.trim();
       s += cur + ",";
     }
     let queryString = s.substring(0, s.length - 1); // Remove trailing comma
     return queryString;
-    // let randIdx = Math.floor(Math.random() * queries.length);
-    // let choice = queries[randIdx].innerText.trim();
-    // return choice;
   } else {
     return False;
   }
@@ -204,15 +225,24 @@ const deleteAccount = async function (e) {
 const deleteQuery = async function (e) {
   const $tgt = $(e.target);
   const dataId = $tgt.closest("div").data().qid;
+  $tgt.closest("div").remove();
+  await deleteQueryFromDB(dataId);
+};
+
+const deleteQueryFromDB = async function (dataId) {
   try {
     const res = await axios({
       url: `/queries/${dataId}`,
       method: "DELETE",
     });
-    $tgt.closest("div").remove();
   } catch (e) {
     alert(`Something went wrong during Query Deletion. Error info:${e}`);
   }
+};
+
+const deleteQueryDemo = function (e) {
+  const $tgt = $(e.target);
+  $tgt.closest("div").remove();
 };
 
 const renderEmbedTweets = function (positive, neutral, negative) {

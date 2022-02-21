@@ -204,6 +204,15 @@ def logout_user():
     return redirect('/')
 
 
+@app.route('/users/demo')
+def show_demo_user_page():
+    """Shows example account view."""
+    queries = ['Bitcoin', 'Tesla', 'Covid-19',
+               'Global Warming', 'Russia Ukraine']
+    search_suggestions = get_search_suggestions()
+    return render_template('/users/user-demo.html', queries=queries, suggestions=search_suggestions)
+
+
 @app.route('/users/<int:user_id>')
 def show_user_details(user_id):
     """Show user details page."""

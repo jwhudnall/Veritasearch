@@ -11,48 +11,21 @@ $(document).ready(async function () {
   if ($("#searchResultContainer").length > 0) {
     fetchAndShowContent();
   }
-
+  // Runs on personal results page only
   if ($("#personalizedResultContainer").length > 0) {
-    // Runs on personal results page only
     $("#personalizedResultContainer").hide();
     $(".searchForTruthBlock").hide();
   }
-
   // Personalized User Content Action
   $("#getUserContent").on("click", async function () {
-    $("#personalizedResultContainer").show();
-    $("#getUserContent").prop("disabled", true);
-    $("#getUserContent").text("Searching...");
+    updateBtnAndSearchContainer("#getUserContent");
     await fetchAndShowRecommendations("#queryContainer", "#getUserContent");
   });
-  // Demo User Content Action
-  $("#getDemoUserContent").on("click", async function () {
-    if ($("#queryContainerDemo").children().length > 0) {
-      $("#personalizedResultContainer").show();
-      $("#getDemoUserContent").prop("disabled", true);
-      $("#getDemoUserContent").text("Searching...");
-      await fetchAndShowRecommendations(
-        "#queryContainerDemo",
-        "#getDemoUserContent"
-      );
-    } else {
-      $refresh = $(
-        '<span class="text-blue-400"><a href="/users/demo">Click to refresh page.</a></span>'
-      );
-      $("#userRecMsg")
-        .text("Past search history is needed to provide recommendations. ")
-        .append($refresh);
-      $("#getDemoUserContent").hide();
-    }
-  });
-
+  $("#getDemoUserContent").on("click", handleDemoResults);
   $(".veritasSearchForm").on("submit", renderSearchLoading);
-
   $("#queryContainer").on("click", "button", deleteQuery);
   $("#queryContainerDemo").on("click", "button", deleteQueryDemo);
-
   $("#delActBtn").on("click", deleteAccount);
-
   $("#headlineWords").on(
     "click",
     ".veritasSearchSuggestion",
@@ -67,7 +40,6 @@ $(document).ready(async function () {
     $("#userRegisterSection").empty();
     toggleModal("registration-modal", false);
   });
-
   // User Login Action
   $("body").on("click", ".loginModalBtn", async function () {
     const html = await getLoginFormHTML();
@@ -78,6 +50,25 @@ $(document).ready(async function () {
     toggleModal("login-modal", false);
   });
 });
+
+const handleDemoResults = async function () {
+  if ($("#queryContainerDemo").children().length > 0) {
+    updateBtnAndSearchContainer("#getDemoUserContent");
+    await fetchAndShowRecommendations(
+      "#queryContainerDemo",
+      "#getDemoUserContent"
+    );
+  } else {
+    $refresh = $(
+      '<span class="text-blue-400"><a href="/users/demo">Click to refresh page.</a></span>'
+    );
+    $("#userRecMsg")
+      .text("Past search history is needed to provide recommendations. ")
+      .append($refresh);
+    $("#getDemoUserContent").hide();
+  }
+};
+
 const emptyTweetContainers = function () {
   const containers = [
     positiveTweetContainer,
@@ -119,8 +110,6 @@ const fetchAndShowRecommendations = async function (target, btn) {
   setTimeout(function () {
     $(btn).text("Complete");
     $(btn).fadeTo(5000, 0);
-    // $("#getUserContent").animate({ opacity: 0 }, 3000);
-
     $("#userRecMsg").text(
       "Your recommendations change over time, and improve as you make more searches."
     );
@@ -151,6 +140,12 @@ const getTweetRecommendations = async function (query) {
       `Something went wrong during Personalized Tweet Recommendation Search. Please try again later.Error info:${e}`
     );
   }
+};
+
+const updateBtnAndSearchContainer = function (btn) {
+  $("#personalizedResultContainer").show();
+  $(btn).prop("disabled", true);
+  $(btn).text("Searching...");
 };
 
 const selectQueriesForSearch = function (target) {

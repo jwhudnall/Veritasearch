@@ -2,7 +2,7 @@
 
 _Discover Truth._
 
-<img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/veritas-search-home.jpg?raw=true" alt="Veritas Search Homepage" width="400px">
+<img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/veritas-search-home.jpg?raw=true" alt="Veritas Search Homepage" >
 
 Veritas is an attempt to aggregate and classify information based on it's underlying sentiment. The goal is to provide information to the user that is clearly labelled, in an effort to increase transparency and reduce echo chambers. The first iteration uses the Twitter platform as an information source.
 
@@ -29,7 +29,7 @@ If a user has an account and is signed in, their search queries are saved and us
 ## Standard User Flow
 
 1. A user lands on the page, and enters a search term (most likely clicking a pre-selected option).
-2. After reviewing the results, the user is gently encouraged to create an account in order to receive personalized recommendations.
+2. After reviewing the results, the user is gently encouraged to create an account in order to receive personalized recommendations. An account experience preview button was added to let users sample the experience without actually signing up.
 3. Once a user registers, any queries they make will be tied to their account. When they visit their profile page, they will be able to click a button to receive recommendations. The end result is categorized content from more than one topic, congruent with the interest of the user.
 4. From their profile page, users can delete individual queries. Doing so removes related searches as potential recommendation material.
 5. Users can also delete their account from a drop-down accordion, removing all information tied to their account.
@@ -37,33 +37,34 @@ If a user has an account and is signed in, their search queries are saved and us
 
 ## Main Features
 
-- **Side-by-Side Viewpoint Perspective** - On desktop, results are presented side-by-side. The goal is to present different perspectives through which the user can search:
+- **Side-by-Side Viewpoint Perspective** 
+  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-results.jpg?raw=true" alt="Veritas Search Results">
+  - On desktop, results are presented side-by-side. The goal is to present different perspectives through which the user can search.
 
-  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-results.jpg?raw=true" alt="Veritas Search Results" width="250px">
+- **Suggested Searches** 
+  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-suggested-searches.jpg" alt="Veritas Search Suggestions">
+  - I use python to randomly select 3 search-topics from a predefined list. Users can click a suggestion to trigger a search of that topic. I implemented this to reduce friction when users are first introduced to the platform.
 
-- **Suggested Searches** - I use python to randomly select 3 search-topics from a predefined list. Users can click a suggestion to trigger a search of that topic. I implemented this to reduce friction when users are first introduced to the platform:
+- **"How it Works" Section**
+  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-how-it-works.jpg" alt="Veritas How it Works">
+  - I added this to help the user understand what was going on behind the scenes. I believe it's a good high-level overview for those that don't read this documentation.
+
+- **Personal Recommendations** 
+  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-recommendations.jpg?raw=true" alt="Veritas Search Suggestions">
+  - This was implemented to offer the user incentive to continue using the platform. Recommendations are based on previous queries.
  
-  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-suggested-searches.jpg" alt="Veritas Search Suggestions" width="250px">
 
-- **"How it Works" Section** - I added this to help the user understand what was going on behind the scenes. I believe it's a good high-level overview for those that don't read this documentation:
+- **Past Search Removal Option**
 
-  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-how-it-works.jpg" alt="Veritas How it Works" width="250px">
+  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-query-removal.jpg" alt="Veritas Search Deletion">
 
-- **Personal Recommendations** - This was implemented to offer the user incentive to continue using the platform. Recommendations are based on previous queries:
- 
-  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-recommendations.jpg?raw=true" alt="Veritas Search Suggestions" width="250px">
+- **Account Removal** 
 
-- **Past Search Removal Option** - I felt it important that the user be able to remove past searches:
+  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-delete-account.jpg" alt="Veritas Account Removal">
 
-  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-query-removal.jpg" alt="Veritas Search Deletion" width="250px">
+- **Login and Register Modals** 
 
-- **Account Removal** - I also felt it important that the user could delete their account, removing any trace of information related to their searches:
- 
-  <img src="https://raw.githubusercontent.com/jwhudnall/Springboard-Capstone-1/main/static/images/readme-images/veritas-delete-account.jpg" alt="Veritas Account Removal" width="250px">
-
-- **Login and Register Modals** - This was a stretch goal, which I believe gives the site a more professional feel:
-
-  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal" width="250px">
+  <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal">
 <hr>
 
 ## API's Used

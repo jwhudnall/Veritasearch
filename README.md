@@ -1,6 +1,6 @@
 # Veritas Search
 
-_Discover Truth._
+_Search a topic. Get different perspectives. Form your own opinion._
 
 <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/veritas-search-home.jpg?raw=true" alt="Veritas Search Homepage" >
 

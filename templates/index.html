@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Veritas Search
+Veritas Search - Search a topic. Get different perspectives. Form your own opinion.
 {% endblock %}
 
 {% block content %}
@@ -9,7 +9,9 @@ Veritas Search
   <h1
     class="mt-56 text-center text-white text-4xl tracking-tight font-extrabold text-white sm:text-6xl lg:mt-56 xl:text-6xl">
     Veritas Search</h1>
-  <div class="w-full max-w-sm mt-5 mx-auto">
+  <h2 class="text-white text-center tracking-tight">Search a topic. Get different perspectives. Form your own opinion.
+  </h2>
+  <div class="w-full max-w-lg mt-1 mx-auto">
 
     <form action="/search" method="GET" class="veritasSearchForm">
       <div class="flex items-center justify-center">
@@ -38,7 +40,7 @@ Veritas Search
 
   {% if suggestions %}
   <section class="headlines mb-8">
-    <h2 class="text-center mt-4 text-white">Suggested Searches:</h2>
+    <h2 class="text-center mt-4 text-white tracking-tight font-semibold">Suggested Searches:</h2>
     <div id="headlineWords" class="mt-1 flex flex-row justify-center">
       {% for suggestion in suggestions %}
       <a href="/search/{{suggestion}}">

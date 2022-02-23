@@ -67,8 +67,17 @@ If a user has an account and is signed in, their search queries are saved and us
   <img src="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/static/images/readme-images/veritas-modals.jpg?raw=true" alt="Veritas Sign In Modal">
 <hr>
 
-## API's Used
+## Composition
+### Technologies Used
+- Backend
+  - Python (Flask)
+  - SQLAlchemy/PostgreSQL
+  - bcrypt (password hashing)
+- Frontend
+  - Tailwind CSS
+  - jQuery 
 
+### APIs
 - <a href="https://developer.twitter.com/en/docs/twitter-api">Twitter API v2</a>
   - I originally planned to use Twitter's v1 API (which retrieves tweets Twitter classifies as "popular"). During implementation, however, I realized the results were very limited. I migrated to v2 to facilitate wider viewpoints.
 - <a href="https://developer.twitter.com/en/docs/twitter-for-websites/javascript-api/guides/scripting-factory-functions">Twitter's Javascript API</a>

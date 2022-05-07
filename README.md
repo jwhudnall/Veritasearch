@@ -4,7 +4,7 @@ _Search a topic. Get different perspectives. Form your own opinion._
 
 <img src="https://github.com/jwhudnall/Veritasearch/blob/main/static/images/veritas-homepage-rev1.jpg?raw=true" alt="Veritas Search Homepage" >
 
-Veritas is an attempt to aggregate and classify information based on it's underlying sentiment. The goal is to provide information to the user that is clearly labelled, in an effort to increase transparency and reduce echo chambers. The first iteration uses the Twitter platform as an information source.
+Veritas Search is an attempt to aggregate and classify information based on it's underlying sentiment. The goal is to provide information to the user that is clearly labelled, in an effort to increase transparency and reduce echo chambers. The first iteration uses the Twitter platform as an information source.
 
 Live link: http://www.veritasearch.com/
 

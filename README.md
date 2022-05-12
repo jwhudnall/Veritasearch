@@ -6,6 +6,8 @@ _Search a topic. Get different perspectives. Form your own opinion._
 
 Veritas Search is an attempt to aggregate and classify information based on it's underlying sentiment. The goal is to provide information to the user that is clearly labelled, in an effort to increase transparency and reduce echo chambers. The first iteration uses the Twitter platform as an information source.
 
+This was a project I brainstormed, wire-framed and implemented as part of Springboard's Software Engineering Bootcamp.
+
 Live link: http://www.veritasearch.com/
 
 Original Proposal: <a href="https://github.com/jwhudnall/Springboard-Capstone-1/blob/main/Project%20Veritas%20-%20Capstone%201%20Project%20Proposal.pdf">Project Veritas - Project Proposal.pdf</a>

@@ -18,7 +18,7 @@ Link to Deployment Work Flow: <a href="https://trello.com/b/cRnB6FPG/capstone-1"
 
 ## How it Works
 
-The backend is implemented with python and served via Flask. Users are guided to search a topic using one of the main search bars. The search query is then sent to the <a href="https://developer.twitter.com/en/docs/twitter-api">Twitter API v2</a>, returning tweets related to the user's query. The search is optimized to exclude retweets, and source tweets from verified accounts only.
+The backend is implemented with python and served via Flask. Users are guided to search a topic using one of the main search bars. The search query is then sent to the <a href="https://developer.twitter.com/en/docs/twitter-api">Twitter API v2</a>, which yields tweets related to the user's query. The search is optimized to exclude retweets, and source tweets from verified accounts only.
 
 Once results are returned, they are pruned to remove superfluous fields. The text from each tweet is then sent to <a href="https://sentim-api.herokuapp.com/">Sentim API</a>, a Machine Learning Natural Language Processing API that returns a sentiment and polarity score. Together, these fields are aggregated to construct and return a list of unordered tweet objects. This list is then converted into a tuple comprised of 3 tweet types; Positives, Neutrals and Negatives, sorted by polarity score.
 
